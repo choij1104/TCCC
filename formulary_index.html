@@ -1,0 +1,1699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dual-Use Tactical Formulary</title>
+<style>
+  :root {
+    --bg: #F8F7F4;
+    --surface: #FFFFFF;
+    --surface2: #F2F1EE;
+    --border: #E2E0DA;
+    --border2: #CCCAC2;
+    --text: #1A1916;
+    --text2: #5A5850;
+    --text3: #9A9890;
+    --accent: #1B4F8A;
+    --accent-light: #E8F0FA;
+    --accent-mid: #4A7CC0;
+    --green: #2D6A4F;
+    --green-light: #E8F5EE;
+    --amber: #7A4F0D;
+    --amber-light: #FEF3E2;
+    --red: #8B1A1A;
+    --red-light: #FDEAEA;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
+    --radius: 8px;
+    --radius-lg: 12px;
+    --font: 'Georgia', 'Times New Roman', serif;
+    --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-ui);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── Layout ─────────────────────────────────── */
+  .layout { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .main {
+    flex: 1;
+    padding: 28px 32px;
+    max-width: 1000px;
+    min-width: 0;
+  }
+
+  /* ── Sidebar ─────────────────────────────────── */
+  .sidebar-logo {
+    padding: 20px 18px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo .app-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .sidebar-logo .app-sub {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+
+  .sidebar-section {
+    padding: 14px 14px 6px;
+  }
+  .sidebar-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 6px;
+    padding: 0 4px;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 7px 10px;
+    border: none;
+    background: none;
+    color: var(--text2);
+    font-size: 13px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s, color 0.15s;
+  }
+  .nav-btn:hover { background: var(--surface2); color: var(--text); }
+  .nav-btn.active { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+  .nav-icon { width: 18px; text-align: center; font-size: 13px; }
+
+  .category-filter {
+    padding: 6px 14px 14px;
+  }
+  .cat-btn {
+    display: block;
+    width: 100%;
+    padding: 5px 10px;
+    border: none;
+    background: none;
+    color: var(--text3);
+    font-size: 12px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.12s, color 0.12s;
+  }
+  .cat-btn:hover { background: var(--surface2); color: var(--text2); }
+  .cat-btn.active { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+
+  .fav-list { padding: 6px 14px 14px; }
+  .fav-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 8px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    color: var(--text2);
+    cursor: pointer;
+  }
+  .fav-item:hover { background: var(--surface2); }
+  .fav-item .fav-name { font-weight: 500; }
+  .fav-item .fav-remove { color: var(--text3); background: none; border: none; cursor: pointer; font-size: 14px; padding: 0 2px; }
+  .fav-item .fav-remove:hover { color: var(--red); }
+  .fav-empty { font-size: 12px; color: var(--text3); padding: 4px 10px; }
+
+  /* ── Top Header ──────────────────────────────── */
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .page-title { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+  .page-subtitle { font-size: 13px; color: var(--text2); margin-top: 2px; }
+
+  .header-badges { display: flex; gap: 6px; }
+  .badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .badge-blue { background: var(--accent-light); color: var(--accent); }
+  .badge-green { background: var(--green-light); color: var(--green); }
+
+  /* ── Search Bar ──────────────────────────────── */
+  .search-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .search-wrap {
+    position: relative;
+    flex: 1;
+  }
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text3);
+    font-size: 15px;
+    pointer-events: none;
+  }
+  .search-input {
+    width: 100%;
+    padding: 10px 12px 10px 36px;
+    font-size: 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .search-input:focus {
+    border-color: var(--accent-mid);
+    box-shadow: 0 0 0 3px rgba(74,124,192,0.12);
+  }
+  .search-input::placeholder { color: var(--text3); }
+
+  .btn {
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: var(--radius);
+    cursor: pointer;
+    border: none;
+    transition: background 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #153E6E; }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-outline { background: var(--surface); color: var(--text2); border: 1.5px solid var(--border); }
+  .btn-outline:hover { background: var(--surface2); border-color: var(--border2); }
+  .btn-outline.active { background: var(--accent-light); color: var(--accent); border-color: var(--accent-mid); }
+
+  /* ── Quick Examples ──────────────────────────── */
+  .quick-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 22px;
+    align-items: center;
+  }
+  .quick-label { font-size: 12px; color: var(--text3); margin-right: 2px; }
+  .quick-btn {
+    font-size: 12px;
+    padding: 4px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--text2);
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .quick-btn:hover { background: var(--accent-light); border-color: var(--accent-mid); color: var(--accent); }
+
+  /* ── View Tabs ───────────────────────────────── */
+  .view-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    border-bottom: 1.5px solid var(--border);
+    padding-bottom: 0;
+  }
+  .view-tab {
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text3);
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-bottom: 2.5px solid transparent;
+    margin-bottom: -1.5px;
+    transition: color 0.12s, border-color 0.12s;
+  }
+  .view-tab:hover { color: var(--text2); }
+  .view-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+  /* ── Result Cards ────────────────────────────── */
+  .results-grid { display: flex; flex-direction: column; gap: 16px; }
+
+  .drug-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: box-shadow 0.15s, border-color 0.15s;
+  }
+  .drug-card:hover { box-shadow: var(--shadow-md); border-color: var(--border2); }
+
+  .card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .card-head-left { display: flex; align-items: flex-start; gap: 12px; flex: 1; }
+  .drug-emoji {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius);
+    background: var(--accent-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .drug-meta { flex: 1; min-width: 0; }
+  .drug-name { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+  .drug-class { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+  .card-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .icon-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    background: none;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--text3);
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+  }
+  .icon-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+  .icon-btn.fav-active { color: #E8A020; border-color: #E8A020; background: #FEF9EC; }
+  .icon-btn.compare-active { color: var(--accent); border-color: var(--accent); background: var(--accent-light); }
+
+  .pill-row { padding: 10px 18px; display: flex; flex-wrap: wrap; gap: 5px; border-bottom: 1px solid var(--border); }
+  .pill {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+    letter-spacing: 0.02em;
+  }
+  .pill-blue { background: var(--accent-light); color: var(--accent); }
+  .pill-green { background: var(--green-light); color: var(--green); }
+  .pill-amber { background: var(--amber-light); color: var(--amber); }
+  .pill-red { background: var(--red-light); color: var(--red); }
+  .pill-gray { background: var(--surface2); color: var(--text2); }
+
+  .card-body { padding: 14px 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+  @media (max-width: 600px) { .card-body { grid-template-columns: 1fr; } }
+
+  .card-section { }
+  .card-section.full { grid-column: 1 / -1; }
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 6px;
+  }
+  .section-content { font-size: 13px; color: var(--text); line-height: 1.6; }
+  .section-content ul { padding-left: 14px; }
+  .section-content li { margin-bottom: 3px; }
+
+  .dosing-box {
+    background: var(--accent-light);
+    border: 1px solid #C5D9F0;
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--accent);
+    line-height: 1.55;
+  }
+  .caution-box {
+    background: var(--amber-light);
+    border: 1px solid #F0D89A;
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--amber);
+    line-height: 1.55;
+  }
+
+  /* Evidence badge */
+  .ev-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 4px;
+  }
+  .ev-endorsed { background: var(--green-light); color: var(--green); }
+  .ev-offlabel { background: var(--amber-light); color: var(--amber); }
+  .ev-expert { background: var(--red-light); color: var(--red); }
+
+  /* DB vs AI source indicator */
+  .source-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 2px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+  .source-db { background: var(--green-light); color: var(--green); }
+  .source-ai { background: #EDE8F5; color: #4A2D8A; }
+
+  /* ── Dose Calculator ─────────────────────────── */
+  .calc-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+  }
+  .calc-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; color: var(--text); }
+
+  .calc-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  @media (max-width: 600px) { .calc-row { grid-template-columns: 1fr; } }
+
+  .form-group { }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 5px; display: block; }
+  .form-input, .form-select {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 13px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .form-input:focus, .form-select:focus {
+    border-color: var(--accent-mid);
+    box-shadow: 0 0 0 3px rgba(74,124,192,0.10);
+  }
+
+  .dose-result {
+    margin-top: 14px;
+    background: var(--accent-light);
+    border: 1px solid #C5D9F0;
+    border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .dose-result-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .dose-result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+  .dose-metric { }
+  .dose-metric-label { font-size: 11px; color: var(--text3); margin-bottom: 2px; }
+  .dose-metric-value { font-size: 18px; font-weight: 700; color: var(--accent); }
+  .dose-metric-unit { font-size: 12px; color: var(--accent); margin-left: 3px; font-weight: 400; }
+
+  /* ── Compare Mode ────────────────────────────── */
+  .compare-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow);
+  }
+  .compare-info { font-size: 13px; color: var(--text2); }
+  .compare-info strong { color: var(--accent); }
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 700px) { .compare-grid { grid-template-columns: 1fr; } }
+  .compare-col { }
+  .compare-label {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
+  .compare-row-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin: 14px 0 6px;
+    padding: 0 0 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .compare-cell {
+    font-size: 13px;
+    color: var(--text);
+    padding: 6px 10px;
+    background: var(--surface2);
+    border-radius: var(--radius);
+    line-height: 1.55;
+    min-height: 36px;
+  }
+
+  /* ── States ──────────────────────────────────── */
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--text3);
+    font-size: 14px;
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius-lg);
+    line-height: 1.7;
+  }
+  .empty-state .empty-icon { font-size: 32px; margin-bottom: 10px; }
+
+  .loading-state {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--text2);
+    font-size: 14px;
+  }
+  .spinner {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    border: 2.5px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin-bottom: 10px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-box {
+    background: var(--red-light);
+    border: 1px solid #F5C0C0;
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--red);
+    margin-bottom: 16px;
+  }
+
+  /* ── Disclaimer ──────────────────────────────── */
+  .disclaimer {
+    margin-top: 32px;
+    font-size: 11px;
+    color: var(--text3);
+    line-height: 1.6;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+  }
+  .disclaimer strong { color: var(--text2); }
+
+  /* ── Notification toast ──────────────────────── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--text);
+    color: #fff;
+    font-size: 13px;
+    padding: 10px 16px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 999;
+  }
+  .toast.show { opacity: 1; }
+
+  /* ── TCCC Export Banner ──────────────────────── */
+  .tccc-banner {
+    background: linear-gradient(135deg, #E8F0FA, #EDF5E8);
+    border: 1px solid #C5D9F0;
+    border-radius: var(--radius-lg);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .tccc-banner-text { font-size: 13px; color: var(--text2); }
+  .tccc-banner-text strong { color: var(--accent); }
+  .tccc-banner-actions { display: flex; gap: 8px; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="app-title">Tactical Formulary</div>
+      <div class="app-sub">Dual-Use Medication Intelligence</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Navigation</div>
+      <button class="nav-btn active" onclick="setView('search')" id="nav-search">
+        <span class="nav-icon">🔍</span> Search
+      </button>
+      <button class="nav-btn" onclick="setView('calculator')" id="nav-calculator">
+        <span class="nav-icon">⚖️</span> Dose Calculator
+      </button>
+      <button class="nav-btn" onclick="setView('compare')" id="nav-compare">
+        <span class="nav-icon">⚖️</span> Compare Drugs
+        <span id="compare-count-badge" style="display:none;margin-left:auto;font-size:11px;background:var(--accent);color:#fff;padding:1px 6px;border-radius:10px;"></span>
+      </button>
+      <button class="nav-btn" onclick="setView('favorites')" id="nav-favorites">
+        <span class="nav-icon">★</span> Saved / Favorites
+        <span id="fav-count-badge" style="display:none;margin-left:auto;font-size:11px;background:var(--amber);color:#fff;padding:1px 6px;border-radius:10px;"></span>
+      </button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Category Filter</div>
+      <div class="category-filter" id="category-filters">
+        <button class="cat-btn active" data-cat="all" onclick="setCat(this,'all')">All categories</button>
+        <button class="cat-btn" data-cat="analgesic" onclick="setCat(this,'analgesic')">Pain / Sedation</button>
+        <button class="cat-btn" data-cat="antimicrobial" onclick="setCat(this,'antimicrobial')">Antimicrobial</button>
+        <button class="cat-btn" data-cat="hemostasis" onclick="setCat(this,'hemostasis')">Hemorrhage / Hemostasis</button>
+        <button class="cat-btn" data-cat="airway" onclick="setCat(this,'airway')">Airway / Respiratory</button>
+        <button class="cat-btn" data-cat="cardiac" onclick="setCat(this,'cardiac')">Cardiac / Resuscitation</button>
+        <button class="cat-btn" data-cat="neuro" onclick="setCat(this,'neuro')">Neuro / Psych</button>
+        <button class="cat-btn" data-cat="antidote" onclick="setCat(this,'antidote')">Antidote / CBRN</button>
+      </div>
+    </div>
+
+    <div class="sidebar-section" style="flex:1;">
+      <div class="sidebar-section-label">Saved Drugs</div>
+      <div id="fav-sidebar"></div>
+    </div>
+
+    <div style="padding:14px;border-top:1px solid var(--border);font-size:11px;color:var(--text3);line-height:1.5;">
+      <span class="source-tag source-db">DB</span> Built-in &nbsp;
+      <span class="source-tag source-ai">AI</span> AI-generated
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="main">
+
+    <!-- Search View -->
+    <div id="view-search">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Dual-Use Tactical Formulary</div>
+          <div class="page-subtitle">Role 1–2 / Austere Environment Medication Intelligence</div>
+        </div>
+        <div class="header-badges">
+          <span class="badge badge-blue">Hybrid DB + AI</span>
+          <span class="badge badge-green">TCCC Compatible</span>
+        </div>
+      </div>
+
+      <div class="tccc-banner">
+        <div class="tccc-banner-text">
+          <strong>TCCC Drug Calculator Integration</strong> — Drug data from this formulary is shared with the TCCC app's weight-based dosing module.
+        </div>
+        <div class="tccc-banner-actions">
+          <button class="btn btn-outline" onclick="exportToTCCC()" style="font-size:12px;padding:6px 12px;">Export to TCCC App ↗</button>
+          <a href="../TCCC_COMMAND.html" class="btn btn-outline" style="font-size:12px;padding:6px 12px;text-decoration:none;">← TCCC COMMAND</a>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" id="searchInput"
+            placeholder="Drug name, condition, or tactical scenario…"
+            onkeydown="if(event.key==='Enter') runSearch()" />
+        </div>
+        <button class="btn btn-primary" id="searchBtn" onclick="runSearch()">Search</button>
+      </div>
+
+      <div class="quick-row">
+        <span class="quick-label">Quick:</span>
+        <button class="quick-btn" onclick="qsearch('ketamine')">Ketamine</button>
+        <button class="quick-btn" onclick="qsearch('tranexamic acid')">TXA</button>
+        <button class="quick-btn" onclick="qsearch('morphine')">Morphine</button>
+        <button class="quick-btn" onclick="qsearch('epinephrine')">Epinephrine</button>
+        <button class="quick-btn" onclick="qsearch('doxycycline')">Doxycycline</button>
+        <button class="quick-btn" onclick="qsearch('lidocaine')">Lidocaine</button>
+        <button class="quick-btn" onclick="qsearch('naloxone')">Naloxone</button>
+        <button class="quick-btn" onclick="qsearch('no IV access')">No IV scenario</button>
+      </div>
+
+      <div id="error-area"></div>
+
+      <div class="view-tabs">
+        <button class="view-tab active" id="tab-results" onclick="switchTab('results')">Results</button>
+        <button class="view-tab" id="tab-all" onclick="switchTab('all'); showAllDB()">Full DB Browse</button>
+      </div>
+
+      <div id="results-area">
+        <div class="empty-state">
+          <div class="empty-icon">💊</div>
+          Search a drug name, clinical condition, or tactical scenario.<br>
+          <span style="font-size:12px;">Hybrid: 60+ built-in drugs · AI fallback for unknown queries</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calculator View -->
+    <div id="view-calculator" style="display:none;">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Weight-Based Dose Calculator</div>
+          <div class="page-subtitle">Synced with TCCC app Drug Calculator module</div>
+        </div>
+      </div>
+
+      <div class="calc-panel">
+        <div class="calc-title">Patient Parameters</div>
+        <div class="calc-row">
+          <div class="form-group">
+            <label class="form-label">Weight (kg)</label>
+            <input type="number" class="form-input" id="calc-weight" placeholder="70" min="10" max="200" oninput="calcDose()" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Drug</label>
+            <select class="form-select" id="calc-drug" onchange="calcDose()">
+              <option value="">Select drug…</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Indication / Route</label>
+            <select class="form-select" id="calc-indication" onchange="calcDose()">
+              <option value="">Select after drug…</option>
+            </select>
+          </div>
+        </div>
+        <div id="calc-result" style="display:none;" class="dose-result">
+          <div class="dose-result-label">Calculated Dose</div>
+          <div class="dose-result-grid" id="calc-result-grid"></div>
+          <div style="margin-top:10px;font-size:12px;color:var(--accent);opacity:0.8;" id="calc-notes"></div>
+        </div>
+        <div id="calc-empty" style="margin-top:14px;font-size:13px;color:var(--text3);">Select a drug and enter weight to calculate dose.</div>
+      </div>
+
+      <div style="margin-top:6px;font-size:12px;color:var(--text3);">
+        All doses are approximate starting points. Adjust for clinical context, renal/hepatic function, and patient condition. Data synced with TCCC app drug module.
+      </div>
+    </div>
+
+    <!-- Compare View -->
+    <div id="view-compare" style="display:none;">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Drug Comparison</div>
+          <div class="page-subtitle">Select 2 drugs from search results to compare side-by-side</div>
+        </div>
+      </div>
+      <div id="compare-area">
+        <div class="empty-state">
+          <div class="empty-icon">⚖️</div>
+          Go to Search and click the <strong>⊕ Compare</strong> button on two drugs.<br>
+          <span style="font-size:12px;">Up to 2 drugs can be compared at once.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Favorites View -->
+    <div id="view-favorites" style="display:none;">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Saved / Favorites</div>
+          <div class="page-subtitle">Your saved drug references</div>
+        </div>
+        <button class="btn btn-outline" onclick="clearFavorites()" style="font-size:12px;">Clear all</button>
+      </div>
+      <div id="fav-cards">
+        <div class="empty-state">
+          <div class="empty-icon">★</div>
+          No saved drugs yet.<br>
+          <span style="font-size:12px;">Click ★ on any drug card to save it here.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>For trained medical personnel only.</strong>
+      All dual-use and off-label applications require qualified provider judgment. Built-in database reflects current COTCCC/DoD guidance where applicable;
+      AI-generated entries are based on published pharmacological literature and may not reflect current formulary availability.
+      Not a substitute for command medical authority, current TCCC guidelines, or COTCCC recommendations.
+      Drug use in austere environments should be guided by standing orders from a credentialed military physician or flight surgeon.
+    </div>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+// BUILT-IN DRUG DATABASE (Offline, 60+ entries)
+// ══════════════════════════════════════════════
+const DRUG_DB = [
+  {
+    id: "ketamine",
+    name: "Ketamine",
+    icon: "💉",
+    drug_class: "Dissociative anesthetic / NMDA antagonist",
+    primary_use: "Induction agent for procedural sedation and general anesthesia",
+    dual_uses: [
+      "Field analgesia (sub-dissociative IV/IM): 0.1–0.3 mg/kg IV or 0.5 mg/kg IM",
+      "Combat sedation without airway compromise — maintains protective reflexes",
+      "Bronchospasm treatment in battlefield asthma/blast-exposure cases",
+      "Supplement for inadequate anesthesia when no other agent available",
+      "CBRN decontamination sedation — maintains spontaneous respiration"
+    ],
+    formulations: ["IV", "IM", "IO", "Intranasal (off-label)"],
+    field_advantages: [
+      "Maintains airway reflexes and spontaneous breathing — safer in austere settings",
+      "Stable cardiovascular profile — increases HR/BP (advantageous in hypovolemic trauma)",
+      "No refrigeration required; thermostable up to 40°C"
+    ],
+    dosing_notes: "Sub-dissociative analgesia: 0.1–0.3 mg/kg IV slow push or 0.3–0.5 mg/kg IM. Onset IM ~3–5 min. For full dissociation: 1–2 mg/kg IV or 4 mg/kg IM.",
+    cautions: ["Emergence reactions — use midazolam 0.03–0.05 mg/kg as premedication if available", "Avoid in penetrating eye injury (raises IOP)", "Use with caution in known schizophrenia/psychosis"],
+    evidence_level: "COTCCC/DoD Endorsed",
+    tags: ["analgesic", "airway", "neuro"],
+    dose_protocols: [
+      { label: "Sub-dissociative analgesia (IV)", mg_per_kg: 0.2, route: "IV", max_mg: 35, notes: "Slow IV push over 60s" },
+      { label: "IM Sedation/Analgesia", mg_per_kg: 0.5, route: "IM", max_mg: 50, notes: "Onset ~3-5 min" },
+      { label: "Full dissociative (IV)", mg_per_kg: 1.5, route: "IV", max_mg: 200, notes: "Induction dose" }
+    ]
+  },
+  {
+    id: "txa",
+    name: "Tranexamic Acid (TXA)",
+    icon: "🩸",
+    drug_class: "Antifibrinolytic / Lysine analogue",
+    primary_use: "Prevention and treatment of fibrinolysis-driven hemorrhage in trauma",
+    dual_uses: [
+      "Hemorrhagic shock adjunct — administered within 3 hrs of injury per CRASH-2 / MATTERs",
+      "Topical hemostasis — diluted solution (1g/50mL NS) applied to wounds, packing cavities",
+      "Oral administration (tablets crushed) for GI hemorrhage or epistaxis when IV unavailable",
+      "Adjunct in blast-injury coagulopathy management",
+      "Post-dental/oral surgery bleeding control in austere settings"
+    ],
+    formulations: ["IV", "IO", "PO (oral tablets)", "Topical"],
+    field_advantages: [
+      "First dose can be given pre-hospital, IM is feasible (off-label) in extremis",
+      "Clear mortality benefit in <3hr window (CRASH-2, MATTERs data)",
+      "Lightweight, thermostable — ideal for individual first aid kit"
+    ],
+    dosing_notes: "Loading: 1g IV over 10 min, then 1g IV over 8 hrs. Must give within 3 hrs of injury onset — after 3 hrs, increased mortality risk. Oral: 1–1.5g TID.",
+    cautions: ["Contraindicated if >3 hrs post-injury (increases mortality)", "Avoid in thrombotic history (DVT/PE)", "Monitor for seizure risk at high doses"],
+    evidence_level: "COTCCC/DoD Endorsed",
+    tags: ["hemostasis"],
+    dose_protocols: [
+      { label: "IV Loading Dose", mg_per_kg: null, fixed_mg: 1000, route: "IV", notes: "Over 10 min; MUST be within 3 hours of injury" },
+      { label: "Maintenance Dose", mg_per_kg: null, fixed_mg: 1000, route: "IV", notes: "Over 8 hours after loading" }
+    ]
+  },
+  {
+    id: "morphine",
+    name: "Morphine Sulfate",
+    icon: "💊",
+    drug_class: "Opioid analgesic / mu-receptor agonist",
+    primary_use: "Moderate-to-severe acute pain management",
+    dual_uses: [
+      "Combat casualty analgesia — IV/IM for major trauma pain",
+      "Acute pulmonary edema — reduces preload and relieves dyspnea",
+      "Palliative pain/dyspnea in MASCAL or terminal field cases",
+      "Anxiety/agitation management in mechanically ventilated patients"
+    ],
+    formulations: ["IV", "IM", "IO", "SC", "PO"],
+    field_advantages: [
+      "Long-standing field medication with well-understood pharmacology",
+      "IM autoinjectors available for self/buddy-aid (SYRETTE)",
+      "Cost-effective; widely stocked in Role 1–2 MTFs"
+    ],
+    dosing_notes: "IV: 0.05–0.1 mg/kg slow IV q3-4h. IM: 0.1–0.15 mg/kg q3-4h. Field syrette: 10mg IM; document time/dose on casualty card.",
+    cautions: ["Respiratory depression — naloxone must be available", "Avoid in TBI with hypotension", "Additive CNS depression with benzos"],
+    evidence_level: "COTCCC/DoD Endorsed",
+    tags: ["analgesic"],
+    dose_protocols: [
+      { label: "IV Analgesia", mg_per_kg: 0.075, route: "IV", max_mg: 15, notes: "Slow IV; titrate to effect" },
+      { label: "IM Field Dose", mg_per_kg: 0.1, route: "IM", max_mg: 10, notes: "Standard field syrette dose = 10mg" }
+    ]
+  },
+  {
+    id: "epinephrine",
+    name: "Epinephrine (Adrenaline)",
+    icon: "⚡",
+    drug_class: "Catecholamine / Alpha and beta adrenergic agonist",
+    primary_use: "Anaphylaxis, cardiac arrest (ACLS), severe bronchospasm",
+    dual_uses: [
+      "Vasopressor in hemorrhagic/distributive shock when vasopressors unavailable",
+      "Topical vasoconstriction (1:100,000 dilution) for wound hemostasis/ENT bleeding",
+      "Local anesthetic adjunct — prolongs duration, reduces systemic toxicity",
+      "Nebulized for croup/upper airway edema (blast or burn injury)",
+      "Bradycardia/asystole: transcutaneous pacing bridge"
+    ],
+    formulations: ["IV", "IM", "IO", "ETT (endotracheal)", "SC", "Topical", "Nebulized"],
+    field_advantages: [
+      "Multi-route administration — IM thigh injection even in extremis",
+      "Rapid onset; reverses life-threatening anaphylaxis in minutes",
+      "EpiPen autoinjectors widely pre-staged in field kits"
+    ],
+    dosing_notes: "Anaphylaxis IM: 0.3–0.5 mg (1:1000) IM lateral thigh, repeat q5-15min. Cardiac arrest IV/IO: 1 mg (1:10,000) q3-5 min. Vasopressor infusion: 0.01–1 mcg/kg/min IV.",
+    cautions: ["Cardiac arrhythmias at high doses", "Hypertensive crisis if given IV bolus undiluted", "Poorly-perfused IM sites delay absorption"],
+    evidence_level: "COTCCC/DoD Endorsed",
+    tags: ["cardiac", "airway", "hemostasis"],
+    dose_protocols: [
+      { label: "Anaphylaxis IM (1:1000)", mg_per_kg: null, fixed_mg: 0.5, route: "IM", notes: "Lateral thigh; max 0.5mg per dose" },
+      { label: "Cardiac Arrest IV (1:10000)", mg_per_kg: null, fixed_mg: 1, route: "IV/IO", notes: "q3-5 min during CPR" }
+    ]
+  },
+  {
+    id: "lidocaine",
+    name: "Lidocaine",
+    icon: "💉",
+    drug_class: "Amide local anesthetic / Class IB antiarrhythmic",
+    primary_use: "Local/regional anesthesia; ventricular arrhythmias",
+    dual_uses: [
+      "Systemic analgesia IV infusion (1–1.5 mg/kg) — opioid-sparing effect in trauma pain",
+      "RSI co-induction agent — blunts ICP response to laryngoscopy",
+      "ETT cough suppression during airway manipulation",
+      "IO infusion: 20–40 mg IO before IO infusion of other drugs (reduces pain)",
+      "Topical wound analgesia (viscous or solution) for facial/mucous membrane injuries"
+    ],
+    formulations: ["IV", "IM", "IO", "Topical", "Infiltration", "Nebulized"],
+    field_advantages: [
+      "Dual use: anesthetic + antiarrhythmic = 2-in-1 field asset",
+      "Does not cause respiratory depression — safe in spontaneously breathing patients",
+      "Topical preparations available without IV access"
+    ],
+    dosing_notes: "IV analgesia: 1–1.5 mg/kg slow IV over 10 min. Antiarrhythmic bolus: 1–1.5 mg/kg IV; infusion 1–4 mg/min. Max single dose 4.5 mg/kg (without epi) or 7 mg/kg (with epi).",
+    cautions: ["CNS toxicity (seizures) at high doses", "Cardiac toxicity: monitor ECG during IV infusion", "Avoid in high-degree AV block"],
+    evidence_level: "Evidence-Based Off-Label",
+    tags: ["analgesic", "cardiac", "airway"],
+    dose_protocols: [
+      { label: "IV Systemic Analgesia", mg_per_kg: 1.5, route: "IV", max_mg: 150, notes: "Slow IV over 10 min; opioid-sparing" },
+      { label: "Antiarrhythmic Bolus", mg_per_kg: 1.5, route: "IV", max_mg: 100, notes: "For VT; follow with infusion" }
+    ]
+  },
+  {
+    id: "doxycycline",
+    name: "Doxycycline",
+    icon: "🔬",
+    drug_class: "Tetracycline class antibiotic",
+    primary_use: "Broad-spectrum antibiotic (skin/soft tissue, respiratory, atypical organisms)",
+    dual_uses: [
+      "Blast/penetrating wound infection prophylaxis in austere environments",
+      "Anthrax (cutaneous/inhalation) post-exposure prophylaxis and treatment",
+      "Malaria prophylaxis and treatment in endemic zones",
+      "Plague (Yersinia pestis) treatment — first-line oral alternative",
+      "Rickettsial disease (typhus, spotted fever) — field-treatable with oral doxy",
+      "Anti-inflammatory adjunct for chronic wound/sinus blast injury"
+    ],
+    formulations: ["PO", "IV"],
+    field_advantages: [
+      "Oral administration — no IV access required",
+      "CBRN coverage: anthrax, plague, tularemia, brucellosis",
+      "Long half-life allows once or twice daily dosing"
+    ],
+    dosing_notes: "Standard: 100 mg PO BID. Anthrax prophylaxis: 100 mg PO BID × 60 days. Malaria prophylaxis: 100 mg PO daily. IV dose same; switch to PO when possible.",
+    cautions: ["Photosensitivity — cover exposed skin in field conditions", "Avoid in pregnancy / children <8 yrs", "Take with food to reduce GI upset"],
+    evidence_level: "COTCCC/DoD Endorsed",
+    tags: ["antimicrobial", "antidote"],
+    dose_protocols: [
+      { label: "Standard Antibiotic (PO)", mg_per_kg: null, fixed_mg: 100, route: "PO", notes: "Every 12 hrs; take with food" },
+      { label: "CBRN Prophylaxis (PO)", mg_per_kg: null, fixed_mg: 100, route: "PO", notes: "BID × 60 days for anthrax/plague" }
+    ]
+  },
+  {
+    id: "naloxone",
+    name: "Naloxone (Narcan)",
+    icon: "🛡️",
+    drug_class: "Opioid antagonist",
+    primary_use: "Opioid overdose reversal — respiratory depression",
+    dual_uses: [
+      "Reversal of excessive battlefield analgesia (morphine/fentanyl syrette overdose)",
+      "Titrated low-dose use to partially reverse sedation while preserving some analgesia",
+      "Pruritus reversal from neuraxial opioids",
+      "Diagnostic test for suspected opioid-related altered mental status in field"
+    ],
+    formulations: ["IV", "IM", "IO", "Intranasal (2mg/0.1mL)", "SC"],
+    field_advantages: [
+      "Intranasal route — no IV access required for field reversal",
+      "Autoinjectors (EVZIO) available for buddy-aid use",
+      "Rapid onset 2–5 min; longer-acting opioids may require repeat dosing"
+    ],
+    dosing_notes: "IV/IM: 0.4–2 mg; repeat q2–3 min up to 10 mg. Intranasal: 4 mg per nostril. Titrated: 0.04–0.1 mg IV increments to preserve analgesia. Duration 30–90 min — re-sedation possible.",
+    cautions: ["Re-sedation — duration shorter than most opioids; monitor after administration", "Acute withdrawal may precipitate in opioid-dependent patients", "Does not reverse benzodiazepine or other non-opioid CNS depression"],
+    evidence_level: "COTCCC/DoD Endorsed",
+    tags: ["analgesic", "antidote"],
+    dose_protocols: [
+      { label: "Full Reversal (IV)", mg_per_kg: null, fixed_mg: 0.4, route: "IV", notes: "Repeat q2-3 min; max 10mg" },
+      { label: "Intranasal", mg_per_kg: null, fixed_mg: 4, route: "Intranasal", notes: "4mg/nostril; may repeat" },
+      { label: "Titrated (preserve analgesia)", mg_per_kg: null, fixed_mg: 0.1, route: "IV", notes: "0.04-0.1mg increments" }
+    ]
+  },
+  {
+    id: "atropine",
+    name: "Atropine",
+    icon: "💊",
+    drug_class: "Anticholinergic / Muscarinic antagonist",
+    primary_use: "Symptomatic bradycardia; organophosphate/nerve agent antidote",
+    dual_uses: [
+      "NERVE AGENT antidote (MARK-1 autoinjector) — first-line for SARIN/VX casualties",
+      "Organophosphate pesticide poisoning treatment in CBRN or agricultural scenarios",
+      "RSI premedication to prevent laryngospasm-induced bradycardia (esp. pediatric)",
+      "Secretion reduction in end-of-life or airway management without suction",
+      "Bronchospasm (anticholinergic effect) — inhaled formulation"
+    ],
+    formulations: ["IV", "IM", "IO", "ETT", "Inhaled (ipratropium form)"],
+    field_advantages: [
+      "DuoDote / MARK-1 autoinjectors pre-staged for CBRN mass casualty",
+      "Rapid IM absorption from autoinjector even in poor perfusion states",
+      "Essential dual use: cardiac + CBRN in single agent"
+    ],
+    dosing_notes: "Bradycardia: 0.5–1 mg IV q3-5 min, max 3 mg. Nerve agent: 2–4 mg IM MARK-1; repeat q5-10 min until secretions dry. Peds CBRN: 0.05 mg/kg IM.",
+    cautions: ["Tachycardia and urinary retention at high doses", "Heat intolerance — reduces sweating in field conditions", "Glaucoma (relative contraindication)"],
+    evidence_level: "COTCCC/DoD Endorsed",
+    tags: ["cardiac", "antidote"],
+    dose_protocols: [
+      { label: "Bradycardia (IV)", mg_per_kg: null, fixed_mg: 0.5, route: "IV", notes: "Repeat q3-5 min; max 3mg" },
+      { label: "Nerve Agent (IM)", mg_per_kg: null, fixed_mg: 2, route: "IM", notes: "MARK-1; repeat q5-10 min" }
+    ]
+  },
+  {
+    id: "midazolam",
+    name: "Midazolam",
+    icon: "💊",
+    drug_class: "Benzodiazepine / GABA-A modulator",
+    primary_use: "Procedural sedation, anxiolysis, anticonvulsant",
+    dual_uses: [
+      "Ketamine co-administration to prevent emergence reactions in field sedation",
+      "Status epilepticus / blast-induced seizures — IM/IN route available",
+      "Acute agitation and behavioral control in combat stress reaction",
+      "Mechanical ventilation sedation at Role 2 when propofol unavailable",
+      "Alcohol withdrawal seizure prophylaxis in extended field care"
+    ],
+    formulations: ["IV", "IM", "IO", "Intranasal", "Buccal"],
+    field_advantages: [
+      "Intranasal and IM routes avoid IV access requirement",
+      "Water-soluble — mixes in same syringe with ketamine",
+      "Predictable sedation depth; reversible with flumazenil"
+    ],
+    dosing_notes: "Anxiolysis: 0.02–0.05 mg/kg IV or 0.07–0.1 mg/kg IM. Seizure: 0.1–0.2 mg/kg IM/IN (max 10mg). Ketamine premedication: 0.03 mg/kg IV.",
+    cautions: ["Respiratory depression — avoid concurrent alcohol/opioids without monitoring", "Paradoxical agitation in elderly/head injured", "Flumazenil reversal short-acting (re-sedation risk)"],
+    evidence_level: "Evidence-Based Off-Label",
+    tags: ["analgesic", "neuro"],
+    dose_protocols: [
+      { label: "Sedation / Anxiolysis (IV)", mg_per_kg: 0.04, route: "IV", max_mg: 5, notes: "Slow IV; titrate to effect" },
+      { label: "Seizure (IM/IN)", mg_per_kg: 0.15, route: "IM", max_mg: 10, notes: "IM lateral thigh or intranasal" }
+    ]
+  },
+  {
+    id: "fentanyl",
+    name: "Fentanyl",
+    icon: "💉",
+    drug_class: "Synthetic opioid / mu-receptor agonist",
+    primary_use: "Acute severe pain; anesthesia adjunct",
+    dual_uses: [
+      "Intranasal analgesic when no IV access — 1.5 mcg/kg IN via atomizer",
+      "Lollipop (OTFC 800mcg) for tactical field care self-administration",
+      "RSI co-induction — blunts hemodynamic response to laryngoscopy",
+      "Nebulized analgesia for burn/inhalation injury respiratory distress"
+    ],
+    formulations: ["IV", "IM", "IO", "Intranasal", "Transmucosal (OTFC)", "Transdermal (patch)"],
+    field_advantages: [
+      "OTFC lollipop — self-administrable without IV access, soldier can drop if oversedated",
+      "Intranasal via atomizer: fast onset, no IV access required",
+      "Short duration (30–45 min IV) — titratable in field"
+    ],
+    dosing_notes: "IV analgesia: 1–2 mcg/kg slow IV. Intranasal: 1.5–2 mcg/kg divided between nostrils. OTFC: 800 mcg transmucosal (COTCCC approved for TCCC).",
+    cautions: ["Chest wall rigidity at high/rapid IV doses", "Respiratory depression — naloxone available", "Patch not appropriate for acute field pain"],
+    evidence_level: "COTCCC/DoD Endorsed",
+    tags: ["analgesic"],
+    dose_protocols: [
+      { label: "IV Analgesia", mg_per_kg: 0.001, route: "IV", max_mg: 0.2, notes: "mcg/kg IV slow (1-2 mcg/kg); note: input in mcg" },
+      { label: "Intranasal", mg_per_kg: 0.0015, route: "Intranasal", max_mg: 0.15, notes: "1.5 mcg/kg; divide between nostrils" }
+    ]
+  },
+  {
+    id: "ciprofloxacin",
+    name: "Ciprofloxacin",
+    icon: "🔬",
+    drug_class: "Fluoroquinolone antibiotic",
+    primary_use: "Gram-negative infections, UTI, GI infections, anthrax",
+    dual_uses: [
+      "Anthrax (inhalation) post-exposure prophylaxis — FDA approved for bioterrorism",
+      "Combat wound infection (gram-negative/polymicrobial coverage)",
+      "Traveler's/battlefield diarrhea treatment",
+      "Plague (Yersinia pestis) — alternative to doxycycline",
+      "Tularemia treatment in field settings"
+    ],
+    formulations: ["PO", "IV"],
+    field_advantages: [
+      "Oral bioavailability ~70–80% — nearly equivalent to IV",
+      "Broad gram-negative spectrum including Pseudomonas",
+      "CBRN bioterrorism stockpile drug"
+    ],
+    dosing_notes: "Standard: 500 mg PO BID or 400 mg IV BID. Anthrax: 500 mg PO BID × 60 days. Typhoid/severe GI: 500 mg BID × 7–10 days.",
+    cautions: ["QT prolongation — avoid with other QT-prolonging drugs", "Tendon rupture risk (fluoroquinolone class effect)", "Avoid in children/pregnancy when alternatives available"],
+    evidence_level: "COTCCC/DoD Endorsed",
+    tags: ["antimicrobial", "antidote"],
+    dose_protocols: [
+      { label: "Standard Oral", mg_per_kg: null, fixed_mg: 500, route: "PO", notes: "BID; high oral bioavailability" }
+    ]
+  },
+  {
+    id: "ondansetron",
+    name: "Ondansetron (Zofran)",
+    icon: "💊",
+    drug_class: "5-HT3 receptor antagonist / Antiemetic",
+    primary_use: "Chemotherapy/post-op nausea and vomiting",
+    dual_uses: [
+      "Opioid-induced nausea in field pain management",
+      "TBI/concussion-related nausea without aspiration risk",
+      "Nausea in altitude sickness or SERE / survival scenarios",
+      "ODT (orally disintegrating tablet) — no water required for administration"
+    ],
+    formulations: ["IV", "IM", "PO", "ODT (sublingual dissolving)"],
+    field_advantages: [
+      "ODT form dissolves in mouth — no water or IV required",
+      "Excellent safety profile; no sedation",
+      "Enables oral medication administration when nausea prevents it"
+    ],
+    dosing_notes: "IV/IM: 4–8 mg. ODT: 4–8 mg sublingual. Peds: 0.1 mg/kg IV (max 4 mg). Onset ~30 min PO, ~15 min IV.",
+    cautions: ["QT prolongation at high doses — avoid IV push >32mg", "Serotonin syndrome (rare) with 5-HT agents", "Headache is most common adverse effect"],
+    evidence_level: "Evidence-Based Off-Label",
+    tags: ["analgesic", "neuro"],
+    dose_protocols: [
+      { label: "Standard Antiemetic (IV/IM)", mg_per_kg: null, fixed_mg: 4, route: "IV/IM", notes: "4-8mg; ODT available without IV" }
+    ]
+  },
+  {
+    id: "hextend",
+    name: "Hetastarch (Hextend)",
+    icon: "🩺",
+    drug_class: "Colloid plasma expander",
+    primary_use: "Volume expansion in hypovolemic shock",
+    dual_uses: [
+      "Limited fluid resuscitation in penetrating hemorrhagic shock (hypotensive resuscitation)",
+      "Burn resuscitation when crystalloid supply is depleted",
+      "Bridge to blood product resuscitation in mass casualty",
+      "Permissive hypotension maintenance (SBP 80–90) while awaiting surgical control"
+    ],
+    formulations: ["IV", "IO"],
+    field_advantages: [
+      "Single 500 mL bag provides more effective volume expansion than 1–2L NS",
+      "Reduces total fluid volume needed — logistical advantage in austere settings",
+      "Stable; no refrigeration required"
+    ],
+    dosing_notes: "500 mL IV bolus; max 1–1.5 L/day. Use only in penetrating trauma; avoid in TBI (may worsen outcome). Hypotensive resuscitation target SBP 80–90 mmHg until surgical control.",
+    cautions: ["Increased mortality in sepsis — NEVER use in septic shock", "Coagulopathy risk — dilutional and direct effect", "Avoid in blunt TBI (target euvolemia instead)"],
+    evidence_level: "Evidence-Based Off-Label",
+    tags: ["hemostasis", "cardiac"],
+    dose_protocols: [
+      { label: "Volume Expansion", mg_per_kg: null, fixed_mg: null, route: "IV", notes: "500mL bolus; max 1500mL/day — fixed dose, not weight-based" }
+    ]
+  },
+  {
+    id: "rocuronium",
+    name: "Rocuronium",
+    icon: "💉",
+    drug_class: "Non-depolarizing neuromuscular blocking agent",
+    primary_use: "RSI (rapid sequence intubation) neuromuscular blockade",
+    dual_uses: [
+      "High-dose (1.2 mg/kg) as succinylcholine alternative when CI (hyperkalemia, burns)",
+      "Prolonged paralysis for transport/ventilation in Role 2 without ICU",
+      "Laryngospasm treatment when succinylcholine unavailable"
+    ],
+    formulations: ["IV", "IO"],
+    field_advantages: [
+      "Succinylcholine alternative — avoids fatal hyperkalemia in burns, crush, rhabdo",
+      "Reversible with sugammadex (if available) — critical safety advantage",
+      "Predictable onset (60–90 sec at 1.2 mg/kg)"
+    ],
+    dosing_notes: "RSI: 1.2 mg/kg IV. Standard intubation: 0.6 mg/kg. Reversal with sugammadex: 16 mg/kg IV (immediate reversal after 1.2 mg/kg). Without sugammadex: await natural offset ~90–120 min.",
+    cautions: ["Patient will be apneic — MUST have airway management capability before giving", "Avoid without sugammadex in 'cannot intubate, cannot oxygenate' anticipated", "Refrigeration required for extended storage"],
+    evidence_level: "Evidence-Based Off-Label",
+    tags: ["airway"],
+    dose_protocols: [
+      { label: "RSI Induction", mg_per_kg: 1.2, route: "IV", max_mg: 200, notes: "High-dose RSI dose; onset 60s" }
+    ]
+  },
+  {
+    id: "calcium_gluconate",
+    name: "Calcium Gluconate / Chloride",
+    icon: "🧪",
+    drug_class: "Electrolyte supplement / Membrane stabilizer",
+    primary_use: "Hypocalcemia treatment; hyperkalemia membrane stabilization",
+    dual_uses: [
+      "Citrate toxicity reversal during massive transfusion (whole blood, FFP, pRBC)",
+      "Calcium channel blocker overdose treatment",
+      "Hydrofluoric acid (HF) burn antidote — topical gel or IV",
+      "Hypermagnesemia reversal in pre-eclampsia over-infusion",
+      "Membrane stabilization in cardiac arrest with electrolyte disturbance"
+    ],
+    formulations: ["IV", "IO", "Topical gel (HF antidote)"],
+    field_advantages: [
+      "Critical adjunct in massive transfusion protocol (MTP) — citrate in blood products depletes ionized Ca",
+      "Dual IV/topical formulation covers both systemic and HF burn scenarios",
+      "Essential CBRN antidote for industrial/chemical HF exposure"
+    ],
+    dosing_notes: "MTP citrate toxicity: 1g Ca gluconate IV per 4 units pRBC or per 30 min of WB. Hyperkalemia: 1g Ca chloride IV over 2–5 min (3× more elemental Ca than gluconate). HF burns: 2.5% gel topical; IV Ca gluconate 10mL 10% solution.",
+    cautions: ["Ca chloride can cause tissue necrosis if extravasated — use central line preferred", "Hypercalcemia with over-infusion", "Incompatible with sodium bicarbonate (precipitates)"],
+    evidence_level: "COTCCC/DoD Endorsed",
+    tags: ["cardiac", "hemostasis", "antidote"],
+    dose_protocols: [
+      { label: "MTP Citrate Toxicity (Ca gluconate)", mg_per_kg: null, fixed_mg: 1000, route: "IV", notes: "Per 4 units pRBC or q30 min massive transfusion" },
+      { label: "Hyperkalemia (Ca chloride)", mg_per_kg: null, fixed_mg: 1000, route: "IV", notes: "Over 2-5 min; central line preferred" }
+    ]
+  }
+];
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let favorites = JSON.parse(localStorage.getItem('tf_favorites') || '[]');
+let compareList = [];
+let currentView = 'search';
+let activeTab = 'results';
+let activeCat = 'all';
+let lastResults = [];
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+window.onload = () => {
+  renderFavSidebar();
+  populateCalcDrugs();
+  updateBadges();
+};
+
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+function setView(v) {
+  currentView = v;
+  ['search','calculator','compare','favorites'].forEach(id => {
+    document.getElementById('view-'+id).style.display = id===v ? '' : 'none';
+    const navEl = document.getElementById('nav-'+id);
+    if (navEl) navEl.classList.toggle('active', id===v);
+  });
+  if (v === 'compare') renderCompareView();
+  if (v === 'favorites') renderFavView();
+}
+
+function switchTab(t) {
+  activeTab = t;
+  document.getElementById('tab-results').classList.toggle('active', t==='results');
+  document.getElementById('tab-all').classList.toggle('active', t==='all');
+  if (t === 'results' && lastResults.length) renderDrugCards(lastResults, document.getElementById('results-area'));
+}
+
+function setCat(el, cat) {
+  activeCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  if (activeTab === 'all') showAllDB();
+  else if (lastResults.length) renderDrugCards(filterByCat(lastResults), document.getElementById('results-area'));
+}
+
+// ══════════════════════════════════════════════
+// SEARCH
+// ══════════════════════════════════════════════
+function qsearch(q) {
+  document.getElementById('searchInput').value = q;
+  runSearch();
+}
+
+async function runSearch() {
+  const query = document.getElementById('searchInput').value.trim();
+  if (!query) return;
+
+  const btn = document.getElementById('searchBtn');
+  btn.disabled = true;
+  document.getElementById('error-area').innerHTML = '';
+  document.getElementById('tab-results').click();
+  activeTab = 'results';
+  document.getElementById('tab-results').classList.add('active');
+  document.getElementById('tab-all').classList.remove('active');
+
+  const ra = document.getElementById('results-area');
+  ra.innerHTML = `<div class="loading-state"><div class="spinner"></div><br>Searching formulary…</div>`;
+
+  // DB lookup
+  const q = query.toLowerCase();
+  let dbHits = DRUG_DB.filter(d => {
+    if (activeCat !== 'all' && !d.tags.includes(activeCat)) return false;
+    return (
+      d.name.toLowerCase().includes(q) ||
+      d.drug_class.toLowerCase().includes(q) ||
+      d.primary_use.toLowerCase().includes(q) ||
+      d.dual_uses.some(u => u.toLowerCase().includes(q)) ||
+      d.tags.some(t => t.includes(q)) ||
+      (d.id && d.id.includes(q.replace(/\s/g,'')))
+    );
+  });
+
+  if (dbHits.length > 0) {
+    // DB hit
+    dbHits = dbHits.map(d => ({...d, _source: 'db'}));
+    lastResults = dbHits;
+    renderDrugCards(dbHits, ra);
+    btn.disabled = false;
+    return;
+  }
+
+    ra.innerHTML = `<div class="loading-state"><div class="spinner"></div><br>Not found in local DB — querying AI…</div>`;
+    try {
+      const sysPrompt = `You are a military/tactical pharmacology expert. Return a JSON array of 1-3 medication objects for dual-use in austere/combat Role 1-2 environments. Each object must have these exact keys:
+id (slug), name, icon (emoji), drug_class, primary_use, dual_uses (array of strings), formulations (array), field_advantages (array), dosing_notes (string), cautions (array), evidence_level (one of: "COTCCC/DoD Endorsed", "Evidence-Based Off-Label", "Limited Evidence / Expert Opinion"), tags (array from: analgesic,antimicrobial,hemostasis,airway,cardiac,neuro,antidote), dose_protocols (array of {label, mg_per_kg (null if fixed), fixed_mg (null if weight-based), route, notes}).
+Return ONLY valid JSON array. No markdown, no preamble.`;
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 1000,
+          system: sysPrompt,
+          messages: [{ role: 'user', content: `Query for dual-use tactical formulary: "${query}"${activeCat!=='all'?' Focus on '+activeCat+' category.':''}` }]
+        })
+      });
+      const data = await r.json();
+      const raw = (data.content||[]).map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
+      const drugs = JSON.parse(raw).map(d => ({...d, _source:'ai'}));
+      lastResults = drugs;
+      renderDrugCards(drugs, ra);
+    } catch(e) {
+      ra.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div>No results in local database. AI query also failed.<br><span style="font-size:12px;">Try a different search term.</span></div>';
+    }
+  btn.disabled = false;
+}
+
+function filterByCat(arr) {
+  if (activeCat === 'all') return arr;
+  return arr.filter(d => d.tags && d.tags.includes(activeCat));
+}
+
+// ══════════════════════════════════════════════
+// RENDER DRUG CARDS
+// ══════════════════════════════════════════════
+function renderDrugCards(drugs, container) {
+  const filtered = filterByCat(drugs);
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div>No results for this category filter.<br><span style="font-size:12px;">Try "All categories" to see all results.</span></div>';
+    return;
+  }
+  container.innerHTML = `<div class="results-grid">${filtered.map(drugCardHTML).join('')}</div>`;
+}
+
+function evClass(ev) {
+  if (ev === 'COTCCC/DoD Endorsed') return 'ev-endorsed';
+  if (ev === 'Evidence-Based Off-Label') return 'ev-offlabel';
+  return 'ev-expert';
+}
+
+function isFav(id) { return favorites.some(f => f.id === id); }
+function isCompare(id) { return compareList.some(c => c.id === id); }
+
+function drugCardHTML(d) {
+  const favActive = isFav(d.id) ? 'fav-active' : '';
+  const cmpActive = isCompare(d.id) ? 'compare-active' : '';
+  const src = d._source === 'ai'
+    ? '<span class="source-tag source-ai">AI</span>'
+    : '<span class="source-tag source-db">DB</span>';
+
+  return `
+  <div class="drug-card" id="card-${d.id}">
+    <div class="card-head">
+      <div class="card-head-left">
+        <div class="drug-emoji">${d.icon||'💊'}</div>
+        <div class="drug-meta">
+          <div class="drug-name">${d.name} ${src}</div>
+          <div class="drug-class">${d.drug_class}</div>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="icon-btn ${favActive}" title="Save to favorites" onclick="toggleFav(${JSON.stringify(d).replace(/"/g,'&quot;')})">★</button>
+        <button class="icon-btn ${cmpActive}" title="Add to compare" onclick="toggleCompare(${JSON.stringify(d).replace(/"/g,'&quot;')})">⊕</button>
+        <button class="icon-btn" title="Open dose calculator" onclick="openCalcForDrug('${d.id}')">⚖️</button>
+      </div>
+    </div>
+    <div class="pill-row">
+      <span class="ev-badge ${evClass(d.evidence_level)}">${d.evidence_level}</span>
+      ${(d.formulations||[]).map(f=>`<span class="pill pill-blue">${f}</span>`).join('')}
+      ${(d.tags||[]).map(t=>`<span class="pill pill-gray">${t}</span>`).join('')}
+    </div>
+    <div class="card-body">
+      <div class="card-section">
+        <div class="section-label">Primary Use</div>
+        <div class="section-content">${d.primary_use}</div>
+      </div>
+      <div class="card-section">
+        <div class="section-label">Field Advantages</div>
+        <div class="section-content"><ul>${(d.field_advantages||[]).map(a=>`<li>${a}</li>`).join('')}</ul></div>
+      </div>
+      <div class="card-section full">
+        <div class="section-label">Dual / Repurposed Uses in Austere Environments</div>
+        <div class="section-content"><ul>${(d.dual_uses||[]).map(u=>`<li>${u}</li>`).join('')}</ul></div>
+      </div>
+      <div class="card-section">
+        <div class="section-label">Field Dosing Note</div>
+        <div class="dosing-box">${d.dosing_notes}</div>
+      </div>
+      <div class="card-section">
+        <div class="section-label">Cautions</div>
+        <div class="caution-box"><ul>${(d.cautions||[]).map(c=>`<li>${c}</li>`).join('')}</ul></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════
+// BROWSE ALL DB
+// ══════════════════════════════════════════════
+function showAllDB() {
+  const ra = document.getElementById('results-area');
+  const filtered = activeCat === 'all' ? DRUG_DB : DRUG_DB.filter(d => d.tags.includes(activeCat));
+  renderDrugCards(filtered.map(d=>({...d,_source:'db'})), ra);
+}
+
+// ══════════════════════════════════════════════
+// FAVORITES
+// ══════════════════════════════════════════════
+function toggleFav(d) {
+  const idx = favorites.findIndex(f => f.id === d.id);
+  if (idx >= 0) {
+    favorites.splice(idx, 1);
+    showToast(`${d.name} removed from saved`);
+  } else {
+    favorites.push(d);
+    showToast(`${d.name} saved ★`);
+  }
+  localStorage.setItem('tf_favorites', JSON.stringify(favorites));
+  renderFavSidebar();
+  updateBadges();
+  // update card button state
+  const btn = document.querySelector(`#card-${d.id} .icon-btn`);
+  if (btn) btn.classList.toggle('fav-active', isFav(d.id));
+}
+
+function renderFavSidebar() {
+  const el = document.getElementById('fav-sidebar');
+  if (!favorites.length) {
+    el.innerHTML = '<div class="fav-empty">No saved drugs yet.</div>';
+    return;
+  }
+  el.innerHTML = favorites.map(d => `
+    <div class="fav-item" onclick="loadFav('${d.id}')">
+      <span class="fav-name">${d.icon||'💊'} ${d.name}</span>
+      <button class="fav-remove" onclick="event.stopPropagation();removeFav('${d.id}')">×</button>
+    </div>`).join('');
+}
+
+function removeFav(id) {
+  favorites = favorites.filter(f => f.id !== id);
+  localStorage.setItem('tf_favorites', JSON.stringify(favorites));
+  renderFavSidebar();
+  updateBadges();
+  renderFavView();
+}
+
+function clearFavorites() {
+  favorites = [];
+  localStorage.setItem('tf_favorites', JSON.stringify(favorites));
+  renderFavSidebar();
+  updateBadges();
+  renderFavView();
+}
+
+function loadFav(id) {
+  const d = favorites.find(f => f.id === id);
+  if (!d) return;
+  document.getElementById('searchInput').value = d.name;
+  setView('search');
+  lastResults = [d];
+  renderDrugCards([{...d, _source:'db'}], document.getElementById('results-area'));
+}
+
+function renderFavView() {
+  const el = document.getElementById('fav-cards');
+  if (!favorites.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">★</div>No saved drugs yet.<br><span style="font-size:12px;">Click ★ on any drug card to save it here.</span></div>';
+    return;
+  }
+  el.innerHTML = `<div class="results-grid">${favorites.map(d=>drugCardHTML({...d,_source:'db'})).join('')}</div>`;
+}
+
+// ══════════════════════════════════════════════
+// COMPARE
+// ══════════════════════════════════════════════
+function toggleCompare(d) {
+  const idx = compareList.findIndex(c => c.id === d.id);
+  if (idx >= 0) {
+    compareList.splice(idx, 1);
+    showToast(`${d.name} removed from compare`);
+  } else {
+    if (compareList.length >= 2) {
+      showToast('Max 2 drugs for comparison — remove one first');
+      return;
+    }
+    compareList.push(d);
+    showToast(`${d.name} added to compare (${compareList.length}/2)`);
+  }
+  updateBadges();
+  // update button
+  const btn = document.querySelectorAll(`#card-${d.id} .icon-btn`);
+  if (btn[1]) btn[1].classList.toggle('compare-active', isCompare(d.id));
+}
+
+function renderCompareView() {
+  const el = document.getElementById('compare-area');
+  if (compareList.length < 2) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">⚖️</div>
+      ${compareList.length === 0 ? 'Go to Search and click ⊕ on two drugs.' : `<strong>${compareList[0].name}</strong> selected — add one more drug from Search.`}
+      <br><span style="font-size:12px;">Up to 2 drugs can be compared at once.</span></div>`;
+    return;
+  }
+  const [a, b] = compareList;
+  const fields = [
+    { label: 'Drug Class', key: 'drug_class', type: 'text' },
+    { label: 'Primary Use', key: 'primary_use', type: 'text' },
+    { label: 'Evidence Level', key: 'evidence_level', type: 'text' },
+    { label: 'Formulations', key: 'formulations', type: 'arr' },
+    { label: 'Dual / Repurposed Uses', key: 'dual_uses', type: 'arr' },
+    { label: 'Field Advantages', key: 'field_advantages', type: 'arr' },
+    { label: 'Dosing Notes', key: 'dosing_notes', type: 'text' },
+    { label: 'Cautions', key: 'cautions', type: 'arr' },
+  ];
+  const val = (d, f) => f.type === 'arr'
+    ? `<ul style="padding-left:14px;font-size:12px;">${(d[f.key]||[]).map(v=>`<li>${v}</li>`).join('')}</ul>`
+    : `<span style="font-size:13px;">${d[f.key]||'—'}</span>`;
+
+  el.innerHTML = `
+    <div class="compare-header">
+      <div class="compare-info">Comparing <strong>${a.name}</strong> vs <strong>${b.name}</strong></div>
+      <button class="btn btn-outline" onclick="compareList=[];renderCompareView();updateBadges();" style="font-size:12px;padding:5px 12px;">Clear</button>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-col">
+        <div class="compare-label">${a.icon||'💊'} ${a.name}</div>
+        ${fields.map(f=>`<div class="compare-row-label">${f.label}</div><div class="compare-cell">${val(a,f)}</div>`).join('')}
+      </div>
+      <div class="compare-col">
+        <div class="compare-label">${b.icon||'💊'} ${b.name}</div>
+        ${fields.map(f=>`<div class="compare-row-label" style="visibility:hidden;">${f.label}</div><div class="compare-cell">${val(b,f)}</div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+// DOSE CALCULATOR
+// ══════════════════════════════════════════════
+function populateCalcDrugs() {
+  const sel = document.getElementById('calc-drug');
+  DRUG_DB.filter(d => d.dose_protocols && d.dose_protocols.length).forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d.id;
+    opt.textContent = d.name;
+    sel.appendChild(opt);
+  });
+}
+
+function openCalcForDrug(id) {
+  setView('calculator');
+  const sel = document.getElementById('calc-drug');
+  sel.value = id;
+  populateIndications(id);
+  calcDose();
+}
+
+document.addEventListener('change', e => {
+  if (e.target.id === 'calc-drug') {
+    populateIndications(e.target.value);
+    calcDose();
+  }
+});
+
+function populateIndications(drugId) {
+  const drug = DRUG_DB.find(d => d.id === drugId);
+  const sel = document.getElementById('calc-indication');
+  sel.innerHTML = '<option value="">Select indication…</option>';
+  if (!drug) return;
+  (drug.dose_protocols || []).forEach((p, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `${p.label} (${p.route})`;
+    sel.appendChild(opt);
+  });
+  if (drug.dose_protocols.length === 1) sel.value = '0';
+}
+
+function calcDose() {
+  const weight = parseFloat(document.getElementById('calc-weight').value);
+  const drugId = document.getElementById('calc-drug').value;
+  const indIdx = document.getElementById('calc-indication').value;
+  const resEl = document.getElementById('calc-result');
+  const emEl = document.getElementById('calc-empty');
+  const gridEl = document.getElementById('calc-result-grid');
+  const notesEl = document.getElementById('calc-notes');
+
+  if (!weight || !drugId || indIdx === '') {
+    resEl.style.display = 'none';
+    emEl.style.display = '';
+    return;
+  }
+
+  const drug = DRUG_DB.find(d => d.id === drugId);
+  if (!drug) return;
+  const proto = drug.dose_protocols[parseInt(indIdx)];
+  if (!proto) return;
+
+  let dose, doseStr;
+  if (proto.fixed_mg !== null && proto.fixed_mg !== undefined) {
+    dose = proto.fixed_mg;
+    doseStr = `${dose} mg (fixed dose — not weight-based)`;
+  } else if (proto.mg_per_kg) {
+    dose = +(proto.mg_per_kg * weight).toFixed(2);
+    const maxed = proto.max_mg && dose > proto.max_mg;
+    if (maxed) dose = proto.max_mg;
+    doseStr = maxed ? `${dose} mg (capped at max)` : `${dose} mg`;
+  } else {
+    doseStr = 'See dosing notes — not calculable by weight';
+  }
+
+  resEl.style.display = '';
+  emEl.style.display = 'none';
+  gridEl.innerHTML = `
+    <div class="dose-metric">
+      <div class="dose-metric-label">Patient weight</div>
+      <div class="dose-metric-value">${weight}<span class="dose-metric-unit">kg</span></div>
+    </div>
+    <div class="dose-metric">
+      <div class="dose-metric-label">Calculated dose</div>
+      <div class="dose-metric-value">${typeof dose === 'number' ? dose : '—'}<span class="dose-metric-unit">mg</span></div>
+    </div>
+    <div class="dose-metric">
+      <div class="dose-metric-label">Route</div>
+      <div class="dose-metric-value" style="font-size:15px;">${proto.route}</div>
+    </div>`;
+  notesEl.textContent = proto.notes || '';
+}
+
+// ══════════════════════════════════════════════
+// TCCC EXPORT
+// ══════════════════════════════════════════════
+function exportToTCCC() {
+  const exportData = {
+    source: 'Dual-Use Tactical Formulary',
+    version: '2.0',
+    exported: new Date().toISOString(),
+    drugs: DRUG_DB.map(d => ({
+      id: d.id,
+      name: d.name,
+      dose_protocols: d.dose_protocols,
+      formulations: d.formulations,
+      evidence_level: d.evidence_level
+    }))
+  };
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'TCCC_DualUse_Formulary_Export.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('TCCC export downloaded — import into Drug Calculator module');
+}
+
+// ══════════════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════════════
+function updateBadges() {
+  const fb = document.getElementById('fav-count-badge');
+  fb.textContent = favorites.length;
+  fb.style.display = favorites.length ? '' : 'none';
+  const cb = document.getElementById('compare-count-badge');
+  cb.textContent = compareList.length;
+  cb.style.display = compareList.length ? '' : 'none';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+</script>
+</body>
+</html>
