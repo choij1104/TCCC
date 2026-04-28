@@ -5177,8 +5177,8 @@ function calcHemoClass() {
     + siHTML
     + '</div>';
 
-  // Auto calculate Shock Index
-  setTimeout(calcShockIdx, 50);
+  // Update Shock Index display (direct call, no circular)
+  calcShockIdxDisplay();
 
   // Alert if Class III/IV
   if (classScore >= 3 ) {
@@ -5214,6 +5214,40 @@ function calcParkland() {
 // ══════════════════════════════════════════════
 // SHOCK INDEX / MAP
 // ══════════════════════════════════════════════
+function calcShockIdxDisplay() {
+  // Safe version called from calcHemoClass — does NOT call calcHemoClass back
+  var sbp = parseFloat(document.getElementById('hemo-sbp')?.value);
+  var dbp = parseFloat(document.getElementById('hemo-dbp')?.value);
+  var hr  = parseFloat(document.getElementById('hemo-hr')?.value);
+  var el  = document.getElementById('shock-result');
+  if (!el) return;
+  if (isNaN(sbp) && isNaN(hr)) return;
+
+  var html = '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:2px;padding:10px;">';
+  html    += '<div style="font-family:var(--mono);font-size:10px;line-height:2.2;color:var(--white);">';
+
+  if (!isNaN(sbp) && !isNaN(dbp)) {
+    var map = Math.round((sbp + 2 * dbp) / 3);
+    var mc  = map < 65 ? 'var(--red)' : map < 70 ? 'var(--amber)' : 'var(--green)';
+    html += 'MAP: <span style="font-family:var(--head);font-size:20px;font-weight:900;color:' + mc + ';">' + map + '</span> mmHg';
+    if (map < 65) html += ' <span style="color:var(--red);"> ⚠ CRITICAL</span>';
+    else if (map < 70) html += ' <span style="color:var(--amber);"> ⚠ LOW</span>';
+    html += '<br>';
+  }
+
+  if (!isNaN(hr) && !isNaN(sbp) && sbp > 0) {
+    var si = (hr / sbp).toFixed(2);
+    var sc = si >= 1.0 ? 'var(--red)' : si >= 0.9 ? 'var(--amber)' : 'var(--green)';
+    var sl = si >= 1.4 ? '🚨 SEVERE SHOCK' : si >= 1.0 ? '⚠ SIGNIFICANT SHOCK' : si >= 0.9 ? '⚠ MODERATE SHOCK' : 'NORMAL';
+    html += 'SHOCK INDEX: <span style="font-family:var(--head);font-size:20px;font-weight:900;color:' + sc + ';">' + si + '</span>';
+    html += ' <span style="color:' + sc + ';">' + sl + '</span><br>';
+    html += '<span style="font-size:9px;color:var(--muted);">SI = HR÷SBP &nbsp;|&nbsp; Normal: 0.5–0.7 &nbsp;|&nbsp; >0.9: hemorrhage</span>';
+  }
+
+  html += '</div></div>';
+  el.innerHTML = html;
+}
+
 function calcShockIdx() {
   // Use values already entered in Hemorrhage Class Estimator
   const sbp = parseFloat(document.getElementById('hemo-sbp')?.value);
@@ -5255,8 +5289,7 @@ function calcShockIdx() {
   html += '</div></div>';
   el.innerHTML = html;
 
-  // Also auto-trigger hemo class recalc
-  if (typeof calcHemoClass === 'function') calcHemoClass();
+  // Note: do NOT call calcHemoClass here — circular dependency
 }
 
 // ══════════════════════════════════════════════
