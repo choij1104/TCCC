@@ -489,10 +489,10 @@ button{-webkit-appearance:none;cursor:pointer;}
   <button class="nav-btn" id="tab-tq" onclick="showPage('tq')"><span class="nav-icon">🩸</span>HEMO</button>
   <button class="nav-btn" id="tab-injury" onclick="showPage('injury')"><span class="nav-icon">🫁</span>INJURY</button>
   <button class="nav-btn" id="tab-drugs" onclick="showPage('drugs')"><span class="nav-icon">💉</span>DRUGS</button>
-  <button class="nav-btn" id="tab-log" onclick="showPage('log')"><span class="nav-icon">📋</span>LOG</button>
   <button class="nav-btn" id="tab-calc" onclick="showPage('calc')"><span class="nav-icon">🧮</span>CALC</button>
-  <button class="nav-btn" id="tab-mist" onclick="showPage('mist')"><span class="nav-icon">📡</span>MIST</button>
   <button class="nav-btn" id="tab-medevac" onclick="showPage('medevac')"><span class="nav-icon">🚁</span>MEDEVAC</button>
+  <button class="nav-btn" id="tab-mist" onclick="showPage('mist')"><span class="nav-icon">📡</span>MIST</button>
+  <button class="nav-btn" id="tab-log" onclick="showPage('log')"><span class="nav-icon">📋</span>LOG</button>
 </div>
 
 <div id="screen">
@@ -661,7 +661,13 @@ button{-webkit-appearance:none;cursor:pointer;}
       </div>
     </div>
   </div>
+
+  <!-- NEXT TAB -->
+  <div style="padding:16px 0 8px;display:flex;justify-content:flex-end;">
+    <button onclick="showPage('vitals')" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:12px 24px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">NEXT: 💓 VITALS &#9654;</button>
+  </div>
 </div>
+
 
 <!-- ╔══════════════════════════════╗ -->
 <!-- ║        PAGE: VITALS          ║ -->
@@ -814,7 +820,13 @@ button{-webkit-appearance:none;cursor:pointer;}
       </div>
     </div>
   </div>
+
+  <!-- NEXT TAB -->
+  <div style="padding:16px 0 8px;display:flex;justify-content:flex-end;">
+    <button onclick="showPage('tq')" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:12px 24px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">NEXT: 🩸 HEMO &#9654;</button>
+  </div>
 </div>
+
 
 <!-- ╔══════════════════════════════╗ -->
 <!-- ║    PAGE: HEMORRHAGE CONTROL  ║ -->
@@ -1017,121 +1029,13 @@ button{-webkit-appearance:none;cursor:pointer;}
       </div>
       <div id="shock-result"></div>
     </div>
-  </div>
-
-<!-- ╔══════════════════════════════╗ -->
-<!-- ║          PAGE: DRUGS         ║ -->
-<!-- ╚══════════════════════════════╝ -->
-<div class="page" id="page-drugs">
-  <div class="sec">
-    <div class="sec-hdr"><span class="sec-title">PHARMACOLOGICAL RECORD</span></div>
-    <div class="sec-body">
-
-      <div class="drug-cat">💉 ANALGESIA / SEDATION</div>
-      <div class="drug-wrap">
-        <div class="dpill" onclick="openDrug('Morphine','IV/IM 2–5mg — titrate to effect')">Morphine</div>
-        <div class="dpill" onclick="openDrug('Ketamine','IV 0.3–0.5mg/kg | IM 1–2mg/kg | Sub-dissociative: 0.1–0.3mg/kg IV')">Ketamine</div>
-        <div class="dpill" onclick="openDrug('Fentanyl','IV 1–2mcg/kg | IN 100mcg — onset 2–3 min')">Fentanyl</div>
-        <div class="dpill" onclick="openDrug('Midazolam','IV/IM 1–5mg — caution with opioids')">Midazolam</div>
-        <div class="dpill" onclick="openDrug('Meloxicam','PO 15mg q24h — do NOT use if hemorrhage risk')">Meloxicam</div>
-        <div class="dpill" onclick="openDrug('Acetaminophen (APAP)','IV/PO 1g q6h — max 4g/day')">APAP</div>
-        <div class="dpill" onclick="openDrug('Diazepam','IV/IM 5–10mg — seizure/muscle spasm')">Diazepam</div>
-      </div>
-
-      <div class="drug-cat">🩸 FLUIDS / BLOOD PRODUCTS</div>
-      <div class="drug-wrap">
-        <div class="dpill a" onclick="openDrug('Hextend (6% HES)','IV 500mL bolus — max 1L/day')">Hextend</div>
-        <div class="dpill a" onclick="openDrug('Normal Saline 0.9%','IV 250mL boluses — hypotensive resus goal SBP 80–90')">NS</div>
-        <div class="dpill a" onclick="openDrug('Lactated Ringer\'s (LR)','IV 250–500mL boluses')">LR</div>
-        <div class="dpill a" onclick="openDrug('pRBC (Packed Red Blood Cells)','IV 1 unit — type/crossmatch if available')">pRBC</div>
-        <div class="dpill a" onclick="openDrug('FFP (Fresh Frozen Plasma)','IV 1 unit — 1:1 ratio with pRBC')">FFP</div>
-        <div class="dpill a" onclick="openDrug('Whole Blood (LTOWB)','IV 1 unit — preferred over component therapy')">Whole Blood</div>
-        <div class="dpill a" onclick="openDrug('Platelets','IV 1 apheresis unit')">Platelets</div>
-        <div class="dpill r" onclick="openDrug('TXA (Tranexamic Acid)','IV 1g over 10 min — MUST GIVE WITHIN 3 HRS OF INJURY. Follow with 1g over 8h')">TXA ⚠</div>
-      </div>
-
-      <div class="drug-cat">🦠 ANTIBIOTICS</div>
-      <div class="drug-wrap">
-        <div class="dpill g" onclick="openDrug('Moxifloxacin','PO 400mg q24h — combat wound prophylaxis')">Moxifloxacin</div>
-        <div class="dpill g" onclick="openDrug('Ertapenem','IV 1g q24h — broad-spectrum, penetrating trauma')">Ertapenem</div>
-        <div class="dpill g" onclick="openDrug('Ceftriaxone','IV/IM 1–2g q24h')">Ceftriaxone</div>
-        <div class="dpill g" onclick="openDrug('Metronidazole','IV 500mg q8h — abdominal/anaerobic coverage')">Metronidazole</div>
-        <div class="dpill g" onclick="openDrug('Azithromycin','PO/IV 500mg q24h')">Azithromycin</div>
-        <div class="dpill g" onclick="openDrug('Amoxicillin-Clavulanate','PO 875/125mg q12h')">Amox-Clav</div>
-        <div class="dpill g" onclick="openDrug('Ciprofloxacin','PO/IV 500mg q12h')">Cipro</div>
-        <div class="dpill g" onclick="openDrug('Doxycycline','PO 100mg q12h')">Doxycycline</div>
-      </div>
-
-      <div class="drug-cat">⚡ CARDIOVASCULAR / RESUSCITATION</div>
-      <div class="drug-wrap">
-        <div class="dpill r" onclick="openDrug('Epinephrine — ACLS','IV/IO 1mg q3–5min — CARDIAC ARREST ONLY')">Epi ACLS ⚠</div>
-        <div class="dpill r" onclick="openDrug('Epinephrine — Anaphylaxis','IM 0.3–0.5mg (1:1000) lateral thigh — repeat q5–15min')">Epi Anaphylaxis</div>
-        <div class="dpill" onclick="openDrug('Norepinephrine','IV drip — 4mg/250mL NS, start 0.1mcg/kg/min, titrate MAP ≥65')">Norepinephrine</div>
-        <div class="dpill" onclick="openDrug('Vasopressin','IV 20u bolus OR 0.03u/min infusion')">Vasopressin</div>
-        <div class="dpill" onclick="openDrug('Atropine','IV/IO 1mg — bradycardia. Repeat q3–5min, max 3mg')">Atropine</div>
-        <div class="dpill" onclick="openDrug('Amiodarone','IV 150mg over 10min — VT/VF')">Amiodarone</div>
-        <div class="dpill" onclick="openDrug('Lidocaine 2%','IV 1–1.5mg/kg — VT/VF if amiodarone unavail')">Lidocaine</div>
-        <div class="dpill a" onclick="openDrug('Calcium Chloride (CaCl₂) 10%','IV 1g — per unit COMP. Rall et al. 2026. Prefer central line — vesicant')">CaCl₂</div>
-        <div class="dpill a" onclick="openDrug('Sodium Bicarbonate 8.4%','IV 1mEq/kg — severe acidosis')">NaHCO₃</div>
-      </div>
-
-      <div class="drug-cat">🌬️ AIRWAY / RSI AGENTS</div>
-      <div class="drug-wrap">
-        <div class="dpill r" onclick="openDrug('Succinylcholine — RSI','IV 1.5mg/kg — EXPECT FASCICULATIONS. Contraind: burns >24h, crush, hyperK')">Succinylcholine ⚠</div>
-        <div class="dpill r" onclick="openDrug('Rocuronium — RSI','IV 1.2mg/kg — preferred if succinylcholine contraindicated')">Rocuronium</div>
-        <div class="dpill" onclick="openDrug('Etomidate — Induction','IV 0.3mg/kg — single dose for RSI induction')">Etomidate</div>
-        <div class="dpill" onclick="openDrug('Ketamine — Induction','IV 1–2mg/kg — maintains airway reflexes, hemodynamically stable')">Ketamine RSI</div>
-        <div class="dpill a" onclick="openDrug('Naloxone (Narcan)','IV/IM/IN 0.4mg — titrate, repeat q2–3min. May cause acute withdrawal')">Naloxone ⚠</div>
-        <div class="dpill g" onclick="openDrug('Albuterol','NEB 2.5mg in 3mL NS — bronchospasm')">Albuterol</div>
-        <div class="dpill g" onclick="openDrug('Ipratropium','NEB 0.5mg — combine with albuterol')">Ipratropium</div>
-        <div class="dpill g" onclick="openDrug('Methylprednisolone','IV 125mg — airway edema, anaphylaxis, spinal injury')">Methylpred</div>
-      </div>
-
-      <div class="drug-cat">🧠 NEURO / SEIZURE / ICP</div>
-      <div class="drug-wrap">
-        <div class="dpill p" onclick="openDrug('Lorazepam (Ativan)','IV/IM 2–4mg — seizure. Repeat q5–10min if needed')">Lorazepam</div>
-        <div class="dpill p" onclick="openDrug('Levetiracetam (Keppra)','IV 1000mg over 15min — maintenance anticonvulsant')">Levetiracetam</div>
-        <div class="dpill p" onclick="openDrug('Dexamethasone','IV 10mg — cerebral edema, spinal cord injury')">Dexamethasone</div>
-        <div class="dpill p" onclick="openDrug('Mannitol 20%','IV 1g/kg over 20min — ICP. Watch for hypotension')">Mannitol</div>
-        <div class="dpill p" onclick="openDrug('Hypertonic Saline 3%','IV 250mL over 20min — ICP management')">HTS 3%</div>
-      </div>
-
-      <div class="drug-cat">🔬 ADJUNCTS / OTHER</div>
-      <div class="drug-wrap">
-        <div class="dpill" onclick="openDrug('Ondansetron (Zofran)','IV/IM/ODT 4mg — nausea/vomiting')">Zofran</div>
-        <div class="dpill" onclick="openDrug('Diphenhydramine (Benadryl)','IV/IM 50mg — allergic reaction')">Benadryl</div>
-        <div class="dpill" onclick="openDrug('Dextrose 50% (D50W)','IV 25g (50mL) push — hypoglycemia')">D50W</div>
-        <div class="dpill" onclick="openDrug('Thiamine (B1)','IV 100mg — give BEFORE D50 if EtOH/malnourished')">Thiamine</div>
-        <div class="dpill" onclick="openDrug('Famotidine (Pepcid)','IV/PO 20mg q12h — GI protection')">Famotidine</div>
-        <div class="dpill" onclick="openDrug('Heparin','SQ 5000u q8–12h — DVT prophylaxis')">Heparin</div>
-        <div class="dpill" onclick="openDrug('Aspirin','PO 324mg — ACS / platelet inhibition')">Aspirin</div>
-        <div class="dpill" onclick="openDrug('Nitroglycerin SL','0.4mg q5min × 3 — chest pain. Hold if SBP &lt;90')">Nitro SL</div>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="sec">
-    <div class="sec-hdr"><span class="sec-title">MANUAL DRUG ENTRY</span></div>
-    <div class="sec-body">
-      <div class="r2">
-        <div><span class="lbl">DRUG NAME</span><input class="inp" id="md-name" placeholder="Drug name"></div>
-        <div><span class="lbl">DOSE</span><input class="inp" id="md-dose" placeholder="Amount + unit"></div>
-      </div>
-      <div class="r3">
-        <div><span class="lbl">ROUTE</span>
-          <select class="inp" id="md-route">
-            <option>IV</option><option>IM</option><option>IO</option><option>SQ</option><option>IN</option><option>PO</option><option>SL</option><option>NEB</option><option>TOP</option><option>PR</option>
-          </select>
-        </div>
-        <div><span class="lbl">TIMES GIVEN</span><input class="inp" id="md-times" type="number" value="1" min="1"></div>
-        <div><span class="lbl">LOT # (opt)</span><input class="inp" id="md-lot" placeholder="Lot #"></div>
-      </div>
-      <input class="inp" id="md-note" placeholder="Response / side effects / notes">
-      <button class="btn btn-blue" onclick="logManualDrug()">💊 SAVE DRUG RECORD</button>
-    </div>
+  
+  <!-- NEXT TAB -->
+  <div style="padding:16px 0 8px;display:flex;justify-content:flex-end;">
+    <button onclick="showPage('injury')" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:12px 24px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">NEXT: 🫁 INJURY &#9654;</button>
   </div>
 </div>
+
 
 <!-- ╔══════════════════════════════╗ -->
 <!-- ║        PAGE: INJURY          ║ -->
@@ -1334,58 +1238,133 @@ button{-webkit-appearance:none;cursor:pointer;}
       </div>
     </div>
   </div>
+
+  <!-- NEXT TAB -->
+  <div style="padding:16px 0 8px;display:flex;justify-content:flex-end;">
+    <button onclick="showPage('drugs')" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:12px 24px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">NEXT: 💉 DRUGS &#9654;</button>
+  </div>
 </div>
+
 
 <!-- ╔══════════════════════════════╗ -->
-<!-- ║          PAGE: LOG           ║ -->
+<!-- ║          PAGE: DRUGS         ║ -->
 <!-- ╚══════════════════════════════╝ -->
-<div class="page" id="page-log">
-
-  <!-- TREATMENT TIMELINE -->
+<div class="page" id="page-drugs">
   <div class="sec">
-    <div class="sec-hdr">
-      <span class="sec-title">TREATMENT TIMELINE</span>
-      <div style="margin-left:auto;display:flex;gap:4px;">
-        <button onclick="openExport()" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">JSON</button>
-        <button onclick="exportCSV()" style="background:var(--blue-dk);color:var(--blue);border:1px solid var(--blue2);padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">CSV</button>
-      </div>
-    </div>
-    <div class="sec-body" style="padding:8px;">
-      <!-- Filter chips -->
-      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;" id="log-filters">
-        <span class="chip chip-m" style="cursor:pointer;opacity:1" onclick="filterLog('all',this)">ALL</span>
-        <span class="chip chip-r" style="cursor:pointer;opacity:.45" onclick="filterLog('tq',this)">HEMO</span>
-        <span class="chip chip-b" style="cursor:pointer;opacity:.45" onclick="filterLog('drug',this)">DRUG</span>
-        <span class="chip chip-g" style="cursor:pointer;opacity:.45" onclick="filterLog('vital',this)">VITAL</span>
-        <span class="chip chip-a" style="cursor:pointer;opacity:.45" onclick="filterLog('procedure',this)">PROC</span>
-        <span class="chip chip-m" style="cursor:pointer;opacity:.45" onclick="filterLog('system',this)">SYS</span>
-      </div>
-      <div id="log-list"><div class="empty">No records yet</div></div>
-    </div>
-  </div>
-
-  <!-- TCCC CARD -->
-  <div class="sec">
-    <div class="sec-hdr"><span class="sec-title">TCCC CARD</span></div>
+    <div class="sec-hdr"><span class="sec-title">PHARMACOLOGICAL RECORD</span></div>
     <div class="sec-body">
-      <div id="tccc-card" style="font-family:var(--mono);font-size:10px;color:var(--green);line-height:1.9;background:var(--bg3);padding:10px;border-radius:2px;border:1px solid var(--border);white-space:pre-wrap;margin-bottom:8px;min-height:40px;">Press GENERATE →</div>
-      <div class="g2">
-        <button class="btn btn-green btn-sm" onclick="genCard()">GENERATE TCCC CARD</button>
-        <button class="btn btn-ghost btn-sm" onclick="copyTCCC()">📋 COPY</button>
+
+      <div class="drug-cat">💉 ANALGESIA / SEDATION</div>
+      <div class="drug-wrap">
+        <div class="dpill" onclick="openDrug('Morphine','IV/IM 2–5mg — titrate to effect')">Morphine</div>
+        <div class="dpill" onclick="openDrug('Ketamine','IV 0.3–0.5mg/kg | IM 1–2mg/kg | Sub-dissociative: 0.1–0.3mg/kg IV')">Ketamine</div>
+        <div class="dpill" onclick="openDrug('Fentanyl','IV 1–2mcg/kg | IN 100mcg — onset 2–3 min')">Fentanyl</div>
+        <div class="dpill" onclick="openDrug('Midazolam','IV/IM 1–5mg — caution with opioids')">Midazolam</div>
+        <div class="dpill" onclick="openDrug('Meloxicam','PO 15mg q24h — do NOT use if hemorrhage risk')">Meloxicam</div>
+        <div class="dpill" onclick="openDrug('Acetaminophen (APAP)','IV/PO 1g q6h — max 4g/day')">APAP</div>
+        <div class="dpill" onclick="openDrug('Diazepam','IV/IM 5–10mg — seizure/muscle spasm')">Diazepam</div>
       </div>
+
+      <div class="drug-cat">🩸 FLUIDS / BLOOD PRODUCTS</div>
+      <div class="drug-wrap">
+        <div class="dpill a" onclick="openDrug('Hextend (6% HES)','IV 500mL bolus — max 1L/day')">Hextend</div>
+        <div class="dpill a" onclick="openDrug('Normal Saline 0.9%','IV 250mL boluses — hypotensive resus goal SBP 80–90')">NS</div>
+        <div class="dpill a" onclick="openDrug('Lactated Ringer\'s (LR)','IV 250–500mL boluses')">LR</div>
+        <div class="dpill a" onclick="openDrug('pRBC (Packed Red Blood Cells)','IV 1 unit — type/crossmatch if available')">pRBC</div>
+        <div class="dpill a" onclick="openDrug('FFP (Fresh Frozen Plasma)','IV 1 unit — 1:1 ratio with pRBC')">FFP</div>
+        <div class="dpill a" onclick="openDrug('Whole Blood (LTOWB)','IV 1 unit — preferred over component therapy')">Whole Blood</div>
+        <div class="dpill a" onclick="openDrug('Platelets','IV 1 apheresis unit')">Platelets</div>
+        <div class="dpill r" onclick="openDrug('TXA (Tranexamic Acid)','IV 1g over 10 min — MUST GIVE WITHIN 3 HRS OF INJURY. Follow with 1g over 8h')">TXA ⚠</div>
+      </div>
+
+      <div class="drug-cat">🦠 ANTIBIOTICS</div>
+      <div class="drug-wrap">
+        <div class="dpill g" onclick="openDrug('Moxifloxacin','PO 400mg q24h — combat wound prophylaxis')">Moxifloxacin</div>
+        <div class="dpill g" onclick="openDrug('Ertapenem','IV 1g q24h — broad-spectrum, penetrating trauma')">Ertapenem</div>
+        <div class="dpill g" onclick="openDrug('Ceftriaxone','IV/IM 1–2g q24h')">Ceftriaxone</div>
+        <div class="dpill g" onclick="openDrug('Metronidazole','IV 500mg q8h — abdominal/anaerobic coverage')">Metronidazole</div>
+        <div class="dpill g" onclick="openDrug('Azithromycin','PO/IV 500mg q24h')">Azithromycin</div>
+        <div class="dpill g" onclick="openDrug('Amoxicillin-Clavulanate','PO 875/125mg q12h')">Amox-Clav</div>
+        <div class="dpill g" onclick="openDrug('Ciprofloxacin','PO/IV 500mg q12h')">Cipro</div>
+        <div class="dpill g" onclick="openDrug('Doxycycline','PO 100mg q12h')">Doxycycline</div>
+      </div>
+
+      <div class="drug-cat">⚡ CARDIOVASCULAR / RESUSCITATION</div>
+      <div class="drug-wrap">
+        <div class="dpill r" onclick="openDrug('Epinephrine — ACLS','IV/IO 1mg q3–5min — CARDIAC ARREST ONLY')">Epi ACLS ⚠</div>
+        <div class="dpill r" onclick="openDrug('Epinephrine — Anaphylaxis','IM 0.3–0.5mg (1:1000) lateral thigh — repeat q5–15min')">Epi Anaphylaxis</div>
+        <div class="dpill" onclick="openDrug('Norepinephrine','IV drip — 4mg/250mL NS, start 0.1mcg/kg/min, titrate MAP ≥65')">Norepinephrine</div>
+        <div class="dpill" onclick="openDrug('Vasopressin','IV 20u bolus OR 0.03u/min infusion')">Vasopressin</div>
+        <div class="dpill" onclick="openDrug('Atropine','IV/IO 1mg — bradycardia. Repeat q3–5min, max 3mg')">Atropine</div>
+        <div class="dpill" onclick="openDrug('Amiodarone','IV 150mg over 10min — VT/VF')">Amiodarone</div>
+        <div class="dpill" onclick="openDrug('Lidocaine 2%','IV 1–1.5mg/kg — VT/VF if amiodarone unavail')">Lidocaine</div>
+        <div class="dpill a" onclick="openDrug('Calcium Chloride (CaCl₂) 10%','IV 1g — per unit COMP. Rall et al. 2026. Prefer central line — vesicant')">CaCl₂</div>
+        <div class="dpill a" onclick="openDrug('Sodium Bicarbonate 8.4%','IV 1mEq/kg — severe acidosis')">NaHCO₃</div>
+      </div>
+
+      <div class="drug-cat">🌬️ AIRWAY / RSI AGENTS</div>
+      <div class="drug-wrap">
+        <div class="dpill r" onclick="openDrug('Succinylcholine — RSI','IV 1.5mg/kg — EXPECT FASCICULATIONS. Contraind: burns >24h, crush, hyperK')">Succinylcholine ⚠</div>
+        <div class="dpill r" onclick="openDrug('Rocuronium — RSI','IV 1.2mg/kg — preferred if succinylcholine contraindicated')">Rocuronium</div>
+        <div class="dpill" onclick="openDrug('Etomidate — Induction','IV 0.3mg/kg — single dose for RSI induction')">Etomidate</div>
+        <div class="dpill" onclick="openDrug('Ketamine — Induction','IV 1–2mg/kg — maintains airway reflexes, hemodynamically stable')">Ketamine RSI</div>
+        <div class="dpill a" onclick="openDrug('Naloxone (Narcan)','IV/IM/IN 0.4mg — titrate, repeat q2–3min. May cause acute withdrawal')">Naloxone ⚠</div>
+        <div class="dpill g" onclick="openDrug('Albuterol','NEB 2.5mg in 3mL NS — bronchospasm')">Albuterol</div>
+        <div class="dpill g" onclick="openDrug('Ipratropium','NEB 0.5mg — combine with albuterol')">Ipratropium</div>
+        <div class="dpill g" onclick="openDrug('Methylprednisolone','IV 125mg — airway edema, anaphylaxis, spinal injury')">Methylpred</div>
+      </div>
+
+      <div class="drug-cat">🧠 NEURO / SEIZURE / ICP</div>
+      <div class="drug-wrap">
+        <div class="dpill p" onclick="openDrug('Lorazepam (Ativan)','IV/IM 2–4mg — seizure. Repeat q5–10min if needed')">Lorazepam</div>
+        <div class="dpill p" onclick="openDrug('Levetiracetam (Keppra)','IV 1000mg over 15min — maintenance anticonvulsant')">Levetiracetam</div>
+        <div class="dpill p" onclick="openDrug('Dexamethasone','IV 10mg — cerebral edema, spinal cord injury')">Dexamethasone</div>
+        <div class="dpill p" onclick="openDrug('Mannitol 20%','IV 1g/kg over 20min — ICP. Watch for hypotension')">Mannitol</div>
+        <div class="dpill p" onclick="openDrug('Hypertonic Saline 3%','IV 250mL over 20min — ICP management')">HTS 3%</div>
+      </div>
+
+      <div class="drug-cat">🔬 ADJUNCTS / OTHER</div>
+      <div class="drug-wrap">
+        <div class="dpill" onclick="openDrug('Ondansetron (Zofran)','IV/IM/ODT 4mg — nausea/vomiting')">Zofran</div>
+        <div class="dpill" onclick="openDrug('Diphenhydramine (Benadryl)','IV/IM 50mg — allergic reaction')">Benadryl</div>
+        <div class="dpill" onclick="openDrug('Dextrose 50% (D50W)','IV 25g (50mL) push — hypoglycemia')">D50W</div>
+        <div class="dpill" onclick="openDrug('Thiamine (B1)','IV 100mg — give BEFORE D50 if EtOH/malnourished')">Thiamine</div>
+        <div class="dpill" onclick="openDrug('Famotidine (Pepcid)','IV/PO 20mg q12h — GI protection')">Famotidine</div>
+        <div class="dpill" onclick="openDrug('Heparin','SQ 5000u q8–12h — DVT prophylaxis')">Heparin</div>
+        <div class="dpill" onclick="openDrug('Aspirin','PO 324mg — ACS / platelet inhibition')">Aspirin</div>
+        <div class="dpill" onclick="openDrug('Nitroglycerin SL','0.4mg q5min × 3 — chest pain. Hold if SBP &lt;90')">Nitro SL</div>
+      </div>
+
     </div>
   </div>
 
-  <!-- FREE NOTES -->
   <div class="sec">
-    <div class="sec-hdr"><span class="sec-title">FREE TEXT / NOTES</span></div>
+    <div class="sec-hdr"><span class="sec-title">MANUAL DRUG ENTRY</span></div>
     <div class="sec-body">
-      <textarea class="inp" id="free-notes" placeholder="Free text, MIST narrative, radio report..." style="min-height:70px"></textarea>
-      <button class="btn btn-green btn-sm" onclick="saveFreeNote()">SAVE NOTE</button>
+      <div class="r2">
+        <div><span class="lbl">DRUG NAME</span><input class="inp" id="md-name" placeholder="Drug name"></div>
+        <div><span class="lbl">DOSE</span><input class="inp" id="md-dose" placeholder="Amount + unit"></div>
+      </div>
+      <div class="r3">
+        <div><span class="lbl">ROUTE</span>
+          <select class="inp" id="md-route">
+            <option>IV</option><option>IM</option><option>IO</option><option>SQ</option><option>IN</option><option>PO</option><option>SL</option><option>NEB</option><option>TOP</option><option>PR</option>
+          </select>
+        </div>
+        <div><span class="lbl">TIMES GIVEN</span><input class="inp" id="md-times" type="number" value="1" min="1"></div>
+        <div><span class="lbl">LOT # (opt)</span><input class="inp" id="md-lot" placeholder="Lot #"></div>
+      </div>
+      <input class="inp" id="md-note" placeholder="Response / side effects / notes">
+      <button class="btn btn-blue" onclick="logManualDrug()">💊 SAVE DRUG RECORD</button>
     </div>
   </div>
 
+  <!-- NEXT TAB -->
+  <div style="padding:16px 0 8px;display:flex;justify-content:flex-end;">
+    <button onclick="showPage('calc')" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:12px 24px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">NEXT: 🧮 CALC &#9654;</button>
+  </div>
 </div>
+
 
 <!-- ╔══════════════════════════════╗ -->
 <!-- ║      PAGE: CALC              ║ -->
@@ -1449,190 +1428,13 @@ button{-webkit-appearance:none;cursor:pointer;}
 
 
 
+
+  <!-- NEXT TAB -->
+  <div style="padding:16px 0 8px;display:flex;justify-content:flex-end;">
+    <button onclick="showPage('medevac')" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:12px 24px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">NEXT: 🚁 MEDEVAC &#9654;</button>
+  </div>
 </div><!-- /calc -->
 
-<!-- ╔══════════════════════════════╗ -->
-<!-- ║      PAGE: MIST              ║ -->
-<!-- ╚══════════════════════════════╝ -->
-<div class="page" id="page-mist">
-
-  <div class="sec">
-    <div class="sec-hdr"><span class="sec-title">📡 MIST REPORT GENERATOR</span></div>
-    <div class="sec-body">
-      <div style="display:flex;gap:6px;margin-bottom:10px;">
-        <button class="btn btn-blue btn-sm" style="flex:1;" onclick="autoFillMIST()">⚡ AUTO-FILL FROM RECORD</button>
-        <button class="btn btn-ghost btn-sm" onclick="clearMIST()">CLEAR</button>
-      </div>
-
-      <span class="lbl">M — MECHANISM OF INJURY</span>
-      <input class="inp" id="mist-m" placeholder="e.g. GSW right thigh, frag blast, IED strike...">
-
-      <span class="lbl">I — INJURIES SUSTAINED</span>
-      <textarea class="inp" id="mist-i" placeholder="e.g. Penetrating GSW right thigh with arterial hemorrhage..." rows="3"></textarea>
-
-      <span class="lbl">S — SIGNS / VITALS</span>
-      <textarea class="inp" id="mist-s" placeholder="e.g. HR 120, BP 90/60, RR 22, GCS 14, SpO2 96%..." rows="2"></textarea>
-
-      <span class="lbl">T — TREATMENT GIVEN</span>
-      <textarea class="inp" id="mist-t" placeholder="e.g. CAT TQ R thigh @ 14:32Z, QuikClot packing, 1g TXA IV..." rows="3"></textarea>
-
-      <span class="lbl" style="margin-top:8px;">📝 ADDITIONAL NOTES (free text)</span>
-      <textarea class="inp" id="mist-notes" placeholder="Additional clinical notes, next treatment plan, special instructions..." rows="3"></textarea>
-
-      <button class="btn btn-green" onclick="genMIST()" style="margin-top:4px;">📡 GENERATE MIST REPORT</button>
-    </div>
-  </div>
-
-  <div class="sec">
-    <div class="sec-hdr"><span class="sec-title">📋 MIST OUTPUT</span></div>
-    <div class="sec-body">
-      <div id="mist-output" style="font-family:var(--mono);font-size:10px;color:var(--green);line-height:1.9;background:var(--bg3);padding:12px;border-radius:2px;border:1px solid var(--border);white-space:pre-wrap;min-height:60px;">← AUTO-FILL → GENERATE</div>
-      <div class="g2" style="margin-top:8px;">
-        <button class="btn btn-green btn-sm" onclick="copyMIST()">📋 COPY MIST</button>
-        <button class="btn btn-ghost btn-sm" onclick="logMISTasNote()">SAVE TO LOG</button>
-      </div>
-      <button class="btn btn-green" onclick="showPage('medevac')" style="margin-top:10px;background:var(--green-dk);border-color:var(--green2);letter-spacing:1px;">🚁 PROCEED TO MEDEVAC 9-LINE →</button>
-    </div>
-  </div>
-
-  <!-- 72hr schedule -->
-  <div class="sec">
-    <div class="sec-hdr"><span class="sec-title">⏰ 72-HOUR TREATMENT SCHEDULE</span></div>
-    <div class="sec-body">
-      <div style="font-family:var(--mono);font-size:9px;color:var(--amber);margin-bottom:8px;letter-spacing:1px;">BASED ON INJURY TIME — REPEATING MEDICATIONS</div>
-      <div class="r2">
-        <div>
-          <span class="lbl">INJURY TIME (HH:MM)</span>
-          <input class="inp" id="sched-start" placeholder="e.g. 14:30">
-        </div>
-        <div>
-          <span class="lbl">ANTIBIOTIC</span>
-          <select class="inp" id="sched-abx">
-            <option value="Moxifloxacin 400mg PO|24">Moxifloxacin q24h</option>
-            <option value="Ertapenem 1g IV|24">Ertapenem q24h</option>
-            <option value="Ceftriaxone 2g IV|24">Ceftriaxone q24h</option>
-            <option value="Metronidazole 500mg IV|8">Metronidazole q8h</option>
-            <option value="Ciprofloxacin 500mg PO|12">Ciprofloxacin q12h</option>
-            <option value="Doxycycline 100mg PO|12">Doxycycline q12h</option>
-          </select>
-        </div>
-      </div>
-      <div class="r2">
-        <div>
-          <span class="lbl">ANALGESIC</span>
-          <select class="inp" id="sched-pain">
-            <option value="Meloxicam 15mg PO|24">Meloxicam q24h</option>
-            <option value="Acetaminophen 1g PO|6">APAP q6h</option>
-            <option value="Morphine 5mg IM|4">Morphine q4h PRN</option>
-            <option value="none|0">None</option>
-          </select>
-        </div>
-        <div>
-          <span class="lbl">INCLUDE TXA 2ND DOSE</span>
-          <select class="inp" id="sched-txa">
-            <option value="yes">Yes (1g over 8h)</option>
-            <option value="no">No</option>
-          </select>
-        </div>
-      </div>
-      <button class="btn btn-amber" onclick="genSchedule()">⏰ GENERATE 72-HR SCHEDULE</button>
-      <div id="sched-output" style="font-family:var(--mono);font-size:10px;color:var(--amber);line-height:2;background:var(--bg3);padding:12px;border-radius:2px;border:1px solid var(--border);white-space:pre-wrap;margin-top:8px;min-height:40px;display:none;"></div>
-    </div>
-  </div>
-
-  <!-- Hypothermia prevention protocol -->
-  <div class="sec">
-    <div class="sec-hdr"><span class="sec-title">🌡️ HYPOTHERMIA PREVENTION PROTOCOL</span></div>
-    <div class="sec-body">
-      <div id="hypo-temp-display" style="font-family:var(--mono);font-size:11px;color:var(--white);line-height:2;background:var(--bg2);padding:10px;border-radius:2px;border:1px solid var(--border);">
-        <span style="color:var(--green)">NORMAL (≥36.0°C)</span> — Standard monitoring<br>
-        <span style="color:var(--amber)">MILD (32–36°C)</span> — Remove wet gear, insulate, warm fluids IV, space blanket<br>
-        <span style="color:var(--amber)">MODERATE (28–32°C)</span> — Active rewarming, warm humidified O2, warm IV fluids 40°C<br>
-        <span style="color:var(--red)">SEVERE (&lt;28°C)</span> — CPR if no pulse, warm lavage, ECMO if available
-      </div>
-      <div class="r2 mt4">
-        <div><span class="lbl">CURRENT TEMP (°C)</span><input class="inp" id="hypo-inp" type="number" step=".1" placeholder="36.5" oninput="checkHypo()"></div>
-        <div style="display:flex;align-items:flex-end;"><div id="hypo-status" style="font-family:var(--head);font-size:13px;font-weight:700;padding:9px 0;"></div></div>
-      </div>
-    </div>
-  </div>
-
-</div><!-- /mist -->
-
-</div><!-- /screen -->
-</div><!-- /app -->
-
-<div id="save-flash">✓ SAVED</div>
-
-<!-- DEI ASSESSMENT MODAL -->
-<div class="overlay hidden" id="dei-modal">
-  <div class="modal">
-    <div class="modal-title" id="dei-modal-title">⚡ DEI ASSESSMENT<button class="modal-x" onclick="document.getElementById('dei-modal').classList.add('hidden')">✕</button></div>
-
-    <!-- DEI TYPE INDICATOR -->
-    <div id="dei-type-banner" style="background:var(--amber-dk);border:1px solid var(--amber);border-radius:2px;padding:8px 12px;margin-bottom:12px;font-family:var(--mono);font-size:10px;color:var(--amber);line-height:1.7;"></div>
-
-    <!-- SYMPTOM CHECKLIST -->
-    <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:6px;">SYMPTOM CHECKLIST — TAP ALL THAT APPLY</div>
-    <div id="dei-symptoms" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;"></div>
-
-    <!-- EXPOSURE DETAILS -->
-    <div class="r2">
-      <div>
-        <span class="lbl">EXPOSURE DURATION</span>
-        <select class="inp" id="dei-duration">
-          <option>Unknown</option>
-          <option>&lt; 1 second</option>
-          <option>1–5 seconds</option>
-          <option>5–30 seconds</option>
-          <option>&gt; 30 seconds</option>
-          <option>Continuous</option>
-        </select>
-      </div>
-      <div>
-        <span class="lbl">ESTIMATED DISTANCE</span>
-        <select class="inp" id="dei-distance">
-          <option>Unknown</option>
-          <option>&lt; 10m</option>
-          <option>10–50m</option>
-          <option>50–200m</option>
-          <option>200–500m</option>
-          <option>&gt; 500m</option>
-        </select>
-      </div>
-    </div>
-
-    <span class="lbl">AFFECTED BODY AREAS</span>
-    <input class="inp" id="dei-areas" placeholder="e.g. eyes, skin, face, hands...">
-
-    <span class="lbl">ADDITIONAL NOTES</span>
-    <textarea class="inp" id="dei-notes" placeholder="Weapon system observed, exposure circumstances, onset of symptoms..." style="min-height:60px"></textarea>
-
-    <button class="btn btn-amber" onclick="saveDEIAssessment()">⚡ LOG DEI ASSESSMENT</button>
-    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('dei-modal').classList.add('hidden')">CANCEL</button>
-  </div>
-</div>
-
-<!-- LOG EDIT MODAL -->
-<div class="overlay hidden" id="log-edit-modal">
-  <div class="modal">
-    <div class="modal-title">✏️ EDIT LOG ENTRY<button class="modal-x" onclick="closeLogEdit()">✕</button></div>
-    <span class="lbl">TIME</span>
-    <input class="inp" id="le-time" placeholder="HH:MM" style="width:120px;display:inline-block;margin-right:8px">
-    <span class="lbl" style="margin-top:8px">CATEGORY</span>
-    <select class="inp" id="le-cat">
-      <option>DRUG</option><option>VITAL</option><option>TQ</option>
-      <option>PROC</option><option>PACK</option><option>GCS</option>
-      <option>AVPU</option><option>MOI</option><option>TRIAGE</option>
-      <option>INJURY</option><option>NOTE</option><option>TIMER</option>
-    </select>
-    <span class="lbl" style="margin-top:4px">ENTRY TEXT</span>
-    <textarea class="inp" id="le-text" style="min-height:90px"></textarea>
-    <button class="btn btn-green" onclick="saveLogEdit()">✔ SAVE CHANGES</button>
-    <button class="btn btn-red btn-sm" onclick="deleteLogEntry()">🗑 DELETE THIS ENTRY</button>
-    <button class="btn btn-ghost btn-sm" onclick="closeLogEdit()">CANCEL</button>
-  </div>
-</div>
 
 <!-- ╔══════════════════════════════╗ -->
 <!-- ║      PAGE: MEDEVAC           ║ -->
@@ -2557,6 +2359,8 @@ function showPage(id) {
   document.getElementById('screen').scrollTop = 0;
   // Auto-fill MIST when tab opened
   if (id === 'mist') setTimeout(autoFillMIST, 150);
+  // Auto-fill MEDEVAC when tab opened
+  if (id === 'medevac') setTimeout(autoFillMEDEVAC, 150);
 }
 
 // ══════════════════════════════════════════════
@@ -3695,6 +3499,39 @@ function saveDEIAssessment() {
 // ══════════════════════════════════════════════
 // MEDEVAC 9-LINE
 // ══════════════════════════════════════════════
+function autoFillMEDEVAC() {
+  var pt = activePt();
+  if (!pt) return;
+
+  // LINE 3 — Patient priority from triage
+  // Already auto-populated in buildNineLine
+
+  // LINE 4 — Equipment: auto-suggest based on vitals
+  var v = pt.vitals || {};
+  var spo2 = parseFloat(v.spo2);
+  var gcs  = parseFloat(v.gcs);
+  var equipSel = document.getElementById('mvac-equip');
+  if (equipSel) {
+    if (!isNaN(spo2) && spo2 < 90) {
+      equipSel.value = 'A — Hoist Required';
+    } else if (!isNaN(gcs) && gcs <= 8) {
+      equipSel.value = 'C — Extraction Equipment Required';
+    }
+  }
+
+  // LINE 8 — Nationality: default US Military
+  var natSel = document.getElementById('mvac-nat');
+  if (natSel && natSel.value === '') natSel.value = 'A — US Military';
+
+  // LINE 9 — CBRN: default None
+  var cbrnSel = document.getElementById('mvac-cbrn');
+  if (cbrnSel && cbrnSel.value === '') cbrnSel.value = 'N — None';
+
+  // Auto-generate 9-LINE
+  setTimeout(buildNineLine, 100);
+  showProcToast('✓ MEDEVAC auto-filled from patient record');
+}
+
 function buildNineLine() {
   const pt = activePt();
   const grid     = document.getElementById('mvac-grid').value.trim()     || '[GRID NOT SET]';
@@ -3820,18 +3657,24 @@ function saveMiniGCS() {
 
 function quickAVPU(code) {
   const map = { A:'Alert — fully conscious', V:'Voice — responds to verbal', P:'Pain — responds to pain only', U:'Unresponsive — no response' };
-  // Auto-set GCS suggestion from AVPU
   const avpuGCS = { A: {e:4,v:5,m:6}, V: {e:3,v:4,m:5}, P: {e:2,v:2,m:4}, U: {e:1,v:1,m:1} };
   const suggestion = avpuGCS[code];
   if (suggestion) {
-    // Pre-fill mini GCS
     ['e','v','m'].forEach(cat => {
       setMiniGCS(cat, suggestion[cat],
         document.querySelector('#mini-gcs-' + cat + ' .mini-gcs-btn:nth-child(' + suggestion[cat] + ')'));
     });
+    // Auto-save GCS to VITALS immediately — no SAVE button needed
+    setTimeout(function() {
+      saveMiniGCS();
+      // Also update VITALS tab GCS field
+      var gcsTotal = suggestion.e + suggestion.v + suggestion.m;
+      var gcsInput = document.getElementById('i-gcs');
+      if (gcsInput) gcsInput.value = gcsTotal;
+    }, 100);
   }
-  addLog('AVPU', 'AVPU: ' + map[code], 'vital');
-  showProcToast('✓ AVPU: ' + code + ' — ' + map[code].split(' — ')[1]);
+  addLog('AVPU', 'AVPU: ' + code + ' — ' + map[code] + ' → GCS ' + (suggestion ? suggestion.e+suggestion.v+suggestion.m : '--'), 'vital');
+  showProcToast('✓ AVPU ' + code + ' → GCS ' + (suggestion ? suggestion.e+suggestion.v+suggestion.m : '--') + ' auto-saved');
 }
 
 // ══════════════════════════════════════════════
@@ -5597,6 +5440,260 @@ function checkHypo() {
 
 </script>
 
-<div style="text-align:center;padding:18px 0 24px;font-family:monospace;font-size:10px;color:#2a3a2a;letter-spacing:1px;border-top:1px solid #1a2a1a;margin-top:24px;">Developed by Jae H. Choi, PhD, DVSc &nbsp;&middot;&nbsp; v1.0 &nbsp;&middot;&nbsp; 2026</div>
+<div style="text-align:center;padding:18px 0 24px;font-family:monospace;font-size:10px;color:#2a3a2a;letter-spacing:1px;border-top:1px solid #1a2a1a;margin-top:24px;">Developed by Jae H. Choi, PhD, DVSc &nbsp;&middot;&nbsp; v1.0 &nbsp;&middot;&nbsp; 2026
+  <!-- NEXT TAB -->
+  <div style="padding:16px 0 8px;display:flex;justify-content:flex-end;">
+    <button onclick="showPage('mist')" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:12px 24px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">NEXT: 📡 MIST &#9654;</button>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════╗ -->
+<!-- ║      PAGE: MIST              ║ -->
+<!-- ╚══════════════════════════════╝ -->
+<div class="page" id="page-mist">
+
+  <div class="sec">
+    <div class="sec-hdr"><span class="sec-title">📡 MIST REPORT GENERATOR</span></div>
+    <div class="sec-body">
+      <div style="display:flex;gap:6px;margin-bottom:10px;">
+        <button class="btn btn-blue btn-sm" style="flex:1;" onclick="autoFillMIST()">⚡ AUTO-FILL FROM RECORD</button>
+        <button class="btn btn-ghost btn-sm" onclick="clearMIST()">CLEAR</button>
+      </div>
+
+      <span class="lbl">M — MECHANISM OF INJURY</span>
+      <input class="inp" id="mist-m" placeholder="e.g. GSW right thigh, frag blast, IED strike...">
+
+      <span class="lbl">I — INJURIES SUSTAINED</span>
+      <textarea class="inp" id="mist-i" placeholder="e.g. Penetrating GSW right thigh with arterial hemorrhage..." rows="3"></textarea>
+
+      <span class="lbl">S — SIGNS / VITALS</span>
+      <textarea class="inp" id="mist-s" placeholder="e.g. HR 120, BP 90/60, RR 22, GCS 14, SpO2 96%..." rows="2"></textarea>
+
+      <span class="lbl">T — TREATMENT GIVEN</span>
+      <textarea class="inp" id="mist-t" placeholder="e.g. CAT TQ R thigh @ 14:32Z, QuikClot packing, 1g TXA IV..." rows="3"></textarea>
+
+      <span class="lbl" style="margin-top:8px;">📝 ADDITIONAL NOTES (free text)</span>
+      <textarea class="inp" id="mist-notes" placeholder="Additional clinical notes, next treatment plan, special instructions..." rows="3"></textarea>
+
+      <button class="btn btn-green" onclick="genMIST()" style="margin-top:4px;">📡 GENERATE MIST REPORT</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hdr"><span class="sec-title">📋 MIST OUTPUT</span></div>
+    <div class="sec-body">
+      <div id="mist-output" style="font-family:var(--mono);font-size:10px;color:var(--green);line-height:1.9;background:var(--bg3);padding:12px;border-radius:2px;border:1px solid var(--border);white-space:pre-wrap;min-height:60px;">← AUTO-FILL → GENERATE</div>
+      <div class="g2" style="margin-top:8px;">
+        <button class="btn btn-green btn-sm" onclick="copyMIST()">📋 COPY MIST</button>
+        <button class="btn btn-ghost btn-sm" onclick="logMISTasNote()">SAVE TO LOG</button>
+      </div>
+      <button class="btn btn-green" onclick="showPage('medevac')" style="margin-top:10px;background:var(--green-dk);border-color:var(--green2);letter-spacing:1px;">🚁 PROCEED TO MEDEVAC 9-LINE →</button>
+    </div>
+  </div>
+
+  <!-- 72hr schedule -->
+  <div class="sec">
+    <div class="sec-hdr"><span class="sec-title">⏰ 72-HOUR TREATMENT SCHEDULE</span></div>
+    <div class="sec-body">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--amber);margin-bottom:8px;letter-spacing:1px;">BASED ON INJURY TIME — REPEATING MEDICATIONS</div>
+      <div class="r2">
+        <div>
+          <span class="lbl">INJURY TIME (HH:MM)</span>
+          <input class="inp" id="sched-start" placeholder="e.g. 14:30">
+        </div>
+        <div>
+          <span class="lbl">ANTIBIOTIC</span>
+          <select class="inp" id="sched-abx">
+            <option value="Moxifloxacin 400mg PO|24">Moxifloxacin q24h</option>
+            <option value="Ertapenem 1g IV|24">Ertapenem q24h</option>
+            <option value="Ceftriaxone 2g IV|24">Ceftriaxone q24h</option>
+            <option value="Metronidazole 500mg IV|8">Metronidazole q8h</option>
+            <option value="Ciprofloxacin 500mg PO|12">Ciprofloxacin q12h</option>
+            <option value="Doxycycline 100mg PO|12">Doxycycline q12h</option>
+          </select>
+        </div>
+      </div>
+      <div class="r2">
+        <div>
+          <span class="lbl">ANALGESIC</span>
+          <select class="inp" id="sched-pain">
+            <option value="Meloxicam 15mg PO|24">Meloxicam q24h</option>
+            <option value="Acetaminophen 1g PO|6">APAP q6h</option>
+            <option value="Morphine 5mg IM|4">Morphine q4h PRN</option>
+            <option value="none|0">None</option>
+          </select>
+        </div>
+        <div>
+          <span class="lbl">INCLUDE TXA 2ND DOSE</span>
+          <select class="inp" id="sched-txa">
+            <option value="yes">Yes (1g over 8h)</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-amber" onclick="genSchedule()">⏰ GENERATE 72-HR SCHEDULE</button>
+      <div id="sched-output" style="font-family:var(--mono);font-size:10px;color:var(--amber);line-height:2;background:var(--bg3);padding:12px;border-radius:2px;border:1px solid var(--border);white-space:pre-wrap;margin-top:8px;min-height:40px;display:none;"></div>
+    </div>
+  </div>
+
+  <!-- Hypothermia prevention protocol -->
+  <div class="sec">
+    <div class="sec-hdr"><span class="sec-title">🌡️ HYPOTHERMIA PREVENTION PROTOCOL</span></div>
+    <div class="sec-body">
+      <div id="hypo-temp-display" style="font-family:var(--mono);font-size:11px;color:var(--white);line-height:2;background:var(--bg2);padding:10px;border-radius:2px;border:1px solid var(--border);">
+        <span style="color:var(--green)">NORMAL (≥36.0°C)</span> — Standard monitoring<br>
+        <span style="color:var(--amber)">MILD (32–36°C)</span> — Remove wet gear, insulate, warm fluids IV, space blanket<br>
+        <span style="color:var(--amber)">MODERATE (28–32°C)</span> — Active rewarming, warm humidified O2, warm IV fluids 40°C<br>
+        <span style="color:var(--red)">SEVERE (&lt;28°C)</span> — CPR if no pulse, warm lavage, ECMO if available
+      </div>
+      <div class="r2 mt4">
+        <div><span class="lbl">CURRENT TEMP (°C)</span><input class="inp" id="hypo-inp" type="number" step=".1" placeholder="36.5" oninput="checkHypo()"></div>
+        <div style="display:flex;align-items:flex-end;"><div id="hypo-status" style="font-family:var(--head);font-size:13px;font-weight:700;padding:9px 0;"></div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /mist -->
+
+</div><!-- /screen -->
+</div><!-- /app -->
+
+<div id="save-flash">✓ SAVED</div>
+
+<!-- DEI ASSESSMENT MODAL -->
+<div class="overlay hidden" id="dei-modal">
+  <div class="modal">
+    <div class="modal-title" id="dei-modal-title">⚡ DEI ASSESSMENT<button class="modal-x" onclick="document.getElementById('dei-modal').classList.add('hidden')">✕</button></div>
+
+    <!-- DEI TYPE INDICATOR -->
+    <div id="dei-type-banner" style="background:var(--amber-dk);border:1px solid var(--amber);border-radius:2px;padding:8px 12px;margin-bottom:12px;font-family:var(--mono);font-size:10px;color:var(--amber);line-height:1.7;"></div>
+
+    <!-- SYMPTOM CHECKLIST -->
+    <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:6px;">SYMPTOM CHECKLIST — TAP ALL THAT APPLY</div>
+    <div id="dei-symptoms" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;"></div>
+
+    <!-- EXPOSURE DETAILS -->
+    <div class="r2">
+      <div>
+        <span class="lbl">EXPOSURE DURATION</span>
+        <select class="inp" id="dei-duration">
+          <option>Unknown</option>
+          <option>&lt; 1 second</option>
+          <option>1–5 seconds</option>
+          <option>5–30 seconds</option>
+          <option>&gt; 30 seconds</option>
+          <option>Continuous</option>
+        </select>
+      </div>
+      <div>
+        <span class="lbl">ESTIMATED DISTANCE</span>
+        <select class="inp" id="dei-distance">
+          <option>Unknown</option>
+          <option>&lt; 10m</option>
+          <option>10–50m</option>
+          <option>50–200m</option>
+          <option>200–500m</option>
+          <option>&gt; 500m</option>
+        </select>
+      </div>
+    </div>
+
+    <span class="lbl">AFFECTED BODY AREAS</span>
+    <input class="inp" id="dei-areas" placeholder="e.g. eyes, skin, face, hands...">
+
+    <span class="lbl">ADDITIONAL NOTES</span>
+    <textarea class="inp" id="dei-notes" placeholder="Weapon system observed, exposure circumstances, onset of symptoms..." style="min-height:60px"></textarea>
+
+    <button class="btn btn-amber" onclick="saveDEIAssessment()">⚡ LOG DEI ASSESSMENT</button>
+    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('dei-modal').classList.add('hidden')">CANCEL</button>
+  </div>
+</div>
+
+<!-- LOG EDIT MODAL -->
+<div class="overlay hidden" id="log-edit-modal">
+  <div class="modal">
+    <div class="modal-title">✏️ EDIT LOG ENTRY<button class="modal-x" onclick="closeLogEdit()">✕</button></div>
+    <span class="lbl">TIME</span>
+    <input class="inp" id="le-time" placeholder="HH:MM" style="width:120px;display:inline-block;margin-right:8px">
+    <span class="lbl" style="margin-top:8px">CATEGORY</span>
+    <select class="inp" id="le-cat">
+      <option>DRUG</option><option>VITAL</option><option>TQ</option>
+      <option>PROC</option><option>PACK</option><option>GCS</option>
+      <option>AVPU</option><option>MOI</option><option>TRIAGE</option>
+      <option>INJURY</option><option>NOTE</option><option>TIMER</option>
+    </select>
+    <span class="lbl" style="margin-top:4px">ENTRY TEXT</span>
+    <textarea class="inp" id="le-text" style="min-height:90px"></textarea>
+    <button class="btn btn-green" onclick="saveLogEdit()">✔ SAVE CHANGES</button>
+    <button class="btn btn-red btn-sm" onclick="deleteLogEntry()">🗑 DELETE THIS ENTRY</button>
+    <button class="btn btn-ghost btn-sm" onclick="closeLogEdit()">CANCEL</button>
+  </div>
+
+  <!-- NEXT TAB -->
+  <div style="padding:16px 0 8px;display:flex;justify-content:flex-end;">
+    <button onclick="showPage('log')" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:12px 24px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">NEXT: 📋 LOG &#9654;</button>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════╗ -->
+<!-- ║          PAGE: LOG           ║ -->
+<!-- ╚══════════════════════════════╝ -->
+<div class="page" id="page-log">
+
+  <!-- TREATMENT TIMELINE -->
+  <div class="sec">
+    <div class="sec-hdr">
+      <span class="sec-title">TREATMENT TIMELINE</span>
+      <div style="margin-left:auto;display:flex;gap:4px;">
+        <button onclick="openExport()" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">JSON</button>
+        <button onclick="exportCSV()" style="background:var(--blue-dk);color:var(--blue);border:1px solid var(--blue2);padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">CSV</button>
+      </div>
+    </div>
+    <div class="sec-body" style="padding:8px;">
+      <!-- Filter chips -->
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;" id="log-filters">
+        <span class="chip chip-m" style="cursor:pointer;opacity:1" onclick="filterLog('all',this)">ALL</span>
+        <span class="chip chip-r" style="cursor:pointer;opacity:.45" onclick="filterLog('tq',this)">HEMO</span>
+        <span class="chip chip-b" style="cursor:pointer;opacity:.45" onclick="filterLog('drug',this)">DRUG</span>
+        <span class="chip chip-g" style="cursor:pointer;opacity:.45" onclick="filterLog('vital',this)">VITAL</span>
+        <span class="chip chip-a" style="cursor:pointer;opacity:.45" onclick="filterLog('procedure',this)">PROC</span>
+        <span class="chip chip-m" style="cursor:pointer;opacity:.45" onclick="filterLog('system',this)">SYS</span>
+      </div>
+      <div id="log-list"><div class="empty">No records yet</div></div>
+    </div>
+  </div>
+
+  <!-- TCCC CARD -->
+  <div class="sec">
+    <div class="sec-hdr"><span class="sec-title">TCCC CARD</span></div>
+    <div class="sec-body">
+      <div id="tccc-card" style="font-family:var(--mono);font-size:10px;color:var(--green);line-height:1.9;background:var(--bg3);padding:10px;border-radius:2px;border:1px solid var(--border);white-space:pre-wrap;margin-bottom:8px;min-height:40px;">Press GENERATE →</div>
+      <div class="g2">
+        <button class="btn btn-green btn-sm" onclick="genCard()">GENERATE TCCC CARD</button>
+        <button class="btn btn-ghost btn-sm" onclick="copyTCCC()">📋 COPY</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FREE NOTES -->
+  <div class="sec">
+    <div class="sec-hdr"><span class="sec-title">FREE TEXT / NOTES</span></div>
+    <div class="sec-body">
+      <textarea class="inp" id="free-notes" placeholder="Free text, MIST narrative, radio report..." style="min-height:70px"></textarea>
+      <button class="btn btn-green btn-sm" onclick="saveFreeNote()">SAVE NOTE</button>
+    </div>
+  </div>
+
+</div>
+
+  <!-- NEXT TAB -->
+  <div style="padding:16px 0 8px;display:flex;justify-content:flex-end;">
+    <button onclick="showPage('calc')" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:12px 20px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">
+      NEXT: 🧮 CALC &#9654;
+    </button>
+  </div>
+
+
 </body>
 </html>
