@@ -5166,8 +5166,15 @@ function calcHemoClass() {
       + '</div>';
   }
 
+  // Warning if blood loss not entered
+  var noBloodLoss = isNaN(ml);
+  var warningHTML = noBloodLoss
+    ? '<div style="background:var(--amber-dk);border:1px solid var(--amber2);border-radius:2px;padding:6px 10px;margin-bottom:8px;font-family:var(--mono);font-size:9px;color:var(--amber);letter-spacing:1px;">⚠ BLOOD LOSS NOT ENTERED — classification based on vitals only</div>'
+    : '';
+
   el.innerHTML =
     '<div style="background:' + cls.bg + ';border:2px solid ' + cls.border + ';border-radius:3px;padding:12px;">'
+    + warningHTML
     + '<div style="font-family:var(--head);font-size:28px;font-weight:900;color:' + cls.color + ';letter-spacing:2px;">CLASS ' + cls.label
     + (pct ? ' <span style="font-size:12px;color:var(--muted);font-weight:400;">(' + pct + '% EBV' + (kg ? ' / EBV=' + tbv + 'mL' : '') + ')</span>' : '')
     + '</div>'
