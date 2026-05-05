@@ -456,7 +456,7 @@ button{-webkit-appearance:none;cursor:pointer;}
       <div id="hdr-clock" style="font-family:var(--mono);font-size:16px;color:var(--green);letter-spacing:2px;">--:--:--</div>
     </div>
     <div id="hdr-elapsed" style="font-family:var(--mono);font-size:11px;color:var(--amber);">ELAPSED --:--:--</div>
-    <div style="text-align:right;font-family:monospace;font-size:9px;color:#2a4a2a;letter-spacing:0.5px;padding:2px 10px 0;line-height:1;">© 2026 Jae H. Choi, PhD, DVSc</div>
+    <div style="text-align:right;font-family:monospace;font-size:9px;color:#2a4a2a;letter-spacing:0.5px;padding:2px 10px 0;line-height:1;">© 2026 Jae H. Choi, PhD, DVSc &nbsp;·&nbsp; Drug protocols: TCCC Guidelines 01 May 2026</div>
 <div id="mode-btns">
       <button class="mode-btn" id="contact-btn" onclick="toggleContactMode()">🚨 CONTACT</button>
       <button class="mode-btn" id="selfaid-btn" onclick="toggleSelfAid()">🩹 SELF-AID</button>
@@ -662,10 +662,11 @@ button{-webkit-appearance:none;cursor:pointer;}
         <button class="btn btn-red btn-sm" onclick="showPage('tq')">🩸 DEPLOY TQ</button>
         <button class="btn btn-blue btn-sm" onclick="openDrug('Morphine','IV/IM — 2–5mg titrate q4h')">💉 MORPHINE</button>
         <button class="btn btn-blue btn-sm" onclick="openDrug('Ketamine','IV 0.3–0.5mg/kg | IM 1–2mg/kg')">💉 KETAMINE</button>
-        <button class="btn btn-red btn-sm" onclick="openDrug('TXA (Tranexamic Acid)','IV 1g over 10 min — WITHIN 3 HRS OF INJURY')">🩸 TXA ⚠</button>
+        <button class="btn btn-red btn-sm" onclick="openDrug('TXA (Tranexamic Acid)','IV/IO 2g push — GIVE ASAP (no 3hr limit) per TCCC 2026')">🩸 TXA ⚠</button>
         <button class="btn btn-amber btn-sm" onclick="openNCD()">🫁 NEEDLE DECOMP</button>
         <button class="btn btn-green btn-sm" onclick="showPage('vitals')">💓 CHECK VITALS</button>
       </div>
+        <div class="dpill b" onclick="openDrug('Esketamine IN','Intranasal 84mg/mL — TCCC 2026 new. Analgesia, procedural sedation')">Esketamine IN ⭐</div>
     </div>
   </div>
 
@@ -1269,10 +1270,11 @@ button{-webkit-appearance:none;cursor:pointer;}
       <div class="drug-wrap">
         <div class="dpill" onclick="openDrug('Morphine','IV/IM 2–5mg — titrate to effect')">Morphine</div>
         <div class="dpill" onclick="openDrug('Ketamine','IV 0.3–0.5mg/kg | IM 1–2mg/kg | Sub-dissociative: 0.1–0.3mg/kg IV')">Ketamine</div>
-        <div class="dpill" onclick="openDrug('Fentanyl','IV 1–2mcg/kg | IN 100mcg — onset 2–3 min')">Fentanyl</div>
+        <div class="dpill" onclick="openDrug('⚠ Fentanyl [REMOVED 2026]','IV 1–2mcg/kg | IN 100mcg — onset 2–3 min')">Fentanyl</div>
         <div class="dpill" onclick="openDrug('Midazolam','IV/IM 1–5mg — caution with opioids')">Midazolam</div>
         <div class="dpill" onclick="openDrug('Meloxicam','PO 15mg q24h — do NOT use if hemorrhage risk')">Meloxicam</div>
         <div class="dpill" onclick="openDrug('Acetaminophen (APAP)','IV/PO 1g q6h — max 4g/day')">APAP</div>
+        <div class="dpill b" onclick="openDrug('Suzetrigine','PO — TCCC 2026 new analgesic. Nav1.8 blocker, non-opioid. Dose per formulary')">Suzetrigine ⭐</div>
         <div class="dpill" onclick="openDrug('Diazepam','IV/IM 5–10mg — seizure/muscle spasm')">Diazepam</div>
       </div>
 
@@ -1285,14 +1287,14 @@ button{-webkit-appearance:none;cursor:pointer;}
         <div class="dpill a" onclick="openDrug('FFP (Fresh Frozen Plasma)','IV 1 unit — 1:1 ratio with pRBC')">FFP</div>
         <div class="dpill a" onclick="openDrug('Whole Blood (LTOWB)','IV 1 unit — preferred over component therapy')">Whole Blood</div>
         <div class="dpill a" onclick="openDrug('Platelets','IV 1 apheresis unit')">Platelets</div>
-        <div class="dpill r" onclick="openDrug('TXA (Tranexamic Acid)','IV 1g over 10 min — MUST GIVE WITHIN 3 HRS OF INJURY. Follow with 1g over 8h')">TXA ⚠</div>
+        <div class="dpill r" onclick="openDrug('TXA (Tranexamic Acid)','IV/IO 2g push ASAP — No 3hr limit (TCCC 2026). 2nd dose: 1g IV over 8h')">TXA ⚠</div>
       </div>
 
       <div class="drug-cat">🦠 ANTIBIOTICS</div>
       <div class="drug-wrap">
-        <div class="dpill g" onclick="openDrug('Moxifloxacin','PO 400mg q24h — combat wound prophylaxis')">Moxifloxacin</div>
-        <div class="dpill g" onclick="openDrug('Ertapenem','IV 1g q24h — broad-spectrum, penetrating trauma')">Ertapenem</div>
-        <div class="dpill g" onclick="openDrug('Ceftriaxone','IV/IM 1–2g q24h')">Ceftriaxone</div>
+        <div class="dpill g" onclick="openDrug('Ceftriaxone 2g','IV/IO/IM 2g q24h — TCCC 2026 1st line ABx. IV preferred')">Ceftriaxone ⭐</div>
+        <div class="dpill g" onclick="openDrug('Cefadroxil 1g','PO 1g q12h — TCCC 2026 oral ABx (replaces Moxifloxacin)')">Cefadroxil ⭐</div>
+        <div class="dpill g" onclick="openDrug('Cephalexin 500mg','PO 500mg q6h — oral ABx alternative to Cefadroxil')">Cephalexin</div>
         <div class="dpill g" onclick="openDrug('Metronidazole','IV 500mg q8h — abdominal/anaerobic coverage')">Metronidazole</div>
         <div class="dpill g" onclick="openDrug('Azithromycin','PO/IV 500mg q24h')">Azithromycin</div>
         <div class="dpill g" onclick="openDrug('Amoxicillin-Clavulanate','PO 875/125mg q12h')">Amox-Clav</div>
@@ -3936,7 +3938,7 @@ const PILOT_DRUGS = [
   { id:'ketamine',  name:'Ketamine',              dose:'50mg IM',         interval:30,   indication:'Pain / sedation' },
   { id:'cipro',     name:'Ciprofloxacin',         dose:'500mg PO',        interval:720,  indication:'Infection prophylaxis' },
   { id:'doxy',      name:'Doxycycline',           dose:'100mg PO',        interval:720,  indication:'Malaria / infection' },
-  { id:'moxiflox',  name:'Moxifloxacin',          dose:'400mg PO',        interval:1440, indication:'Broad-spectrum ABx' },
+  { id:'cefadroxil',name:'Cefadroxil',             dose:'1g PO',           interval:720,  indication:'ABx — TCCC 2026 (replaces Moxifloxacin)' },
   { id:'meloxicam', name:'Meloxicam',             dose:'15mg PO',         interval:1440, indication:'Pain / anti-inflammatory' },
   { id:'txa',       name:'TXA',                   dose:'1g IV over 10min',interval:600,  indication:'Hemorrhage control' },
   { id:'gopill',    name:'Dextroamphetamine',      dose:'10mg PO',         interval:240,  indication:'Go Pill — alertness' },
@@ -5066,7 +5068,7 @@ function calcDoses() {
       ['Ketamine (RSI)',    'IV',   kg * 1.5,   kg * 2.0,   'mg',   '1.5–2 mg/kg IV'],
     ]],
     ['RESUSCITATION', 'var(--amber)', [
-      ['TXA',               'IV',   1000,       1000,       'mg',   '1g fixed — give within 3 hrs'],
+      ['TXA',               'IV/IO',2000,       2000,       'mg',   '2g push ASAP — no 3hr limit (TCCC 2026)'],
       ['NS/LR bolus',       'IV',   250,        500,        'mL',   '250–500mL bolus, reassess'],
       ['Hextend',           'IV',   500,        500,        'mL',   '500mL bolus (max 1L/day)'],
     ]],
@@ -5622,9 +5624,9 @@ function checkHypo() {
         <div>
           <span class="lbl">ANTIBIOTIC</span>
           <select class="inp" id="sched-abx">
-            <option value="Moxifloxacin 400mg PO|24">Moxifloxacin q24h</option>
-            <option value="Ertapenem 1g IV|24">Ertapenem q24h</option>
-            <option value="Ceftriaxone 2g IV|24">Ceftriaxone q24h</option>
+            <option value="Ceftriaxone 2g IV|24">Ceftriaxone 2g IV q24h ⭐ TCCC 2026</option>
+            <option value="Cefadroxil 1g PO|12">Cefadroxil 1g PO q12h ⭐ TCCC 2026</option>
+            <option value="Cephalexin 500mg PO|6">Cephalexin 500mg PO q6h (alternative)</option>
             <option value="Metronidazole 500mg IV|8">Metronidazole q8h</option>
             <option value="Ciprofloxacin 500mg PO|12">Ciprofloxacin q12h</option>
             <option value="Doxycycline 100mg PO|12">Doxycycline q12h</option>
