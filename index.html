@@ -1652,17 +1652,71 @@ button{-webkit-appearance:none;cursor:pointer;}
       <button class="btn btn-green" onclick="dispatchRadio()">📻 MANUAL RADIO TRANSMISSION</button>
 
       <div style="margin:10px 0;border-top:1px solid var(--border);padding-top:10px;">
-        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;">FUTURE CAPABILITIES — NOT YET ACTIVE</div>
-        <button class="btn btn-ghost" style="opacity:.4;cursor:not-allowed;" onclick="dispatchDrone()">
-          🚁 AUTONOMOUS DRONE DISPATCH
-          <span style="font-family:var(--mono);font-size:9px;color:var(--muted);display:block;margin-top:2px;font-weight:400;">API NOT CONNECTED</span>
-        </button>
-        <button class="btn btn-ghost" style="opacity:.4;cursor:not-allowed;margin-top:4px;" onclick="dispatchSatcom()">
-          📡 SATCOM AUTO-TRANSMIT
-          <span style="font-family:var(--mono);font-size:9px;color:var(--muted);display:block;margin-top:2px;font-weight:400;">API NOT CONNECTED</span>
-        </button>
-      </div>
-    </div>
+
+          <!-- API CONFIG -->
+          <div id="dispatch-config" style="background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:10px;margin-bottom:10px;">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:6px;">⚙️ DISPATCH SYSTEM CONFIG</div>
+            <div class="r2" style="margin-bottom:6px;">
+              <div><span class="lbl">DRONE API ENDPOINT</span><input class="inp" id="drone-api-url" placeholder="https://api.drone.mil/v1" style="font-size:10px;"></div>
+              <div><span class="lbl">SATCOM ENDPOINT</span><input class="inp" id="satcom-api-url" placeholder="https://satcom.mil/tx" style="font-size:10px;"></div>
+            </div>
+            <div class="r2">
+              <div><span class="lbl">API KEY</span><input class="inp" id="dispatch-api-key" type="password" placeholder="••••••••" style="font-size:10px;"></div>
+              <div style="display:flex;align-items:flex-end;"><button onclick="saveDispatchConfig()" class="btn btn-green btn-xs" style="margin-bottom:6px;">SAVE</button></div>
+            </div>
+            <div style="font-family:var(--mono);font-size:9px;margin-top:4px;">STATUS: <span id="dispatch-status-text" style="color:var(--amber);">⚡ SIMULATION MODE</span></div>
+          </div>
+
+          <!-- DRONE DISPATCH -->
+          <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:3px;padding:10px;margin-bottom:8px;">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;">🚁 AUTONOMOUS DRONE DISPATCH</div>
+            <div class="r2" style="margin-bottom:8px;">
+              <div><span class="lbl">DRONE TYPE</span>
+                <select class="inp" id="drone-type" style="font-size:11px;">
+                  <option>MQ-9 Reaper (CASEVAC)</option>
+                  <option>Black Hawk UAS (MEDEVAC)</option>
+                  <option>Ghost Rider (Supply Drop)</option>
+                  <option>Valkyrie (Combat SAR)</option>
+                </select>
+              </div>
+              <div><span class="lbl">ETA (min)</span><input class="inp" id="drone-eta" type="number" value="12" min="1" max="60"></div>
+            </div>
+            <div id="drone-status-box" style="display:none;background:var(--green-dk);border:1px solid var(--green2);border-radius:2px;padding:10px;margin-bottom:8px;">
+              <div style="font-family:var(--head);font-size:13px;font-weight:700;color:var(--green);letter-spacing:2px;">🚁 DRONE DISPATCHED</div>
+              <div style="font-family:var(--mono);font-size:10px;color:var(--off);margin-top:4px;">ETA: <span id="drone-countdown" style="color:var(--green);font-weight:700;">--:--</span> &nbsp;|&nbsp; <span id="drone-flight-status" style="color:var(--green);">EN ROUTE</span></div>
+              <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px;" id="drone-coords"></div>
+            </div>
+            <button class="btn btn-green" onclick="dispatchDrone()" id="drone-dispatch-btn">🚁 DISPATCH DRONE</button>
+            <button class="btn btn-red btn-sm" onclick="abortDrone()" id="drone-abort-btn" style="display:none;">✕ ABORT</button>
+          </div>
+
+          <!-- SATCOM -->
+          <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:3px;padding:10px;">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;">📡 SATCOM AUTO-TRANSMIT</div>
+            <div class="r2" style="margin-bottom:8px;">
+              <div><span class="lbl">CHANNEL</span>
+                <select class="inp" id="satcom-channel" style="font-size:11px;">
+                  <option>ALPHA — Primary MEDEVAC</option>
+                  <option>BRAVO — Command Net</option>
+                  <option>CHARLIE — Emergency</option>
+                  <option>DELTA — Intel Report</option>
+                </select>
+              </div>
+              <div><span class="lbl">PRIORITY</span>
+                <select class="inp" id="satcom-priority" style="font-size:11px;">
+                  <option>FLASH — Immediate</option>
+                  <option>URGENT — 15 min</option>
+                  <option>ROUTINE — 1 hr</option>
+                </select>
+              </div>
+            </div>
+            <div id="satcom-status-box" style="display:none;background:var(--blue-dk);border:1px solid var(--blue2);border-radius:2px;padding:10px;margin-bottom:8px;">
+              <div style="font-family:var(--head);font-size:13px;font-weight:700;color:var(--blue);letter-spacing:2px;">📡 TRANSMISSION SENT</div>
+              <div style="font-family:var(--mono);font-size:10px;color:var(--off);margin-top:4px;" id="satcom-confirm"></div>
+            </div>
+            <button class="btn btn-blue" onclick="dispatchSatcom()">📡 TRANSMIT VIA SATCOM</button>
+          </div>
+        </div>
   </div>
 
   <!-- RADIO TRANSMISSION GUIDE -->
@@ -3818,12 +3872,159 @@ function dispatchRadio() {
   }
 }
 
+// ── Dispatch config state ──
+var _droneApiUrl   = '';
+var _satcomApiUrl  = '';
+var _dispatchApiKey = '';
+var _droneTimer    = null;
+var _droneActive   = false;
+
+function saveDispatchConfig() {
+  _droneApiUrl    = document.getElementById('drone-api-url')?.value.trim() || '';
+  _satcomApiUrl   = document.getElementById('satcom-api-url')?.value.trim() || '';
+  _dispatchApiKey = document.getElementById('dispatch-api-key')?.value.trim() || '';
+  var statusEl = document.getElementById('dispatch-status-text');
+  if (_droneApiUrl && _satcomApiUrl && _dispatchApiKey) {
+    if (statusEl) { statusEl.textContent = '✓ API CONFIGURED — LIVE MODE'; statusEl.style.color = 'var(--green)'; }
+    showProcToast('✓ Dispatch API configured — LIVE MODE active');
+  } else {
+    if (statusEl) { statusEl.textContent = '⚡ SIMULATION MODE'; statusEl.style.color = 'var(--amber)'; }
+    showProcToast('⚡ Simulation mode — enter API credentials for live dispatch');
+  }
+}
+
 function dispatchDrone() {
-  alert('DRONE DISPATCH — NOT YET CONNECTED\n\nAPI endpoint not configured.\nContact system administrator to enable autonomous dispatch.');
+  var pt = activePt();
+  var grid = document.getElementById('mvac-grid')?.value.trim() || 'GRID NOT SET';
+  var droneType = document.getElementById('drone-type')?.value || 'MQ-9 Reaper';
+  var eta = parseInt(document.getElementById('drone-eta')?.value) || 12;
+  var d = new Date();
+  var zulu = String(d.getUTCHours()).padStart(2,'0') + String(d.getUTCMinutes()).padStart(2,'0') + 'Z';
+
+  if (_droneApiUrl && _dispatchApiKey) {
+    // ── LIVE MODE: actual API call ──
+    fetch(_droneApiUrl + '/dispatch', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+_dispatchApiKey },
+      body: JSON.stringify({
+        grid: grid, drone_type: droneType, eta_minutes: eta,
+        casualty: pt ? pt.name : 'UNKNOWN', triage: pt ? pt.triage : '--',
+        timestamp: zulu
+      })
+    }).then(function(r){ return r.json(); })
+    .then(function(data) {
+      _showDroneDispatched(droneType, eta, grid, zulu, true, data);
+    })
+    .catch(function(err) {
+      showProcToast('⚠ API error — switching to simulation: ' + err.message);
+      _showDroneDispatched(droneType, eta, grid, zulu, false, null);
+    });
+  } else {
+    // ── SIMULATION MODE ──
+    _showDroneDispatched(droneType, eta, grid, zulu, false, null);
+  }
+}
+
+function _showDroneDispatched(droneType, eta, grid, zulu, isLive, apiData) {
+  _droneActive = true;
+  var box = document.getElementById('drone-status-box');
+  var dispatchBtn = document.getElementById('drone-dispatch-btn');
+  var abortBtn = document.getElementById('drone-abort-btn');
+  var coordEl = document.getElementById('drone-coords');
+  var statusEl = document.getElementById('drone-flight-status');
+
+  if (box) box.style.display = 'block';
+  if (dispatchBtn) dispatchBtn.style.display = 'none';
+  if (abortBtn) abortBtn.style.display = 'block';
+  if (coordEl) coordEl.textContent = (isLive ? '📡 LIVE API' : '⚡ SIM') + ' | Drone: ' + droneType + ' | Grid: ' + grid;
+
+  // Countdown timer
+  var totalSec = eta * 60;
+  var remaining = totalSec;
+  if (_droneTimer) clearInterval(_droneTimer);
+  _droneTimer = setInterval(function() {
+    remaining--;
+    var min = Math.floor(remaining/60);
+    var sec = remaining % 60;
+    var cdEl = document.getElementById('drone-countdown');
+    if (cdEl) cdEl.textContent = String(min).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+    if (remaining <= 120 && statusEl) { statusEl.textContent = '🔴 FINAL APPROACH'; statusEl.style.color = 'var(--red)'; }
+    else if (remaining <= 300 && statusEl) { statusEl.textContent = '🟡 5 MIN OUT'; statusEl.style.color = 'var(--amber)'; }
+    if (remaining <= 0) {
+      clearInterval(_droneTimer);
+      if (cdEl) cdEl.textContent = '00:00';
+      if (statusEl) { statusEl.textContent = '✅ ON SITE'; statusEl.style.color = 'var(--green)'; }
+      showProcToast('🚁 DRONE ON SITE — ' + droneType);
+      speak('Drone on site. ' + droneType + ' has arrived.');
+    }
+  }, 1000);
+
+  addLog('MEDEVAC', (isLive?'[LIVE]':'[SIM]') + ' Drone dispatched: ' + droneType + ' | ETA ' + eta + 'min | Grid: ' + grid + ' @ ' + zulu, 'system');
+  showProcToast('🚁 ' + (isLive?'LIVE':'SIM') + ' — ' + droneType + ' dispatched — ETA ' + eta + ' min');
+  speak('Drone dispatched. ' + droneType + '. ETA ' + eta + ' minutes.');
+}
+
+function abortDrone() {
+  if (!confirm('ABORT DRONE DISPATCH?\n\nThis will cancel the autonomous mission.')) return;
+  _droneActive = false;
+  if (_droneTimer) { clearInterval(_droneTimer); _droneTimer = null; }
+  var box = document.getElementById('drone-status-box');
+  var dispatchBtn = document.getElementById('drone-dispatch-btn');
+  var abortBtn = document.getElementById('drone-abort-btn');
+  if (box) box.style.display = 'none';
+  if (dispatchBtn) dispatchBtn.style.display = 'block';
+  if (abortBtn) abortBtn.style.display = 'none';
+  addLog('MEDEVAC', 'DRONE DISPATCH ABORTED', 'tq');
+  showProcToast('✕ Drone dispatch aborted');
 }
 
 function dispatchSatcom() {
-  alert('SATCOM AUTO-TRANSMIT — NOT YET CONNECTED\n\nSatellite communication module not configured.');
+  var pt = activePt();
+  var channel = document.getElementById('satcom-channel')?.value || 'ALPHA';
+  var priority = document.getElementById('satcom-priority')?.value || 'FLASH';
+  var nineLineText = document.getElementById('mvac-output')?.textContent || '';
+  var d = new Date();
+  var zulu = String(d.getUTCHours()).padStart(2,'0') + String(d.getUTCMinutes()).padStart(2,'0') + 'Z';
+
+  var payload = {
+    channel: channel, priority: priority, timestamp: zulu,
+    casualty: pt ? pt.name : 'UNKNOWN', triage: pt ? pt.triage : '--',
+    nine_line: nineLineText.substring(0, 500)
+  };
+
+  if (_satcomApiUrl && _dispatchApiKey) {
+    // ── LIVE MODE ──
+    fetch(_satcomApiUrl + '/transmit', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+_dispatchApiKey },
+      body: JSON.stringify(payload)
+    }).then(function(r){ return r.json(); })
+    .then(function(data) {
+      _showSatcomSent(channel, priority, zulu, true, data);
+    })
+    .catch(function(err) {
+      showProcToast('⚠ SATCOM API error — simulation fallback');
+      _showSatcomSent(channel, priority, zulu, false, null);
+    });
+  } else {
+    // ── SIMULATION MODE ──
+    _showSatcomSent(channel, priority, zulu, false, null);
+  }
+}
+
+function _showSatcomSent(channel, priority, zulu, isLive, apiData) {
+  var box = document.getElementById('satcom-status-box');
+  var confirmEl = document.getElementById('satcom-confirm');
+  if (box) box.style.display = 'block';
+  var msgId = 'MSG-' + Math.floor(Math.random()*9000+1000);
+  var confirmText = (isLive ? '📡 LIVE TX' : '⚡ SIMULATED') +
+    ' | CH: ' + channel.split('—')[0].trim() +
+    ' | PRI: ' + priority.split('—')[0].trim() +
+    ' | ID: ' + msgId + ' | ' + zulu;
+  if (confirmEl) confirmEl.textContent = confirmText;
+  addLog('MEDEVAC', (isLive?'[LIVE]':'[SIM]') + ' SATCOM TX: ' + channel + ' | ' + priority + ' | ' + msgId + ' @ ' + zulu, 'system');
+  showProcToast('📡 ' + (isLive?'LIVE':'SIM') + ' SATCOM — ' + priority.split('—')[0].trim() + ' sent on ' + channel.split('—')[0].trim());
+  speak('SATCOM transmission sent. ' + priority.split('—')[0].trim() + ' priority.');
 }
 
 // ══════════════════════════════════════════════
