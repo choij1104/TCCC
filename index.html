@@ -291,6 +291,12 @@ body.brief-mode #hdr-elapsed {color:#885500;}
 /* ══ VITAL TREND GRAPH ══ */
 .trend-canvas{width:100%;height:130px;background:var(--bg3);border-radius:2px;display:block;}
 
+/* ══ LIVE/DEMO MODE TABS ══ */
+#mode-tabs{display:flex;gap:0;background:var(--bg2);border-bottom:2px solid var(--border);flex-shrink:0;}
+.mode-tab{flex:1;padding:9px 8px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:2px;cursor:pointer;border:none;border-bottom:3px solid transparent;background:none;color:var(--muted);text-align:center;-webkit-appearance:none;}
+.mode-tab.active-live{color:var(--green);border-bottom-color:var(--green);background:rgba(0,255,65,.04);}
+.mode-tab.active-demo{color:var(--purple);border-bottom-color:var(--purple);background:rgba(187,136,255,.04);}
+
 /* ══ MODE BUTTONS in HEADER ══ */
 #mode-btns{display:flex;gap:5px;align-items:center;}
 .mode-btn{
@@ -561,7 +567,7 @@ button{-webkit-appearance:none;cursor:pointer;}
       <button class="mode-btn" id="red-light-btn" onclick="toggleRedLight()">🔴 NIGHT</button>
       <button class="mode-btn" id="tts-btn" onclick="toggleTTS()">🔊 TTS</button>
       <button class="mode-btn" id="training-btn" onclick="toggleTrainingMode()" style="background:#1a0a00;color:#cc4400;border-color:#661a00;">🎓 TRAIN</button>
-      <button class="mode-btn" id="demo-btn" onclick="toggleDemoMode()" style="background:#0a001a;color:#bb88ff;border-color:#440066;">🎬 DEMO</button>
+      <button class="mode-btn" id="demo-btn" onclick="switchModeTab(_currentMode==='demo'?'live':'demo')" style="background:#0a001a;color:#bb88ff;border-color:#440066;">🎬 DEMO</button>
     </div>
   </div>
 </div>
@@ -576,6 +582,16 @@ button{-webkit-appearance:none;cursor:pointer;}
     <button onclick="exportAllCSV()" style="background:var(--amber-dk);color:var(--amber);border:1px solid var(--amber2);padding:7px 14px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;">📊 ALL CSV</button>
     <button onclick="openImport()" style="background:var(--blue-dk);color:var(--blue);border:1px solid var(--blue2);padding:7px 14px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;">📥 IMPORT</button>
   </div>
+</div>
+
+<!-- LIVE / DEMO MODE TABS -->
+<div id="mode-tabs">
+  <button class="mode-tab active-live" id="tab-live" onclick="switchModeTab('live')">
+    🟢 LIVE
+  </button>
+  <button class="mode-tab" id="tab-demo" onclick="switchModeTab('demo')">
+    🎬 DEMO
+  </button>
 </div>
 
 <!-- PATIENT BAR -->
@@ -4075,6 +4091,196 @@ function logCaGluconate() {
 // ══════════════════════════════════════════════
 var _trainingMode = false;
 var _realDB = null;
+
+// ══════════════════════════════════════════════
+// LIVE / DEMO MODE SYSTEM
+// ══════════════════════════════════════════════
+var _currentMode = 'live'; // 'live' or 'demo'
+var _demoBuilt = false;
+
+function switchModeTab(mode) {
+  _currentMode = mode;
+
+  // Update tab styling
+  var liveTab = document.getElementById('tab-live');
+  var demoTab = document.getElementById('tab-demo');
+  if (liveTab) liveTab.className = 'mode-tab' + (mode === 'live' ? ' active-live' : '');
+  if (demoTab) demoTab.className = 'mode-tab' + (mode === 'demo' ? ' active-demo' : '');
+
+  // Show/hide NEW CASUALTY button
+  var newBtn = document.getElementById('btn-new-pt');
+  if (newBtn) newBtn.style.display = mode === 'live' ? '' : 'none';
+
+  if (mode === 'demo') {
+    // Build demo patients into DB if not done yet
+    if (!_demoBuilt) {
+      _buildAndStoreDemoPatients();
+      _demoBuilt = true;
+    }
+    // Switch to first demo patient
+    var firstDemo = DB.patients.find(function(p){ return p._isDemo; });
+    if (firstDemo) DB.activeId = firstDemo.id;
+    showProcToast('🎬 DEMO MODE — 30 simulation casualties loaded');
+  } else {
+    // Switch to first live patient
+    var firstLive = DB.patients.find(function(p){ return !p._isDemo; });
+    if (firstLive) DB.activeId = firstLive.id;
+    else DB.activeId = null;
+    showProcToast('🟢 LIVE MODE — operational');
+  }
+
+  renderPtBar();
+  syncUIFromPt();
+  setTimeout(renderTrendGraphs, 200);
+}
+
+function _buildAndStoreDemoPatients() {
+  // Remove any existing demo patients first (clean rebuild)
+  DB.patients = DB.patients.filter(function(p){ return !p._isDemo; });
+
+  var now = Date.now();
+  DEMO_SCENARIOS.forEach(function(s, idx) {
+    var pt = makePt();
+    pt.id      = 'demo_' + idx;
+    pt._isDemo = true;
+    pt.name    = s.name;
+    pt.blood   = s.blood;
+    pt.wt      = String(s.wt || '');
+    pt.triage  = s.triage;
+    pt.moi     = s.moi;
+    pt.zones   = s.zones || [];
+    pt.injTime = String(Math.floor(idx/2)+8).padStart(2,'0') + ':' + String((idx%2)*30).padStart(2,'0') + 'Z';
+    pt.startTime = now - (30-idx)*120000;
+
+    // Vitals
+    if (s.hr)   { pt.vitals.hr   = String(s.hr);   }
+    if (s.spo2) { pt.vitals.spo2 = String(s.spo2); }
+    if (s.sbp && s.dbp) {
+      pt.vitals.bp  = s.sbp + '/' + s.dbp;
+      pt.vitals.map = Math.round((s.sbp + 2*s.dbp)/3);
+    }
+    if (s.rr)   { pt.vitals.rr   = String(s.rr);   }
+    if (s.temp) { pt.vitals.temp = String(s.temp);  }
+    if (s.gcs)  { pt.vitals.gcs  = String(s.gcs);  }
+    if (s.spo2) { pt.vitals.spo2 = String(s.spo2); }
+    pt.vitalTs = String(Math.floor(idx/2)+8).padStart(2,'0') + ':' + String((idx%2)*30).padStart(2,'0') + 'Z';
+
+    // Vital history for trend graphs
+    pt.vitalHistory = [{
+      ts:   pt.vitalTs,
+      time: pt.startTime,
+      hr:   s.hr   ? String(s.hr)   : null,
+      spo2: s.spo2 ? String(s.spo2) : null,
+      sbp:  s.sbp  ? String(s.sbp)  : null,
+      dbp:  s.dbp  ? String(s.dbp)  : null,
+      rr:   s.rr   ? String(s.rr)   : null,
+      temp: s.temp ? String(s.temp) : null,
+      map:  (s.sbp&&s.dbp) ? Math.round((s.sbp+2*s.dbp)/3) : null
+    }];
+
+    // GCS vals for display
+    if (s.gcs) {
+      var g = Math.min(15, Math.max(3, s.gcs));
+      var e = g<=5?1:g<=8?2:g<=11?3:4;
+      var mv = g<=5?1:g<=8?2:g<=11?3:g<=13?4:5;
+      var mo = Math.max(1, g - e - mv + 1);
+      pt.gcsVals = { e: Math.min(4,e), v: Math.min(5,mv), m: Math.min(6,mo) };
+    }
+
+    // MARCH
+    if (s.triage==='T1'||s.triage==='T2') { pt.march.M=true; pt.march.C=true; }
+    if (s.triage==='T1') { pt.march.A=true; pt.march.R=true; }
+    if (s.triage==='T3'||s.triage==='T4') { pt.march.M=true; }
+
+    // TQ for limb injuries
+    if (s.triage==='T1' && s.zones) {
+      var tqZone = (s.zones||[]).find(function(z){
+        return z.includes('Thigh')||z.includes('Arm')||z.includes('Leg');
+      });
+      if (tqZone) {
+        pt.tqs.push({
+          id: now+idx+0.1,
+          location: tqZone,
+          type: 'CAT (Combat Application Tourniquet)',
+          deployTime: pt.startTime,
+          deployStr: pt.injTime
+        });
+        pt.logs.push({id:now+idx+0.2,cat:'TQ',text:'TQ DEPLOYED: '+tqZone+' — CAT @ '+pt.injTime,type:'tq',time:pt.injTime,ts:pt.startTime});
+      }
+    }
+
+    // Drug logs
+    if (s.triage==='T1') {
+      pt.logs.push({id:now+idx+0.3,cat:'DRUG',text:'TXA 2g IV/IO push ASAP (no 3hr limit) @ '+pt.injTime,type:'drug',time:pt.injTime,ts:pt.startTime});
+      if (s.hr && s.hr > 120) {
+        pt.logs.push({id:now+idx+0.4,cat:'DRUG',text:'Ketamine 50mg IM for analgesia @ '+pt.injTime,type:'drug',time:pt.injTime,ts:pt.startTime+300000});
+      }
+      pt.logs.push({id:now+idx+0.5,cat:'DRUG',text:'Ceftriaxone 2g IV — ABx prophylaxis @ '+pt.injTime,type:'drug',time:pt.injTime,ts:pt.startTime+600000});
+    }
+    if (s.triage==='T2') {
+      pt.logs.push({id:now+idx+0.3,cat:'DRUG',text:'Ceftriaxone 2g IV — ABx prophylaxis @ '+pt.injTime,type:'drug',time:pt.injTime,ts:pt.startTime});
+    }
+
+    // Vital log entry
+    var vparts = [];
+    if (s.hr)   vparts.push('HR:'+s.hr);
+    if (s.sbp)  vparts.push('BP:'+s.sbp+'/'+(s.dbp||'?'));
+    if (s.spo2) vparts.push('SpO2:'+s.spo2+'%');
+    if (s.rr)   vparts.push('RR:'+s.rr);
+    if (s.temp) vparts.push('T:'+s.temp+'C');
+    if (s.gcs)  vparts.push('GCS:'+s.gcs);
+    if (vparts.length) {
+      pt.logs.push({id:now+idx+0.6,cat:'VITAL',text:vparts.join(' | '),type:'vital',time:pt.vitalTs,ts:pt.startTime+60000});
+    }
+
+    // Injury log
+    pt.logs.push({id:now+idx+0.7,cat:'INJURY',
+      text:'MOI: '+s.moi+' | Zones: '+((s.zones||[]).join(', ')||'--')+(s.ml?' | Est. blood loss: '+s.ml+'mL':''),
+      type:'procedure',time:pt.injTime,ts:pt.startTime});
+
+    // Note
+    pt.logs.push({id:now+idx+0.8,cat:'NOTE',text:'[DEMO] '+(s.note||'Simulation scenario'),type:'system',time:pt.vitalTs,ts:pt.startTime+120000});
+
+    // Blood products for T1
+    if (s.triage==='T1' && s.ml && s.ml > 1500) {
+      pt.bloodProducts = { prbc: 2, ffp: 2, wb: 1 };
+      pt.logs.push({id:now+idx+0.9,cat:'BLOOD',text:'pRBC 2u + FFP 2u + WB 1u administered',type:'drug',time:pt.injTime,ts:pt.startTime+900000});
+    }
+
+    DB.patients.push(pt);
+  });
+
+  saveDB();
+  console.log('Demo patients stored in DB: ' + DEMO_SCENARIOS.length);
+}
+
+// Override renderPtBar to filter by mode
+var _originalRenderPtBar = null;
+
+function renderPtBar() {
+  var el = document.getElementById('pt-chips');
+  if (!el) return;
+
+  // Filter patients by current mode
+  var patients = DB.patients.filter(function(p){
+    return _currentMode === 'demo' ? p._isDemo : !p._isDemo;
+  });
+
+  if (!patients.length) { el.innerHTML = ''; return; }
+
+  el.innerHTML = patients.map(function(p) {
+    var sev = p.triage || '--';
+    var active = p.id === DB.activeId;
+    var label = (p.name || 'UNKNOWN').substring(0, 10);
+    var sevColor = {T1:'var(--red)',T2:'var(--amber)',T3:'var(--green)',T4:'var(--off)','--':'var(--muted)'}[sev] || 'var(--muted)';
+    var demoStyle = (_currentMode==='demo' && active) ? 'border-color:var(--purple);' : '';
+    return '<div class="pt-chip' + (active ? ' active' : '') + '" style="' + demoStyle + '" onclick="switchPt(\'' + p.id + '\');">'
+      + label
+      + '<span style="color:' + sevColor + ';font-size:9px;margin-left:3px">' + sev + '</span>'
+      + ((!p._isDemo) ? '<span class="pt-del" onclick="deletePt(\'' + p.id + '\',event)">✕</span>' : '')
+      + '</div>';
+  }).join('');
+}
 
 // ══════════════════════════════════════════════
 // DEMO MODE — 30 SIMULATION SCENARIOS
