@@ -573,6 +573,7 @@ button{-webkit-appearance:none;cursor:pointer;}
   </div>
   <div style="display:flex;gap:6px;">
     <button onclick="openExport()" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:7px 14px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;">📋 EXPORT</button>
+    <button onclick="exportAllCSV()" style="background:var(--amber-dk);color:var(--amber);border:1px solid var(--amber2);padding:7px 14px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;">📊 ALL CSV</button>
     <button onclick="openImport()" style="background:var(--blue-dk);color:var(--blue);border:1px solid var(--blue2);padding:7px 14px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;">📥 IMPORT</button>
   </div>
 </div>
@@ -694,33 +695,15 @@ button{-webkit-appearance:none;cursor:pointer;}
         <!-- GCS quick -->
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
           <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;width:14px;">E</div>
-          <div style="display:flex;gap:3px;flex:1;" id="mini-gcs-e">
-            <div class="mini-gcs-btn" onclick="setMiniGCS('e',1,this)">1</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('e',2,this)">2</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('e',3,this)">3</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('e',4,this)">4</div>
-          </div>
+          <div style="display:none;" id="mini-gcs-e"></div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
           <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;width:14px;">V</div>
-          <div style="display:flex;gap:3px;flex:1;" id="mini-gcs-v">
-            <div class="mini-gcs-btn" onclick="setMiniGCS('v',1,this)">1</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('v',2,this)">2</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('v',3,this)">3</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('v',4,this)">4</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('v',5,this)">5</div>
-          </div>
+          <div style="display:none;" id="mini-gcs-v"></div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
           <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;width:14px;">M</div>
-          <div style="display:flex;gap:3px;flex:1;" id="mini-gcs-m">
-            <div class="mini-gcs-btn" onclick="setMiniGCS('m',1,this)">1</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('m',2,this)">2</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('m',3,this)">3</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('m',4,this)">4</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('m',5,this)">5</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('m',6,this)">6</div>
-          </div>
+          <div style="display:none;" id="mini-gcs-m"></div>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;">
           <div id="mini-gcs-result" style="font-family:var(--head);font-size:20px;font-weight:900;color:var(--green);">GCS: --</div>
@@ -761,7 +744,7 @@ button{-webkit-appearance:none;cursor:pointer;}
         <button class="btn btn-red btn-sm" onclick="showPage('tq')">🩸 DEPLOY TQ</button>
         <button class="btn btn-blue btn-sm" onclick="openDrug('Morphine','IV/IM — 2–5mg titrate q4h')">💉 MORPHINE</button>
         <button class="btn btn-blue btn-sm" onclick="openDrug('Ketamine','IV 0.3–0.5mg/kg | IM 1–2mg/kg')">💉 KETAMINE</button>
-        <button class="btn btn-red btn-sm" onclick="openDrug('TXA (Tranexamic Acid)','IV 1g over 10 min — WITHIN 3 HRS OF INJURY')">🩸 TXA ⚠</button>
+        <button class="btn btn-red btn-sm" onclick="openDrug('TXA (Tranexamic Acid)','IV/IO 2g push ASAP — no 3hr limit (TCCC 2026)')">🩸 TXA ⚠</button>
         <button class="btn btn-amber btn-sm" onclick="openNCD()">🫁 NEEDLE DECOMP</button>
         <button class="btn btn-green btn-sm" onclick="showPage('vitals')">💓 CHECK VITALS</button>
       </div>
@@ -1372,6 +1355,8 @@ button{-webkit-appearance:none;cursor:pointer;}
         <div class="dpill" onclick="openDrug('Midazolam','IV/IM 1–5mg — caution with opioids')">Midazolam</div>
         <div class="dpill" onclick="openDrug('Meloxicam','PO 15mg q24h — do NOT use if hemorrhage risk')">Meloxicam</div>
         <div class="dpill" onclick="openDrug('Acetaminophen (APAP)','IV/PO 1g q6h — max 4g/day')">APAP</div>
+        <div class="dpill b" onclick="openDrug('Esketamine IN','Intranasal — TCCC 2026. Analgesia/procedural sedation. 84mg/mL intranasal')">Esketamine IN ⭐</div>
+        <div class="dpill b" onclick="openDrug('Suzetrigine','PO — TCCC 2026 new analgesic. Nav1.8 blocker, non-opioid. Dose per formulary')">Suzetrigine ⭐</div>
         <div class="dpill" onclick="openDrug('Diazepam','IV/IM 5–10mg — seizure/muscle spasm')">Diazepam</div>
       </div>
 
@@ -1384,14 +1369,14 @@ button{-webkit-appearance:none;cursor:pointer;}
         <div class="dpill a" onclick="openDrug('FFP (Fresh Frozen Plasma)','IV 1 unit — 1:1 ratio with pRBC')">FFP</div>
         <div class="dpill a" onclick="openDrug('Whole Blood (LTOWB)','IV 1 unit — preferred over component therapy')">Whole Blood</div>
         <div class="dpill a" onclick="openDrug('Platelets','IV 1 apheresis unit')">Platelets</div>
-        <div class="dpill r" onclick="openDrug('TXA (Tranexamic Acid)','IV 1g over 10 min — MUST GIVE WITHIN 3 HRS OF INJURY. Follow with 1g over 8h')">TXA ⚠</div>
+        <div class="dpill r" onclick="openDrug('TXA (Tranexamic Acid)','IV/IO 2g push ASAP — no 3hr limit (TCCC 2026). 2nd dose: 1g IV over 8h')">TXA ⚠</div>
       </div>
 
       <div class="drug-cat">🦠 ANTIBIOTICS</div>
       <div class="drug-wrap">
-        <div class="dpill g" onclick="openDrug('Moxifloxacin','PO 400mg q24h — combat wound prophylaxis')">Moxifloxacin</div>
-        <div class="dpill g" onclick="openDrug('Ertapenem','IV 1g q24h — broad-spectrum, penetrating trauma')">Ertapenem</div>
-        <div class="dpill g" onclick="openDrug('Ceftriaxone','IV/IM 1–2g q24h')">Ceftriaxone</div>
+        <div class="dpill g" onclick="openDrug('Ceftriaxone 2g','IV/IO/IM 2g q24h — TCCC 2026 1st line ABx')">Ceftriaxone ⭐</div>
+        <div class="dpill g" onclick="openDrug('Cefadroxil 1g','PO 1g q12h — TCCC 2026 oral ABx (replaces Moxifloxacin)')">Cefadroxil ⭐</div>
+        <div class="dpill g" onclick="openDrug('Cephalexin 500mg','PO 500mg q6h — oral ABx alternative')">Cephalexin</div>
         <div class="dpill g" onclick="openDrug('Metronidazole','IV 500mg q8h — abdominal/anaerobic coverage')">Metronidazole</div>
         <div class="dpill g" onclick="openDrug('Azithromycin','PO/IV 500mg q24h')">Azithromycin</div>
         <div class="dpill g" onclick="openDrug('Amoxicillin-Clavulanate','PO 875/125mg q12h')">Amox-Clav</div>
@@ -3014,6 +2999,103 @@ function deleteLogEntry() {
 // ══════════════════════════════════════════════
 // CSV EXPORT
 // ══════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// MULTI-PATIENT EXPORT (CSV / Excel-ready)
+// ══════════════════════════════════════════════
+function exportAllCSV() {
+  if (!DB.patients.length) { alert('No casualties to export.'); return; }
+
+  // Build comprehensive CSV with all patients
+  var headers = [
+    'UNIT','NAME','BLOOD','TRIAGE','WEIGHT_KG','AGE','INJURY_TIME',
+    'HR','SBP','DBP','SPO2','RR','TEMP_C','GCS','MAP','GLUCOSE','ETCO2',
+    'MOI','INJURY_ZONES','TQ_COUNT','DRUG_COUNT','PROC_COUNT',
+    'MARCH_M','MARCH_A','MARCH_R','MARCH_C','MARCH_H',
+    'BLOOD_PRBC','BLOOD_FFP','BLOOD_WB','CITRATE_MMOL',
+    'NOTES','IS_DEMO'
+  ];
+
+  var rows = [headers.map(function(h){ return '"'+h+'"'; }).join(',')];
+
+  DB.patients.forEach(function(pt, idx) {
+    var v = pt.vitals || {};
+    var bp = (v.bp || '--/--').split('/');
+    var sbp = bp[0] || '--';
+    var dbp = bp[1] || '--';
+    var bp2 = pt.bloodProducts || {prbc:0,ffp:0,wb:0};
+    var citrate = (bp2.prbc||0)*4 + (bp2.ffp||0)*14 + (bp2.wb||0)*18;
+
+    // Get notes from logs
+    var notes = (pt.logs||[])
+      .filter(function(e){ return e.type==='system' && e.cat==='NOTE'; })
+      .map(function(e){ return e.text.replace(/\[DEMO\]\s*/,'').replace(/"/g,"'"); })
+      .join(' | ');
+
+    // Drug count
+    var drugCount = (pt.logs||[]).filter(function(e){ return e.type==='drug'; }).length;
+    var procCount = (pt.logs||[]).filter(function(e){ return e.type==='procedure'; }).length;
+
+    var row = [
+      '"UNIT-' + String(idx+1).padStart(2,'0') + '"',
+      '"' + (pt.name||'UNKNOWN').replace(/"/g,"'") + '"',
+      '"' + (pt.blood||'') + '"',
+      '"' + (pt.triage||'') + '"',
+      '"' + (pt.wt||'') + '"',
+      '"' + (pt.age||'') + '"',
+      '"' + (pt.injTime||'') + '"',
+      '"' + (v.hr||'--') + '"',
+      '"' + sbp + '"',
+      '"' + dbp + '"',
+      '"' + (v.spo2||'--') + '"',
+      '"' + (v.rr||'--') + '"',
+      '"' + (v.temp||'--') + '"',
+      '"' + (v.gcs||'--') + '"',
+      '"' + (v.map||'--') + '"',
+      '"' + (v.gluc||'--') + '"',
+      '"' + (v.etco2||'--') + '"',
+      '"' + (pt.moi||'').replace(/"/g,"'") + '"',
+      '"' + ((pt.zones||[]).join('; ')) + '"',
+      '"' + ((pt.tqs||[]).length) + '"',
+      '"' + drugCount + '"',
+      '"' + procCount + '"',
+      '"' + (pt.march&&pt.march.M?'YES':'NO') + '"',
+      '"' + (pt.march&&pt.march.A?'YES':'NO') + '"',
+      '"' + (pt.march&&pt.march.R?'YES':'NO') + '"',
+      '"' + (pt.march&&pt.march.C?'YES':'NO') + '"',
+      '"' + (pt.march&&pt.march.H?'YES':'NO') + '"',
+      '"' + (bp2.prbc||0) + '"',
+      '"' + (bp2.ffp||0) + '"',
+      '"' + (bp2.wb||0) + '"',
+      '"' + citrate + '"',
+      '"' + notes + '"',
+      '"' + (pt._isDemo?'YES':'NO') + '"',
+    ];
+    rows.push(row.join(','));
+  });
+
+  var csv = rows.join('\n');
+  var count = DB.patients.length;
+  var demoCount = DB.patients.filter(function(p){ return p._isDemo; }).length;
+
+  // Show in export modal
+  document.getElementById('export-textarea').value = csv;
+  document.getElementById('export-modal').classList.remove('hidden');
+  document.getElementById('rpt-title').textContent = 'ALL PATIENTS CSV — ' + count + ' casualties (' + demoCount + ' demo)';
+  document.getElementById('rpt-sub').textContent = new Date().toLocaleString() + ' | Copy and save as .csv or open in Excel';
+  document.getElementById('export-modal').classList.remove('hidden');
+
+  // Switch to raw tab
+  document.querySelectorAll('.rpt-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById('rtab-json').classList.add('active');
+  document.getElementById('rpt-report').style.display = 'none';
+  document.getElementById('rpt-table').style.display = 'none';
+  document.getElementById('rpt-raw').style.display = 'block';
+  _rptTab = 'json';
+
+  setTimeout(function(){ document.getElementById('export-textarea').select(); }, 100);
+  showProcToast('✅ ' + count + ' patients CSV ready — Copy → paste into Excel');
+}
+
 function exportCSV() {
   const pt = activePt();
   if (!pt) { alert('No casualty selected.'); return; }
@@ -4021,7 +4103,7 @@ const DEMO_SCENARIOS = [
 
   // CAT D: Edge cases + DEI + Maritime
   { name:'DELTA-01', blood:'O+', wt:300,triage:'T2', moi:'Blunt Trauma',               zones:['Abdomen'],                  hr:105, sbp:102, dbp:66, rr:20, temp:36.0, gcs:13, spo2:95,  ml:5000, note:'300kg — weight-based EBV CLASS II' },
-  { name:'DELTA-02', blood:'A+', wt:70, triage:'T1', moi:'DEI — High-Power Laser (HPL)',zones:['Head','Face'],              hr:92,  sbp:108, dbp:70, rr:18, temp:36.5, gcs:15, spo2:99,  ml:null, note:'DEI laser — ocular injury' },
+  { name:'DELTA-02', blood:'A+', wt:70, triage:'T1', moi:'DEI — High-Power Laser (HPL)',zones:['Head','Face'],              hr:122, sbp:88,  dbp:58, rr:24, temp:35.8, gcs:11, spo2:93,  ml:null, note:'DEI laser — ocular injury + hemodynamic instability' },
   { name:'DELTA-03', blood:'O+', wt:75, triage:'T2', moi:'Maritime — Drowning / Near-Drowning',zones:['Head','L Chest'],   hr:118, sbp:90,  dbp:58, rr:28, temp:30.5, gcs:10, spo2:88,  ml:null, note:'Maritime — hypothermia + hypoxia' },
   { name:'DELTA-04', blood:'B+', wt:82, triage:'T1', moi:'Blast / Explosion',           zones:['Abdomen','Pelvis','L Thigh'],hr:140,sbp:68, dbp:42, rr:34, temp:32.8, gcs:7,  spo2:87,  ml:2800, note:'CLASS IV — lethal diamond risk' },
   { name:'DELTA-05', blood:'O+', wt:60, triage:'T3', moi:'Medical — Non-Traumatic',     zones:[],                           hr:78,  sbp:125, dbp:82, rr:14, temp:37.0, gcs:15, spo2:99,  ml:null, note:'Medical — T3 stable' },
@@ -4037,7 +4119,7 @@ const DEMO_SCENARIOS = [
   // CAT F: SOF specific
   { name:'FOXTROT-01', blood:'O+', wt:80, triage:'T1', moi:'GSW — Gunshot Wound',       zones:['R Thigh','Pelvis'],         hr:138, sbp:72,  dbp:44, rr:30, temp:34.5, gcs:10, spo2:91,  ml:1800, note:'SOF operator — GSW' },
   { name:'FOXTROT-02', blood:'O+', wt:85, triage:'T2', moi:'Blast / Explosion',         zones:['Abdomen','Back/Spine'],     hr:114, sbp:90,  dbp:58, rr:24, temp:35.6, gcs:12, spo2:93,  ml:900,  note:'SOF operator — blast' },
-  { name:'FOXTROT-03', blood:'A+', wt:75, triage:'T1', moi:'DEI — High-Power Microwave (HPM)',zones:['Head'],              hr:108, sbp:95,  dbp:62, rr:20, temp:36.8, gcs:12, spo2:96,  ml:null, note:'SOF DEI exposure' },
+  { name:'FOXTROT-03', blood:'A+', wt:75, triage:'T1', moi:'DEI — High-Power Microwave (HPM)',zones:['Head'],              hr:128, sbp:84,  dbp:52, rr:26, temp:35.2, gcs:9,  spo2:91,  ml:null, note:'SOF DEI exposure — cardiac arrhythmia + neurological' },
   { name:'FOXTROT-04', blood:'O-', wt:78, triage:'T3', moi:'Fall / MVC',                zones:['R Lower Leg'],              hr:88,  sbp:118, dbp:76, rr:16, temp:36.4, gcs:15, spo2:98,  ml:280,  note:'SOF training injury' },
   { name:'FOXTROT-05', blood:'B+', wt:72, triage:'T1', moi:'Maritime — Underwater Blast (UWBX)',zones:['L Chest','Abdomen'],hr:145,sbp:60,dbp:36,rr:36,temp:29.0,  gcs:6,  spo2:82,  ml:3100, note:'UWBX — critical' },
 ];
@@ -4179,7 +4261,9 @@ function loadDemoPatients() {
   });
 
   _demoLoaded = true;
-  if (!DB.activeId) DB.activeId = DB.patients[0].id;
+  // Always switch to first demo patient
+  var firstDemo = DB.patients.find(function(p){ return p._isDemo; });
+  if (firstDemo) DB.activeId = firstDemo.id;
   saveDB();
   renderPtBar();
   syncUIFromPt();
@@ -5915,7 +5999,7 @@ function checkHypo() {
 
 </script>
 
-<div style="text-align:center;padding:18px 0 24px;font-family:monospace;font-size:10px;color:#2a3a2a;letter-spacing:1px;border-top:1px solid #1a2a1a;margin-top:24px;">Developed by Jae H. Choi, PhD, DVSc &nbsp;&middot;&nbsp; v1.0 &nbsp;&middot;&nbsp; 2026
+<div style="text-align:center;padding:18px 0 24px;font-family:monospace;font-size:10px;color:#2a3a2a;letter-spacing:1px;border-top:1px solid #1a2a1a;margin-top:24px;">Developed by Jae H. Choi, PhD, DVSc &nbsp;&middot;&nbsp; v1.0 &nbsp;&middot;&nbsp; 2026 &nbsp;&middot;&nbsp; Drug protocols: TCCC Guidelines 01 May 2026
   <!-- NEXT TAB -->
   <div style="padding:16px 0 8px;display:flex;justify-content:flex-end;">
     <button onclick="showPage('mist')" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:12px 24px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">NEXT: 📡 MIST &#9654;</button>
@@ -6123,6 +6207,7 @@ function checkHypo() {
       <div style="margin-left:auto;display:flex;gap:4px;">
         <button onclick="openExport()" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">JSON</button>
         <button onclick="exportCSV()" style="background:var(--blue-dk);color:var(--blue);border:1px solid var(--blue2);padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">CSV</button>
+        <button onclick="exportAllCSV()" style="background:var(--amber-dk);color:var(--amber);border:1px solid var(--amber2);padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">ALL CSV</button>
       </div>
     </div>
     <div class="sec-body" style="padding:8px;">
