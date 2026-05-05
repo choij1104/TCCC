@@ -89,6 +89,103 @@ body.red-light #red-light-btn{
   background:#330000;color:#ff3030;border-color:#660000;
 }
 
+/* ══ BRIEF MODE (Light / Presentation) ══ */
+body.brief-mode {
+  --bg:#f0f4f0;--bg2:#e4ece4;--bg3:#d8e4d8;
+  --panel:#e8f0e8;--panel2:#dce8dc;
+  --border:#8aaa8a;--border2:#6a9a6a;--border3:#4a8a4a;
+  --white:#0a1a0a;--off:#1a3a1a;--muted:#2a5a2a;--muted2:#c0d8c0;
+  --green:#006600;--green2:#008800;--green-dk:#c8e8c8;--green-glow:rgba(0,102,0,.15);
+  --red:#cc0000;--red2:#aa0000;--red-dk:#ffd8d8;
+  --amber:#885500;--amber2:#aa6600;--amber-dk:#fff0cc;
+  --blue:#0055aa;--blue2:#0077cc;--blue-dk:#d8eeff;
+  --purple:#6600aa;--purple-dk:#eed8ff;
+}
+body.brief-mode #app {
+  background:var(--bg);
+}
+body.brief-mode #hdr {
+  background:#ffffff;
+  border-bottom:3px solid #006600;
+  box-shadow:0 2px 12px rgba(0,102,0,.15);
+}
+body.brief-mode #hdr-title {
+  color:#006600;
+  text-shadow:none;
+}
+body.brief-mode #nav {
+  background:#ffffff;
+  border-bottom:2px solid #8aaa8a;
+}
+body.brief-mode .nav-btn {
+  color:#2a5a2a;
+}
+body.brief-mode .nav-btn.active {
+  color:#006600;
+  border-bottom-color:#006600;
+  background:rgba(0,102,0,.06);
+}
+body.brief-mode .sec {
+  background:#ffffff;
+  border-color:#8aaa8a;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+}
+body.brief-mode .sec-hdr {
+  background:#e8f0e8;
+  border-bottom-color:#8aaa8a;
+}
+body.brief-mode .sec-title {
+  color:#006600;
+}
+body.brief-mode .inp {
+  background:#ffffff;
+  border-color:#8aaa8a;
+  color:#0a1a0a;
+}
+body.brief-mode .inp:focus {
+  border-color:#006600;
+}
+body.brief-mode .btn-green {
+  background:#c8e8c8;color:#006600;border-color:#008800;
+}
+body.brief-mode .btn-red {
+  background:#ffd8d8;color:#cc0000;border-color:#aa0000;
+}
+body.brief-mode .btn-amber {
+  background:#fff0cc;color:#885500;border-color:#aa6600;
+}
+body.brief-mode .btn-blue {
+  background:#d8eeff;color:#0055aa;border-color:#0077cc;
+}
+body.brief-mode .btn-ghost {
+  background:#e8f0e8;color:#2a5a2a;border-color:#8aaa8a;
+}
+body.brief-mode .vbox {
+  background:#ffffff;border-color:#8aaa8a;
+}
+body.brief-mode .vbox-val {
+  color:#006600;
+}
+body.brief-mode .dpill {
+  background:#d8eeff;color:#0055aa;border-color:#0077cc;
+}
+body.brief-mode .dpill.r {background:#ffd8d8;color:#cc0000;border-color:#aa0000;}
+body.brief-mode .dpill.a {background:#fff0cc;color:#885500;border-color:#aa6600;}
+body.brief-mode .dpill.g {background:#c8e8c8;color:#006600;border-color:#008800;}
+body.brief-mode .dpill.p {background:#eed8ff;color:#6600aa;border-color:#8800cc;}
+body.brief-mode .log-e {background:#f8fcf8;border-left-color:#8aaa8a;}
+body.brief-mode .pt-chip {background:#e8f0e8;color:#2a5a2a;border-color:#8aaa8a;}
+body.brief-mode .pt-chip.active {background:#c8e8c8;color:#006600;border-color:#008800;}
+body.brief-mode #stor-bar {background:#f0f4f0;border-bottom-color:#8aaa8a;}
+body.brief-mode #pt-bar {background:#f0f4f0;border-bottom-color:#8aaa8a;}
+body.brief-mode .m-step {background:#f8fcf8;border-color:#8aaa8a;}
+body.brief-mode .m-step.done {border-color:#008800;background:#e8f8e8;}
+body.brief-mode #brief-btn {
+  background:#c8e8c8 !important;color:#006600 !important;border-color:#008800 !important;
+}
+body.brief-mode #hdr-clock {color:#006600;}
+body.brief-mode #hdr-elapsed {color:#885500;}
+
 /* ══ CONTACT MODE OVERLAY ══ */
 #contact-mode{
   position:fixed;inset:0;background:#000;z-index:5000;
@@ -456,13 +553,15 @@ button{-webkit-appearance:none;cursor:pointer;}
       <div id="hdr-clock" style="font-family:var(--mono);font-size:16px;color:var(--green);letter-spacing:2px;">--:--:--</div>
     </div>
     <div id="hdr-elapsed" style="font-family:var(--mono);font-size:11px;color:var(--amber);">ELAPSED --:--:--</div>
-    <div style="text-align:right;font-family:monospace;font-size:9px;color:#2a4a2a;letter-spacing:0.5px;padding:2px 10px 0;line-height:1;">© 2026 Jae H. Choi, PhD, DVSc &nbsp;·&nbsp; Drug protocols: TCCC Guidelines 01 May 2026</div>
+    <div style="text-align:right;font-family:monospace;font-size:9px;color:#2a4a2a;letter-spacing:0.5px;padding:2px 10px 0;line-height:1;">© 2026 Jae H. Choi, PhD, DVSc</div>
 <div id="mode-btns">
       <button class="mode-btn" id="contact-btn" onclick="toggleContactMode()">🚨 CONTACT</button>
       <button class="mode-btn" id="selfaid-btn" onclick="toggleSelfAid()">🩹 SELF-AID</button>
+      <button class="mode-btn" id="brief-btn" onclick="toggleBriefMode()" style="background:#c8e8c8;color:#006600;border-color:#008800;">☀️ BRIEF</button>
       <button class="mode-btn" id="red-light-btn" onclick="toggleRedLight()">🔴 NIGHT</button>
       <button class="mode-btn" id="tts-btn" onclick="toggleTTS()">🔊 TTS</button>
       <button class="mode-btn" id="training-btn" onclick="toggleTrainingMode()" style="background:#1a0a00;color:#cc4400;border-color:#661a00;">🎓 TRAIN</button>
+      <button class="mode-btn" id="demo-btn" onclick="toggleDemoMode()" style="background:#0a001a;color:#bb88ff;border-color:#440066;">🎬 DEMO</button>
     </div>
   </div>
 </div>
@@ -592,14 +691,40 @@ button{-webkit-appearance:none;cursor:pointer;}
           <button class="btn btn-red btn-xs" style="margin:0;font-size:11px" onclick="quickAVPU('U')">U<br><span style="font-size:8px;font-weight:400">UNRESP</span></button>
         </div>
 
-        <!-- TCCC 2026: AVPU only — GCS in VITALS tab -->
-        <div id="mini-gcs-result" style="display:none;"></div>
-        <div id="mini-gcs-e" style="display:none;"></div>
-        <div id="mini-gcs-v" style="display:none;"></div>
-        <div id="mini-gcs-m" style="display:none;"></div>
-        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:4px;padding:6px 8px;background:var(--bg2);border-radius:2px;border:1px solid var(--border);">
-          AVPU recorded per TCCC 2026 (DD Form 1380)<br>
-          <span style="color:var(--green);">→ For full GCS E/V/M: go to VITALS tab</span>
+        <!-- GCS quick -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;width:14px;">E</div>
+          <div style="display:flex;gap:3px;flex:1;" id="mini-gcs-e">
+            <div class="mini-gcs-btn" onclick="setMiniGCS('e',1,this)">1</div>
+            <div class="mini-gcs-btn" onclick="setMiniGCS('e',2,this)">2</div>
+            <div class="mini-gcs-btn" onclick="setMiniGCS('e',3,this)">3</div>
+            <div class="mini-gcs-btn" onclick="setMiniGCS('e',4,this)">4</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;width:14px;">V</div>
+          <div style="display:flex;gap:3px;flex:1;" id="mini-gcs-v">
+            <div class="mini-gcs-btn" onclick="setMiniGCS('v',1,this)">1</div>
+            <div class="mini-gcs-btn" onclick="setMiniGCS('v',2,this)">2</div>
+            <div class="mini-gcs-btn" onclick="setMiniGCS('v',3,this)">3</div>
+            <div class="mini-gcs-btn" onclick="setMiniGCS('v',4,this)">4</div>
+            <div class="mini-gcs-btn" onclick="setMiniGCS('v',5,this)">5</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;width:14px;">M</div>
+          <div style="display:flex;gap:3px;flex:1;" id="mini-gcs-m">
+            <div class="mini-gcs-btn" onclick="setMiniGCS('m',1,this)">1</div>
+            <div class="mini-gcs-btn" onclick="setMiniGCS('m',2,this)">2</div>
+            <div class="mini-gcs-btn" onclick="setMiniGCS('m',3,this)">3</div>
+            <div class="mini-gcs-btn" onclick="setMiniGCS('m',4,this)">4</div>
+            <div class="mini-gcs-btn" onclick="setMiniGCS('m',5,this)">5</div>
+            <div class="mini-gcs-btn" onclick="setMiniGCS('m',6,this)">6</div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div id="mini-gcs-result" style="font-family:var(--head);font-size:20px;font-weight:900;color:var(--green);">GCS: --</div>
+          <button class="btn btn-green btn-xs" style="width:auto;margin:0;padding:6px 14px" onclick="saveMiniGCS()">SAVE</button>
         </div>
       </div>
     </div>
@@ -636,11 +761,10 @@ button{-webkit-appearance:none;cursor:pointer;}
         <button class="btn btn-red btn-sm" onclick="showPage('tq')">🩸 DEPLOY TQ</button>
         <button class="btn btn-blue btn-sm" onclick="openDrug('Morphine','IV/IM — 2–5mg titrate q4h')">💉 MORPHINE</button>
         <button class="btn btn-blue btn-sm" onclick="openDrug('Ketamine','IV 0.3–0.5mg/kg | IM 1–2mg/kg')">💉 KETAMINE</button>
-        <button class="btn btn-red btn-sm" onclick="openDrug('TXA (Tranexamic Acid)','IV/IO 2g push — GIVE ASAP (no 3hr limit) per TCCC 2026')">🩸 TXA ⚠</button>
+        <button class="btn btn-red btn-sm" onclick="openDrug('TXA (Tranexamic Acid)','IV 1g over 10 min — WITHIN 3 HRS OF INJURY')">🩸 TXA ⚠</button>
         <button class="btn btn-amber btn-sm" onclick="openNCD()">🫁 NEEDLE DECOMP</button>
         <button class="btn btn-green btn-sm" onclick="showPage('vitals')">💓 CHECK VITALS</button>
       </div>
-        <div class="dpill b" onclick="openDrug('Esketamine IN','Intranasal 84mg/mL — TCCC 2026 new. Analgesia, procedural sedation')">Esketamine IN ⭐</div>
     </div>
   </div>
 
@@ -1244,11 +1368,10 @@ button{-webkit-appearance:none;cursor:pointer;}
       <div class="drug-wrap">
         <div class="dpill" onclick="openDrug('Morphine','IV/IM 2–5mg — titrate to effect')">Morphine</div>
         <div class="dpill" onclick="openDrug('Ketamine','IV 0.3–0.5mg/kg | IM 1–2mg/kg | Sub-dissociative: 0.1–0.3mg/kg IV')">Ketamine</div>
-        <div class="dpill" onclick="openDrug('⚠ Fentanyl [REMOVED 2026]','IV 1–2mcg/kg | IN 100mcg — onset 2–3 min')">Fentanyl</div>
+        <div class="dpill" onclick="openDrug('Fentanyl','IV 1–2mcg/kg | IN 100mcg — onset 2–3 min')">Fentanyl</div>
         <div class="dpill" onclick="openDrug('Midazolam','IV/IM 1–5mg — caution with opioids')">Midazolam</div>
         <div class="dpill" onclick="openDrug('Meloxicam','PO 15mg q24h — do NOT use if hemorrhage risk')">Meloxicam</div>
         <div class="dpill" onclick="openDrug('Acetaminophen (APAP)','IV/PO 1g q6h — max 4g/day')">APAP</div>
-        <div class="dpill b" onclick="openDrug('Suzetrigine','PO — TCCC 2026 new analgesic. Nav1.8 blocker, non-opioid. Dose per formulary')">Suzetrigine ⭐</div>
         <div class="dpill" onclick="openDrug('Diazepam','IV/IM 5–10mg — seizure/muscle spasm')">Diazepam</div>
       </div>
 
@@ -1261,14 +1384,14 @@ button{-webkit-appearance:none;cursor:pointer;}
         <div class="dpill a" onclick="openDrug('FFP (Fresh Frozen Plasma)','IV 1 unit — 1:1 ratio with pRBC')">FFP</div>
         <div class="dpill a" onclick="openDrug('Whole Blood (LTOWB)','IV 1 unit — preferred over component therapy')">Whole Blood</div>
         <div class="dpill a" onclick="openDrug('Platelets','IV 1 apheresis unit')">Platelets</div>
-        <div class="dpill r" onclick="openDrug('TXA (Tranexamic Acid)','IV/IO 2g push ASAP — No 3hr limit (TCCC 2026). 2nd dose: 1g IV over 8h')">TXA ⚠</div>
+        <div class="dpill r" onclick="openDrug('TXA (Tranexamic Acid)','IV 1g over 10 min — MUST GIVE WITHIN 3 HRS OF INJURY. Follow with 1g over 8h')">TXA ⚠</div>
       </div>
 
       <div class="drug-cat">🦠 ANTIBIOTICS</div>
       <div class="drug-wrap">
-        <div class="dpill g" onclick="openDrug('Ceftriaxone 2g','IV/IO/IM 2g q24h — TCCC 2026 1st line ABx. IV preferred')">Ceftriaxone ⭐</div>
-        <div class="dpill g" onclick="openDrug('Cefadroxil 1g','PO 1g q12h — TCCC 2026 oral ABx (replaces Moxifloxacin)')">Cefadroxil ⭐</div>
-        <div class="dpill g" onclick="openDrug('Cephalexin 500mg','PO 500mg q6h — oral ABx alternative to Cefadroxil')">Cephalexin</div>
+        <div class="dpill g" onclick="openDrug('Moxifloxacin','PO 400mg q24h — combat wound prophylaxis')">Moxifloxacin</div>
+        <div class="dpill g" onclick="openDrug('Ertapenem','IV 1g q24h — broad-spectrum, penetrating trauma')">Ertapenem</div>
+        <div class="dpill g" onclick="openDrug('Ceftriaxone','IV/IM 1–2g q24h')">Ceftriaxone</div>
         <div class="dpill g" onclick="openDrug('Metronidazole','IV 500mg q8h — abdominal/anaerobic coverage')">Metronidazole</div>
         <div class="dpill g" onclick="openDrug('Azithromycin','PO/IV 500mg q24h')">Azithromycin</div>
         <div class="dpill g" onclick="openDrug('Amoxicillin-Clavulanate','PO 875/125mg q12h')">Amox-Clav</div>
@@ -3871,6 +3994,229 @@ function logCaGluconate() {
 var _trainingMode = false;
 var _realDB = null;
 
+// ══════════════════════════════════════════════
+// DEMO MODE — 30 SIMULATION SCENARIOS
+// ══════════════════════════════════════════════
+const DEMO_SCENARIOS = [
+  // CAT A: Full inputs (T1-T3)
+  { name:'ALPHA-01', blood:'O+', wt:70, triage:'T1', moi:'GSW — Gunshot Wound',         zones:['R Thigh','Pelvis'],         hr:145, sbp:62,  dbp:38, rr:32, temp:33.5, gcs:7,  spo2:88,  ml:2200, note:'CLASS IV — all critical factors' },
+  { name:'ALPHA-02', blood:'A+', wt:80, triage:'T1', moi:'Blast / Explosion',           zones:['L Chest','Abdomen'],        hr:128, sbp:84,  dbp:52, rr:28, temp:35.1, gcs:10, spo2:91,  ml:1700, note:'CLASS III — blast polytrauma' },
+  { name:'ALPHA-03', blood:'B-', wt:75, triage:'T2', moi:'Fragmentation Injury',        zones:['R Upper Arm','R Forearm'],  hr:108, sbp:98,  dbp:64, rr:22, temp:36.2, gcs:14, spo2:94,  ml:1100, note:'CLASS II — frag wound' },
+  { name:'ALPHA-04', blood:'AB+',wt:85, triage:'T3', moi:'Blunt Trauma',                zones:['Head','Neck'],              hr:86,  sbp:118, dbp:76, rr:16, temp:36.8, gcs:15, spo2:98,  ml:350,  note:'CLASS I — stable' },
+  { name:'ALPHA-05', blood:'O-', wt:70, triage:'T2', moi:'IED — Improvised Explosive Device', zones:['L Lower Leg','Pelvis'], hr:102, sbp:94, dbp:60, rr:24, temp:35.8, gcs:12, spo2:93, ml:900, note:'CLASS II/III — IED blast' },
+
+  // CAT B: Vitals only (no blood loss entered)
+  { name:'BRAVO-01', blood:'O+', wt:72, triage:'T1', moi:'GSW — Gunshot Wound',         zones:['Abdomen'],                  hr:148, sbp:58,  dbp:35, rr:36, temp:32.0, gcs:6,  spo2:86,  ml:null, note:'CLASS IV vitals only — no ml entered' },
+  { name:'BRAVO-02', blood:'A-', wt:78, triage:'T1', moi:'Blast / Explosion',           zones:['Head','L Chest'],           hr:132, sbp:82,  dbp:50, rr:30, temp:34.2, gcs:8,  spo2:90,  ml:null, note:'CLASS III vitals only' },
+  { name:'BRAVO-03', blood:'O+', wt:65, triage:'T2', moi:'Burn / Thermal Injury',       zones:['R Chest','Face'],           hr:115, sbp:92,  dbp:60, rr:26, temp:35.5, gcs:12, spo2:93,  ml:null, note:'CLASS II vitals only' },
+  { name:'BRAVO-04', blood:'B+', wt:90, triage:'T3', moi:'Fall / MVC',                  zones:['Back/Spine'],               hr:82,  sbp:122, dbp:80, rr:15, temp:36.5, gcs:15, spo2:97,  ml:null, note:'CLASS I vitals only' },
+  { name:'BRAVO-05', blood:'O+', wt:68, triage:'T1', moi:'Blast / Explosion',           zones:['Head','Neck','L Chest'],    hr:142, sbp:65,  dbp:40, rr:33, temp:33.0, gcs:7,  spo2:87,  ml:null, note:'GCS only drive — CLASS IV' },
+
+  // CAT C: Partial inputs
+  { name:'CHARLIE-01', blood:'A+', wt:75, triage:'T1', moi:'GSW — Gunshot Wound',       zones:['R Thigh'],                  hr:134, sbp:86,  dbp:54, rr:null,temp:null, gcs:null,spo2:null,ml:null, note:'HR+SBP only — CLASS III' },
+  { name:'CHARLIE-02', blood:'O+', wt:80, triage:'T2', moi:'Fragmentation Injury',      zones:['R Upper Arm'],              hr:null,sbp:88,  dbp:56, rr:null,temp:null, gcs:null,spo2:92, ml:1400, note:'SBP+ml — CLASS III' },
+  { name:'CHARLIE-03', blood:'B+', wt:70, triage:'T1', moi:'Blast / Explosion',         zones:['Head'],                     hr:null,sbp:null,dbp:null,rr:null,temp:null,gcs:8,  spo2:null,ml:null, note:'GCS only — CLASS III' },
+  { name:'CHARLIE-04', blood:'O-', wt:65, triage:'T2', moi:'Blunt Trauma',              zones:['Abdomen'],                  hr:112, sbp:96,  dbp:null,rr:26, temp:35.2, gcs:null,spo2:94, ml:850,  note:'Partial vitals — CLASS II' },
+  { name:'CHARLIE-05', blood:'AB-',wt:88, triage:'T1', moi:'IED — Improvised Explosive Device',zones:['L Chest','Pelvis'], hr:138, sbp:72, dbp:44, rr:32, temp:33.8, gcs:9,  spo2:89,  ml:null, note:'Multiple partial — CLASS IV' },
+
+  // CAT D: Edge cases + DEI + Maritime
+  { name:'DELTA-01', blood:'O+', wt:300,triage:'T2', moi:'Blunt Trauma',               zones:['Abdomen'],                  hr:105, sbp:102, dbp:66, rr:20, temp:36.0, gcs:13, spo2:95,  ml:5000, note:'300kg — weight-based EBV CLASS II' },
+  { name:'DELTA-02', blood:'A+', wt:70, triage:'T1', moi:'DEI — High-Power Laser (HPL)',zones:['Head','Face'],              hr:92,  sbp:108, dbp:70, rr:18, temp:36.5, gcs:15, spo2:99,  ml:null, note:'DEI laser — ocular injury' },
+  { name:'DELTA-03', blood:'O+', wt:75, triage:'T2', moi:'Maritime — Drowning / Near-Drowning',zones:['Head','L Chest'],   hr:118, sbp:90,  dbp:58, rr:28, temp:30.5, gcs:10, spo2:88,  ml:null, note:'Maritime — hypothermia + hypoxia' },
+  { name:'DELTA-04', blood:'B+', wt:82, triage:'T1', moi:'Blast / Explosion',           zones:['Abdomen','Pelvis','L Thigh'],hr:140,sbp:68, dbp:42, rr:34, temp:32.8, gcs:7,  spo2:87,  ml:2800, note:'CLASS IV — lethal diamond risk' },
+  { name:'DELTA-05', blood:'O+', wt:60, triage:'T3', moi:'Medical — Non-Traumatic',     zones:[],                           hr:78,  sbp:125, dbp:82, rr:14, temp:37.0, gcs:15, spo2:99,  ml:null, note:'Medical — T3 stable' },
+  { name:'DELTA-06', blood:'A-', wt:74, triage:'T4', moi:'GSW — Gunshot Wound',         zones:['Head','Neck'],              hr:28,  sbp:48,  dbp:28, rr:4,  temp:28.0, gcs:3,  spo2:72,  ml:3500, note:'T4 EXPECTANT — all lethal' },
+
+  // CAT E: Mass casualty exercise
+  { name:'ECHO-01', blood:'O+', wt:73, triage:'T1', moi:'Blast / Explosion',            zones:['R Chest','Abdomen'],        hr:136, sbp:78,  dbp:48, rr:30, temp:34.0, gcs:9,  spo2:90,  ml:1900, note:'MASCAL patient 1' },
+  { name:'ECHO-02', blood:'B+', wt:68, triage:'T2', moi:'Fragmentation Injury',         zones:['L Upper Arm','L Forearm'],  hr:110, sbp:96,  dbp:62, rr:22, temp:35.8, gcs:13, spo2:93,  ml:750,  note:'MASCAL patient 2' },
+  { name:'ECHO-03', blood:'O-', wt:82, triage:'T3', moi:'Blunt Trauma',                 zones:['Back/Spine'],               hr:84,  sbp:120, dbp:78, rr:16, temp:36.6, gcs:15, spo2:97,  ml:200,  note:'MASCAL patient 3' },
+  { name:'ECHO-04', blood:'A+', wt:70, triage:'T1', moi:'IED — Improvised Explosive Device',zones:['L Chest','L Thigh'],   hr:142, sbp:64,  dbp:38, rr:35, temp:33.2, gcs:7,  spo2:85,  ml:2600, note:'MASCAL patient 4 — critical' },
+  { name:'ECHO-05', blood:'AB+',wt:90, triage:'T2', moi:'Burn / Thermal Injury',        zones:['R Chest','Face','R Upper Arm'],hr:116,sbp:94,dbp:60,rr:25,temp:35.3, gcs:12, spo2:92,  ml:1100, note:'MASCAL patient 5 — burn' },
+
+  // CAT F: SOF specific
+  { name:'FOXTROT-01', blood:'O+', wt:80, triage:'T1', moi:'GSW — Gunshot Wound',       zones:['R Thigh','Pelvis'],         hr:138, sbp:72,  dbp:44, rr:30, temp:34.5, gcs:10, spo2:91,  ml:1800, note:'SOF operator — GSW' },
+  { name:'FOXTROT-02', blood:'O+', wt:85, triage:'T2', moi:'Blast / Explosion',         zones:['Abdomen','Back/Spine'],     hr:114, sbp:90,  dbp:58, rr:24, temp:35.6, gcs:12, spo2:93,  ml:900,  note:'SOF operator — blast' },
+  { name:'FOXTROT-03', blood:'A+', wt:75, triage:'T1', moi:'DEI — High-Power Microwave (HPM)',zones:['Head'],              hr:108, sbp:95,  dbp:62, rr:20, temp:36.8, gcs:12, spo2:96,  ml:null, note:'SOF DEI exposure' },
+  { name:'FOXTROT-04', blood:'O-', wt:78, triage:'T3', moi:'Fall / MVC',                zones:['R Lower Leg'],              hr:88,  sbp:118, dbp:76, rr:16, temp:36.4, gcs:15, spo2:98,  ml:280,  note:'SOF training injury' },
+  { name:'FOXTROT-05', blood:'B+', wt:72, triage:'T1', moi:'Maritime — Underwater Blast (UWBX)',zones:['L Chest','Abdomen'],hr:145,sbp:60,dbp:36,rr:36,temp:29.0,  gcs:6,  spo2:82,  ml:3100, note:'UWBX — critical' },
+];
+
+var _demoLoaded = false;
+
+function toggleDemoMode() {
+  if (_demoLoaded) {
+    // Ask to clear
+    if (confirm('CLEAR DEMO DATA\n\nRemove all 30 simulation casualties?\nReal patients will be preserved.')) {
+      clearDemoPatients();
+    }
+    return;
+  }
+
+  if (!confirm('LOAD DEMO DATA\n\n30 simulation scenarios loaded:\n- ALPHA (full input)\n- BRAVO (vitals only)\n- CHARLIE (partial)\n- DELTA (edge cases)\n- ECHO (MASCAL)\n- FOXTROT (SOF)\n\nContinue?')) return;
+
+  loadDemoPatients();
+}
+
+function loadDemoPatients() {
+  var now = Date.now();
+
+  DEMO_SCENARIOS.forEach(function(s, idx) {
+    var pt = makePt();
+    pt.name  = s.name;
+    pt.blood = s.blood;
+    pt.wt    = s.wt;
+    pt.triage = s.triage;
+    pt.moi   = s.moi;
+    pt.zones = s.zones || [];
+    pt._isDemo = true; // mark as demo patient
+
+    // Set vitals
+    if (s.hr)   pt.vitals.hr   = String(s.hr);
+    if (s.spo2) pt.vitals.spo2 = String(s.spo2);
+    if (s.sbp && s.dbp) {
+      pt.vitals.bp  = s.sbp + '/' + s.dbp;
+      pt.vitals.map = Math.round((s.sbp + 2 * s.dbp) / 3);
+    }
+    if (s.rr)   pt.vitals.rr   = String(s.rr);
+    if (s.temp) pt.vitals.temp = String(s.temp);
+    if (s.gcs)  pt.vitals.gcs  = String(s.gcs);
+    pt.vitalTs = '00:' + String(idx+1).padStart(2,'0');
+
+    // Add vital history
+    pt.vitalHistory = [{
+      ts:   pt.vitalTs,
+      time: now - (30 - idx) * 60000,
+      hr:   s.hr   ? String(s.hr)   : null,
+      spo2: s.spo2 ? String(s.spo2) : null,
+      sbp:  s.sbp  ? String(s.sbp)  : null,
+      dbp:  s.dbp  ? String(s.dbp)  : null,
+      rr:   s.rr   ? String(s.rr)   : null,
+      temp: s.temp ? String(s.temp) : null,
+      map:  (s.sbp && s.dbp) ? Math.round((s.sbp + 2 * s.dbp) / 3) : null
+    }];
+
+    // Add injury time
+    var h = String(Math.floor(idx / 2) + 8).padStart(2,'0');
+    var m = String((idx % 2) * 30).padStart(2,'0');
+    pt.injTime = h + ':' + m + 'Z';
+    pt.startTime = now - (30 - idx) * 120000;
+
+    // Add blood loss to log for hemorrhage context
+    if (s.ml) {
+      pt.logs.push({
+        id: now + idx,
+        cat: 'INJURY',
+        text: 'Est. blood loss: ' + s.ml + 'mL | ' + (s.note||''),
+        type: 'procedure',
+        time: pt.injTime,
+        ts: now - (30-idx)*120000
+      });
+    }
+
+    // Add note
+    pt.logs.push({
+      id: now + idx + 0.5,
+      cat: 'NOTE',
+      text: '[DEMO] ' + (s.note||''),
+      type: 'system',
+      time: pt.vitalTs,
+      ts: now - (30-idx)*60000
+    });
+
+    // MARCH auto-set based on triage
+    if (s.triage === 'T1' || s.triage === 'T2') {
+      pt.march.M = true;
+      pt.march.C = true;
+    }
+    if (s.triage === 'T1') {
+      pt.march.A = true;
+    }
+
+    // Add TQ for T1 patients with limb injuries
+    if (s.triage === 'T1' && s.zones && (s.zones.includes('R Thigh') || s.zones.includes('L Thigh') || s.zones.includes('R Upper Arm'))) {
+      var tqLoc = s.zones.find(z => z.includes('Thigh') || z.includes('Arm')) || s.zones[0];
+      pt.tqs.push({
+        id: now + idx + 0.1,
+        location: tqLoc,
+        type: 'CAT (Combat Application Tourniquet)',
+        deployTime: now - (30-idx) * 120000,
+        deployStr: pt.injTime
+      });
+      pt.logs.push({
+        id: now + idx + 0.2,
+        cat: 'TQ',
+        text: 'TQ DEPLOYED: ' + tqLoc + ' — CAT @ ' + pt.injTime,
+        type: 'tq',
+        time: pt.injTime,
+        ts: now - (30-idx)*120000
+      });
+    }
+
+    // Add drug if T1
+    if (s.triage === 'T1') {
+      pt.logs.push({
+        id: now + idx + 0.3,
+        cat: 'DRUG',
+        text: 'TXA (Tranexamic Acid) 2g IV/IO push ASAP @ ' + pt.injTime,
+        type: 'drug',
+        time: pt.injTime,
+        ts: now - (30-idx)*120000
+      });
+      if (s.hr && s.hr > 120) {
+        pt.logs.push({
+          id: now + idx + 0.4,
+          cat: 'DRUG',
+          text: 'Ketamine 50mg IM @ ' + pt.injTime,
+          type: 'drug',
+          time: pt.injTime,
+          ts: now - (30-idx)*120000 + 120000
+        });
+      }
+    }
+
+    DB.patients.push(pt);
+  });
+
+  _demoLoaded = true;
+  if (!DB.activeId) DB.activeId = DB.patients[0].id;
+  saveDB();
+  renderPtBar();
+  syncUIFromPt();
+
+  // Update demo button
+  var btn = document.getElementById('demo-btn');
+  if (btn) {
+    btn.textContent = '🎬 CLEAR DEMO';
+    btn.style.background = '#1a0a00';
+    btn.style.color = '#ff6600';
+    btn.style.borderColor = '#663300';
+  }
+
+  showProcToast('✅ 30 demo casualties loaded — export JSON for Mother Program');
+  speak('Demo mode activated. Thirty simulation casualties loaded.');
+}
+
+function clearDemoPatients() {
+  DB.patients = DB.patients.filter(function(p) { return !p._isDemo; });
+  if (!DB.patients.find(function(p){ return p.id === DB.activeId; })) {
+    DB.activeId = DB.patients.length ? DB.patients[0].id : null;
+  }
+  _demoLoaded = false;
+  saveDB();
+  renderPtBar();
+  syncUIFromPt();
+
+  var btn = document.getElementById('demo-btn');
+  if (btn) {
+    btn.textContent = '🎬 DEMO';
+    btn.style.background = '#0a001a';
+    btn.style.color = '#bb88ff';
+    btn.style.borderColor = '#440066';
+  }
+  showProcToast('✓ Demo data cleared — real patients preserved');
+}
+
 function toggleTrainingMode() {
   _trainingMode = !_trainingMode;
   document.body.classList.toggle('training-mode', _trainingMode);
@@ -3912,7 +4258,7 @@ const PILOT_DRUGS = [
   { id:'ketamine',  name:'Ketamine',              dose:'50mg IM',         interval:30,   indication:'Pain / sedation' },
   { id:'cipro',     name:'Ciprofloxacin',         dose:'500mg PO',        interval:720,  indication:'Infection prophylaxis' },
   { id:'doxy',      name:'Doxycycline',           dose:'100mg PO',        interval:720,  indication:'Malaria / infection' },
-  { id:'cefadroxil',name:'Cefadroxil',             dose:'1g PO',           interval:720,  indication:'ABx — TCCC 2026 (replaces Moxifloxacin)' },
+  { id:'moxiflox',  name:'Moxifloxacin',          dose:'400mg PO',        interval:1440, indication:'Broad-spectrum ABx' },
   { id:'meloxicam', name:'Meloxicam',             dose:'15mg PO',         interval:1440, indication:'Pain / anti-inflammatory' },
   { id:'txa',       name:'TXA',                   dose:'1g IV over 10min',interval:600,  indication:'Hemorrhage control' },
   { id:'gopill',    name:'Dextroamphetamine',      dose:'10mg PO',         interval:240,  indication:'Go Pill — alertness' },
@@ -4481,10 +4827,45 @@ function copyPMReport() {
 }
 
 // ══════════════════════════════════════════════
+// BRIEF MODE — PRESENTATION / LIGHT THEME
+// ══════════════════════════════════════════════
+let _briefMode = false;
+
+function toggleBriefMode() {
+  // Turn off red light if on
+  if (_redLight) toggleRedLight();
+
+  _briefMode = !_briefMode;
+  document.body.classList.toggle('brief-mode', _briefMode);
+
+  var btn = document.getElementById('brief-btn');
+  if (_briefMode) {
+    btn.textContent = '☀️ TACTICAL';
+    btn.style.background = '#0a1a0a';
+    btn.style.color = '#00ff41';
+    btn.style.borderColor = '#004400';
+    showProcToast('☀️ BRIEF MODE — presentation view');
+  } else {
+    btn.textContent = '☀️ BRIEF';
+    btn.style.background = '#c8e8c8';
+    btn.style.color = '#006600';
+    btn.style.borderColor = '#008800';
+    showProcToast('🌙 TACTICAL MODE — field view');
+  }
+}
+
+// ══════════════════════════════════════════════
 // RED LIGHT NIGHT MODE
 // ══════════════════════════════════════════════
 let _redLight = false;
 function toggleRedLight() {
+  // Turn off brief mode if on
+  if (_briefMode) {
+    _briefMode = false;
+    document.body.classList.remove('brief-mode');
+    var bb = document.getElementById('brief-btn');
+    if (bb) { bb.textContent = '☀️ BRIEF'; bb.style.background='#c8e8c8'; bb.style.color='#006600'; bb.style.borderColor='#008800'; }
+  }
   _redLight = !_redLight;
   document.body.classList.toggle('red-light', _redLight);
   const btn = document.getElementById('red-light-btn');
@@ -5042,7 +5423,7 @@ function calcDoses() {
       ['Ketamine (RSI)',    'IV',   kg * 1.5,   kg * 2.0,   'mg',   '1.5–2 mg/kg IV'],
     ]],
     ['RESUSCITATION', 'var(--amber)', [
-      ['TXA',               'IV/IO',2000,       2000,       'mg',   '2g push ASAP — no 3hr limit (TCCC 2026)'],
+      ['TXA',               'IV',   1000,       1000,       'mg',   '1g fixed — give within 3 hrs'],
       ['NS/LR bolus',       'IV',   250,        500,        'mL',   '250–500mL bolus, reassess'],
       ['Hextend',           'IV',   500,        500,        'mL',   '500mL bolus (max 1L/day)'],
     ]],
@@ -5598,9 +5979,9 @@ function checkHypo() {
         <div>
           <span class="lbl">ANTIBIOTIC</span>
           <select class="inp" id="sched-abx">
-            <option value="Ceftriaxone 2g IV|24">Ceftriaxone 2g IV q24h ⭐ TCCC 2026</option>
-            <option value="Cefadroxil 1g PO|12">Cefadroxil 1g PO q12h ⭐ TCCC 2026</option>
-            <option value="Cephalexin 500mg PO|6">Cephalexin 500mg PO q6h (alternative)</option>
+            <option value="Moxifloxacin 400mg PO|24">Moxifloxacin q24h</option>
+            <option value="Ertapenem 1g IV|24">Ertapenem q24h</option>
+            <option value="Ceftriaxone 2g IV|24">Ceftriaxone q24h</option>
             <option value="Metronidazole 500mg IV|8">Metronidazole q8h</option>
             <option value="Ciprofloxacin 500mg PO|12">Ciprofloxacin q12h</option>
             <option value="Doxycycline 100mg PO|12">Doxycycline q12h</option>
