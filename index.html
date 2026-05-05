@@ -3005,7 +3005,14 @@ function deleteLogEntry() {
 function exportAllCSV() {
   if (!DB.patients.length) { alert('No casualties to export.'); return; }
 
-  // Build comprehensive CSV with all patients
+  // CSV helper — escape field properly
+  function field(val) {
+    var s = (val === null || val === undefined || val === '--' || val === '--/--') ? '' : String(val);
+    // Remove any internal quotes to prevent Excel issues
+    s = s.replace(/"/g, "'");
+    return '"' + s + '"';
+  }
+
   var headers = [
     'UNIT','NAME','BLOOD','TRIAGE','WEIGHT_KG','AGE','INJURY_TIME',
     'HR','SBP','DBP','SPO2','RR','TEMP_C','GCS','MAP','GLUCOSE','ETCO2',
@@ -3015,60 +3022,56 @@ function exportAllCSV() {
     'NOTES','IS_DEMO'
   ];
 
-  var rows = [headers.map(function(h){ return '"'+h+'"'; }).join(',')];
+  var rows = [headers.join(',')];
 
   DB.patients.forEach(function(pt, idx) {
     var v = pt.vitals || {};
-    var bp = (v.bp || '--/--').split('/');
-    var sbp = bp[0] || '--';
-    var dbp = bp[1] || '--';
+    var bp = (v.bp && v.bp !== '--/--') ? v.bp.split('/') : ['',''];
+    var sbp = bp[0] || '';
+    var dbp = bp[1] || '';
     var bp2 = pt.bloodProducts || {prbc:0,ffp:0,wb:0};
-    var citrate = (bp2.prbc||0)*4 + (bp2.ffp||0)*14 + (bp2.wb||0)*18;
-
-    // Get notes from logs
-    var notes = (pt.logs||[])
-      .filter(function(e){ return e.type==='system' && e.cat==='NOTE'; })
-      .map(function(e){ return e.text.replace(/\[DEMO\]\s*/,'').replace(/"/g,"'"); })
-      .join(' | ');
-
-    // Drug count
+    var citrate = ((bp2.prbc||0)*4) + ((bp2.ffp||0)*14) + ((bp2.wb||0)*18);
     var drugCount = (pt.logs||[]).filter(function(e){ return e.type==='drug'; }).length;
     var procCount = (pt.logs||[]).filter(function(e){ return e.type==='procedure'; }).length;
+    var notes = (pt.logs||[])
+      .filter(function(e){ return e.type==='system' && e.cat==='NOTE'; })
+      .map(function(e){ return (e.text||'').replace(/\[DEMO\]\s*/,''); })
+      .join(' | ');
 
     var row = [
-      '"UNIT-' + String(idx+1).padStart(2,'0') + '"',
-      '"' + (pt.name||'UNKNOWN').replace(/"/g,"'") + '"',
-      '"' + (pt.blood||'') + '"',
-      '"' + (pt.triage||'') + '"',
-      '"' + (pt.wt||'') + '"',
-      '"' + (pt.age||'') + '"',
-      '"' + (pt.injTime||'') + '"',
-      '"' + (v.hr||'--') + '"',
-      '"' + sbp + '"',
-      '"' + dbp + '"',
-      '"' + (v.spo2||'--') + '"',
-      '"' + (v.rr||'--') + '"',
-      '"' + (v.temp||'--') + '"',
-      '"' + (v.gcs||'--') + '"',
-      '"' + (v.map||'--') + '"',
-      '"' + (v.gluc||'--') + '"',
-      '"' + (v.etco2||'--') + '"',
-      '"' + (pt.moi||'').replace(/"/g,"'") + '"',
-      '"' + ((pt.zones||[]).join('; ')) + '"',
-      '"' + ((pt.tqs||[]).length) + '"',
-      '"' + drugCount + '"',
-      '"' + procCount + '"',
-      '"' + (pt.march&&pt.march.M?'YES':'NO') + '"',
-      '"' + (pt.march&&pt.march.A?'YES':'NO') + '"',
-      '"' + (pt.march&&pt.march.R?'YES':'NO') + '"',
-      '"' + (pt.march&&pt.march.C?'YES':'NO') + '"',
-      '"' + (pt.march&&pt.march.H?'YES':'NO') + '"',
-      '"' + (bp2.prbc||0) + '"',
-      '"' + (bp2.ffp||0) + '"',
-      '"' + (bp2.wb||0) + '"',
-      '"' + citrate + '"',
-      '"' + notes + '"',
-      '"' + (pt._isDemo?'YES':'NO') + '"',
+      field('UNIT-' + String(idx+1).padStart(2,'0')),
+      field(pt.name),
+      field(pt.blood),
+      field(pt.triage),
+      field(pt.wt),
+      field(pt.age),
+      field(pt.injTime),
+      field(v.hr),
+      field(sbp),
+      field(dbp),
+      field(v.spo2),
+      field(v.rr),
+      field(v.temp),
+      field(v.gcs),
+      field(v.map),
+      field(v.gluc),
+      field(v.etco2),
+      field(pt.moi),
+      field((pt.zones||[]).join('; ')),
+      field((pt.tqs||[]).length),
+      field(drugCount),
+      field(procCount),
+      field(pt.march && pt.march.M ? 'YES' : 'NO'),
+      field(pt.march && pt.march.A ? 'YES' : 'NO'),
+      field(pt.march && pt.march.R ? 'YES' : 'NO'),
+      field(pt.march && pt.march.C ? 'YES' : 'NO'),
+      field(pt.march && pt.march.H ? 'YES' : 'NO'),
+      field(bp2.prbc||0),
+      field(bp2.ffp||0),
+      field(bp2.wb||0),
+      field(citrate),
+      field(notes),
+      field(pt._isDemo ? 'YES' : 'NO')
     ];
     rows.push(row.join(','));
   });
@@ -3077,24 +3080,21 @@ function exportAllCSV() {
   var count = DB.patients.length;
   var demoCount = DB.patients.filter(function(p){ return p._isDemo; }).length;
 
-  // Show in export modal
-  document.getElementById('export-textarea').value = csv;
-  document.getElementById('export-modal').classList.remove('hidden');
-  document.getElementById('rpt-title').textContent = 'ALL PATIENTS CSV — ' + count + ' casualties (' + demoCount + ' demo)';
-  document.getElementById('rpt-sub').textContent = new Date().toLocaleString() + ' | Copy and save as .csv or open in Excel';
-  document.getElementById('export-modal').classList.remove('hidden');
+  // ── DOWNLOAD as .csv file directly ──
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  var ts   = new Date().toISOString().slice(0,10);
+  a.href     = url;
+  a.download = 'TCCC_' + ts + '_' + count + 'pts.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 
-  // Switch to raw tab
-  document.querySelectorAll('.rpt-tab').forEach(function(t){ t.classList.remove('active'); });
-  document.getElementById('rtab-json').classList.add('active');
-  document.getElementById('rpt-report').style.display = 'none';
-  document.getElementById('rpt-table').style.display = 'none';
-  document.getElementById('rpt-raw').style.display = 'block';
-  _rptTab = 'json';
-
-  setTimeout(function(){ document.getElementById('export-textarea').select(); }, 100);
-  showProcToast('✅ ' + count + ' patients CSV ready — Copy → paste into Excel');
+  showProcToast('✅ ' + count + ' patients downloaded — open in Excel');
 }
+
 
 function exportCSV() {
   const pt = activePt();
