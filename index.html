@@ -592,40 +592,14 @@ button{-webkit-appearance:none;cursor:pointer;}
           <button class="btn btn-red btn-xs" style="margin:0;font-size:11px" onclick="quickAVPU('U')">U<br><span style="font-size:8px;font-weight:400">UNRESP</span></button>
         </div>
 
-        <!-- GCS quick -->
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-          <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;width:14px;">E</div>
-          <div style="display:flex;gap:3px;flex:1;" id="mini-gcs-e">
-            <div class="mini-gcs-btn" onclick="setMiniGCS('e',1,this)">1</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('e',2,this)">2</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('e',3,this)">3</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('e',4,this)">4</div>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-          <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;width:14px;">V</div>
-          <div style="display:flex;gap:3px;flex:1;" id="mini-gcs-v">
-            <div class="mini-gcs-btn" onclick="setMiniGCS('v',1,this)">1</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('v',2,this)">2</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('v',3,this)">3</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('v',4,this)">4</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('v',5,this)">5</div>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-          <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;width:14px;">M</div>
-          <div style="display:flex;gap:3px;flex:1;" id="mini-gcs-m">
-            <div class="mini-gcs-btn" onclick="setMiniGCS('m',1,this)">1</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('m',2,this)">2</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('m',3,this)">3</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('m',4,this)">4</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('m',5,this)">5</div>
-            <div class="mini-gcs-btn" onclick="setMiniGCS('m',6,this)">6</div>
-          </div>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div id="mini-gcs-result" style="font-family:var(--head);font-size:20px;font-weight:900;color:var(--green);">GCS: --</div>
-          <button class="btn btn-green btn-xs" style="width:auto;margin:0;padding:6px 14px" onclick="saveMiniGCS()">SAVE</button>
+        <!-- TCCC 2026: AVPU only — GCS in VITALS tab -->
+        <div id="mini-gcs-result" style="display:none;"></div>
+        <div id="mini-gcs-e" style="display:none;"></div>
+        <div id="mini-gcs-v" style="display:none;"></div>
+        <div id="mini-gcs-m" style="display:none;"></div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:4px;padding:6px 8px;background:var(--bg2);border-radius:2px;border:1px solid var(--border);">
+          AVPU recorded per TCCC 2026 (DD Form 1380)<br>
+          <span style="color:var(--green);">→ For full GCS E/V/M: go to VITALS tab</span>
         </div>
       </div>
     </div>
