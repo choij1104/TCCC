@@ -298,8 +298,8 @@ body.brief-mode #hdr-elapsed {color:#885500;}
 .mode-tab.active-demo{color:var(--purple);border-bottom-color:var(--purple);background:rgba(187,136,255,.04);}
 
 /* ══ MODE BUTTONS in HEADER ══ */
-#mode-btns{display:flex;gap:5px;align-items:center;position:relative;z-index:9999;}
-.mode-btn{pointer-events:auto !important;position:relative;z-index:9999;
+#mode-btns{display:flex;gap:5px;align-items:center;}
+.mode-btn{
   padding:4px 7px;border-radius:2px;font-family:'Share Tech Mono',monospace;
   font-size:9px;font-weight:700;letter-spacing:1px;cursor:pointer;
   border:1px solid;-webkit-appearance:none;white-space:nowrap;
@@ -547,6 +547,30 @@ button{-webkit-appearance:none;cursor:pointer;}
 </style>
 </head>
 <body>
+<script>
+(function(){
+  var observer = new MutationObserver(function(mutations){
+    mutations.forEach(function(m){
+      m.addedNodes && m.addedNodes.forEach(function(n){
+        if(n.tagName==='SCRIPT'){
+          var src=(n.src||'').toLowerCase();
+          if(src.indexOf('floatingaction')>-1||src.indexOf('vendor')>-1||src.indexOf('othervendor')>-1){
+            try{n.parentNode.removeChild(n);}catch(e){}
+          }
+        }
+        if(n.style){
+          try{
+            if(n.style.zIndex && parseInt(n.style.zIndex)>100 && !n.id){
+              n.style.pointerEvents='none';
+            }
+          }catch(e){}
+        }
+      });
+    });
+  });
+  observer.observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
 <div id="app">
 
 <!-- HEADER -->
