@@ -298,8 +298,8 @@ body.brief-mode #hdr-elapsed {color:#885500;}
 .mode-tab.active-demo{color:var(--purple);border-bottom-color:var(--purple);background:rgba(187,136,255,.04);}
 
 /* ══ MODE BUTTONS in HEADER ══ */
-#mode-btns{display:flex;gap:5px;align-items:center;}
-.mode-btn{
+#mode-btns{display:flex;gap:5px;align-items:center;position:relative;z-index:9999;}
+.mode-btn{pointer-events:auto !important;position:relative;z-index:9999;
   padding:4px 7px;border-radius:2px;font-family:'Share Tech Mono',monospace;
   font-size:9px;font-weight:700;letter-spacing:1px;cursor:pointer;
   border:1px solid;-webkit-appearance:none;white-space:nowrap;
