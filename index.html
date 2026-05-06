@@ -547,30 +547,6 @@ button{-webkit-appearance:none;cursor:pointer;}
 </style>
 </head>
 <body>
-<script>
-(function(){
-  var observer = new MutationObserver(function(mutations){
-    mutations.forEach(function(m){
-      m.addedNodes && m.addedNodes.forEach(function(n){
-        if(n.tagName==='SCRIPT'){
-          var src=(n.src||'').toLowerCase();
-          if(src.indexOf('floatingaction')>-1||src.indexOf('vendor')>-1||src.indexOf('othervendor')>-1){
-            try{n.parentNode.removeChild(n);}catch(e){}
-          }
-        }
-        if(n.style){
-          try{
-            if(n.style.zIndex && parseInt(n.style.zIndex)>100 && !n.id){
-              n.style.pointerEvents='none';
-            }
-          }catch(e){}
-        }
-      });
-    });
-  });
-  observer.observe(document.documentElement,{childList:true,subtree:true});
-})();
-</script>
 <div id="app">
 
 <!-- HEADER -->
