@@ -592,7 +592,9 @@ button{-webkit-appearance:none;cursor:pointer;}
   <div style="display:flex;gap:6px;">
     <button onclick="openExport()" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:7px 14px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;">📋 EXPORT</button>
     <button onclick="exportAllJSON()" style="background:#0a2d33;color:#00bbcc;border:1px solid #006677;padding:7px 14px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;">💾 ALL JSON</button>
-    <button onclick="exportAllCSV()" style="background:var(--amber-dk);color:var(--amber);border:1px solid var(--amber2);padding:7px 14px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;">📊 ALL CSV</button>
+    <button onclick="exportAllCSV()" style="background:var(--amber-dk);color:var(--amber);border:1px solid var(--amber2);padding:7px 10px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;" title="Patient summary CSV">📊 CSV</button>
+    <button onclick="exportVitalsTimeseriesCSV()" style="background:#3a1e2d;color:#ff66a8;border:1px solid #66345a;padding:7px 10px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;" title="Vitals time-series CSV (one row per measurement)">📈 VITALS</button>
+    <button onclick="exportEventsCSV()" style="background:#2d2d3a;color:#aabaff;border:1px solid #4a5a8a;padding:7px 10px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;" title="Events CSV (one row per log entry)">📋 EVENTS</button>
     <button onclick="openImport()" style="background:var(--blue-dk);color:var(--blue);border:1px solid var(--blue2);padding:7px 14px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;">📥 IMPORT</button>
   </div>
 </div>
@@ -3216,6 +3218,146 @@ function exportAllCSV() {
 // ══════════════════════════════════════════════
 // FIX 4: ALL-PATIENT JSON EXPORT (file download)
 // ══════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// B: TIME-SERIES CSV — one row per vitals snapshot
+// ══════════════════════════════════════════════
+function exportVitalsTimeseriesCSV() {
+  if (!DB.patients.length) { alert('No casualties to export.'); return; }
+
+  function field(val) {
+    var s = (val === null || val === undefined || val === '--' || val === '--/--') ? '' : String(val);
+    s = s.replace(/"/g, "'");
+    return '"' + s + '"';
+  }
+
+  var headers = [
+    'UNIT','NAME','BLOOD','TRIAGE','INJURY_TIME',
+    'MEASUREMENT_NUM','TS','TS_RELATIVE_MIN','TIMESTAMP_MS',
+    'HR','SBP','DBP','MAP','SPO2','RR','TEMP_C','GCS'
+  ];
+  var rows = [headers.join(',')];
+  var totalSnaps = 0;
+
+  DB.patients.forEach(function(pt, idx) {
+    var unit = 'UNIT-' + String(idx+1).padStart(2,'0');
+    var history = pt.vitalHistory || [];
+    var startTime = pt.startTime || (history[0] && history[0].time) || null;
+
+    // If no history but current vitals exist, treat current as one snapshot
+    if (!history.length && pt.vitals && (pt.vitals.hr || pt.vitals.spo2 || pt.vitals.bp)) {
+      var v = pt.vitals;
+      var bp = (v.bp && v.bp !== '--/--') ? v.bp.split('/') : ['',''];
+      history = [{
+        ts: pt.vitalTs || '', time: startTime,
+        hr: v.hr, spo2: v.spo2, sbp: bp[0], dbp: bp[1],
+        rr: v.rr, temp: v.temp, map: v.map
+      }];
+    }
+
+    history.forEach(function(snap, sidx) {
+      var relMin = (snap.time && startTime) ? Math.round((snap.time - startTime)/60000) : '';
+      var sbp = snap.sbp || '';
+      var dbp = snap.dbp || '';
+      // Compute MAP if absent
+      var map = snap.map || '';
+      if (!map && sbp && dbp) map = Math.round((parseFloat(sbp) + 2*parseFloat(dbp))/3);
+      var row = [
+        field(unit), field(pt.name), field(pt.blood), field(pt.triage), field(pt.injTime),
+        field(sidx+1), field(snap.ts), field(relMin), field(snap.time||''),
+        field(snap.hr), field(sbp), field(dbp), field(map),
+        field(snap.spo2), field(snap.rr), field(snap.temp), field(snap.gcs)
+      ];
+      rows.push(row.join(','));
+      totalSnaps++;
+    });
+  });
+
+  if (totalSnaps === 0) { alert('No vitals time-series data yet. Save vitals at least once first.'); return; }
+
+  var csv = rows.join('\n');
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  var url  = URL.createObjectURL(blob);
+  var ts   = new Date().toISOString().slice(0,19).replace(/[:.]/g,'-');
+  var a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'TCCC_' + ts + '_vitals_timeseries_' + totalSnaps + 'snaps.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showProcToast('✅ ' + totalSnaps + ' vitals snapshots exported (timeseries CSV)');
+}
+
+// ══════════════════════════════════════════════
+// B: EVENTS CSV — one row per log event (drugs, TQ, comms, procedures)
+// ══════════════════════════════════════════════
+function exportEventsCSV() {
+  if (!DB.patients.length) { alert('No casualties to export.'); return; }
+
+  function field(val) {
+    var s = (val === null || val === undefined || val === '--' || val === '--/--') ? '' : String(val);
+    s = s.replace(/"/g, "'");
+    return '"' + s + '"';
+  }
+
+  var headers = [
+    'UNIT','NAME','TRIAGE','INJURY_TIME',
+    'EVENT_NUM','EVENT_TIME','EVENT_TS_MS','EVENT_REL_MIN',
+    'CATEGORY','TYPE','TEXT'
+  ];
+  var rows = [headers.join(',')];
+  var totalEvents = 0;
+
+  DB.patients.forEach(function(pt, idx) {
+    var unit = 'UNIT-' + String(idx+1).padStart(2,'0');
+    var startTime = pt.startTime || null;
+    var logs = (pt.logs || []).slice();
+    // Sort by ts ascending
+    logs.sort(function(a,b){ return (a.ts||0) - (b.ts||0); });
+
+    logs.forEach(function(log, lidx) {
+      var relMin = (log.ts && startTime) ? Math.round((log.ts - startTime)/60000) : '';
+      var row = [
+        field(unit), field(pt.name), field(pt.triage), field(pt.injTime),
+        field(lidx+1), field(log.time), field(log.ts||''), field(relMin),
+        field(log.cat), field(log.type), field(log.text)
+      ];
+      rows.push(row.join(','));
+      totalEvents++;
+    });
+  });
+
+  if (totalEvents === 0) { alert('No events to export.'); return; }
+
+  var csv = rows.join('\n');
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  var url  = URL.createObjectURL(blob);
+  var ts   = new Date().toISOString().slice(0,19).replace(/[:.]/g,'-');
+  var a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'TCCC_' + ts + '_events_' + totalEvents + 'evts.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showProcToast('✅ ' + totalEvents + ' events exported (events CSV)');
+}
+
+// ══════════════════════════════════════════════
+// B: BUNDLE — export all 3 CSVs sequentially
+// ══════════════════════════════════════════════
+function exportAllCSVBundle() {
+  if (!DB.patients.length) { alert('No casualties to export.'); return; }
+  exportAllCSV();
+  setTimeout(exportVitalsTimeseriesCSV, 300);
+  setTimeout(exportEventsCSV, 600);
+  setTimeout(function() {
+    showProcToast('✅ 3 CSV files exported (summary + vitals + events)');
+  }, 900);
+}
+
 function exportAllJSON() {
   if (!DB.patients.length) { alert('No casualties to export.'); return; }
 
@@ -6794,8 +6936,10 @@ function checkHypo() {
       <div style="margin-left:auto;display:flex;gap:4px;">
         <button onclick="openExport()" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">JSON</button>
         <button onclick="exportCSV()" style="background:var(--blue-dk);color:var(--blue);border:1px solid var(--blue2);padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">CSV</button>
-        <button onclick="exportAllJSON()" style="background:#0a2d33;color:#00bbcc;border:1px solid #006677;padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">ALL JSON</button>
-        <button onclick="exportAllCSV()" style="background:var(--amber-dk);color:var(--amber);border:1px solid var(--amber2);padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">ALL CSV</button>
+        <button onclick="exportAllJSON()" style="background:#0a2d33;color:#00bbcc;border:1px solid #006677;padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">JSON</button>
+        <button onclick="exportAllCSV()" style="background:var(--amber-dk);color:var(--amber);border:1px solid var(--amber2);padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">CSV</button>
+        <button onclick="exportVitalsTimeseriesCSV()" style="background:#3a1e2d;color:#ff66a8;border:1px solid #66345a;padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">VITALS</button>
+        <button onclick="exportEventsCSV()" style="background:#2d2d3a;color:#aabaff;border:1px solid #4a5a8a;padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">EVENTS</button>
       </div>
     </div>
     <div class="sec-body" style="padding:8px;">
