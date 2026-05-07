@@ -288,8 +288,13 @@ tr:last-child td{border-bottom:none;}
   padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);
 }
 .chart-title{
-  font-family:var(--mono);font-size:9px;color:var(--muted);
-  letter-spacing:2px;margin-bottom:10px;font-weight:700;
+  font-family:var(--head);font-size:14px;color:var(--text);
+  letter-spacing:2px;margin-bottom:4px;font-weight:900;
+  text-transform:uppercase;
+}
+.chart-subtitle{
+  font-family:var(--mono);font-size:10px;color:var(--muted);
+  letter-spacing:1px;margin-bottom:12px;
   text-transform:uppercase;
 }
 canvas{width:100%;display:block;}
@@ -586,12 +591,12 @@ canvas{width:100%;display:block;}
 
   <!-- FILTER BAR -->
   <div id="filter-bar" style="display:none;">
-    <button class="filter-chip active" onclick="setFilter('all',this)">ALL</button>
-    <button class="filter-chip t1" onclick="setFilter('T1',this)">🔴 T1</button>
-    <button class="filter-chip t2" onclick="setFilter('T2',this)">🟡 T2</button>
-    <button class="filter-chip t3" onclick="setFilter('T3',this)">🟢 T3</button>
-    <button class="filter-chip" onclick="setFilter('T4',this)">⚫ T4</button>
-    <button class="filter-chip" onclick="setFilter('untriaged',this)">UNTRIAGED</button>
+    <button class="filter-chip active" id="fc-all" onclick="setFilter('all',this)">ALL</button>
+    <button class="filter-chip t1" id="fc-t1" onclick="setFilter('T1',this)">🔴 T1</button>
+    <button class="filter-chip t2" id="fc-t2" onclick="setFilter('T2',this)">🟡 T2</button>
+    <button class="filter-chip t3" id="fc-t3" onclick="setFilter('T3',this)">🟢 T3</button>
+    <button class="filter-chip" id="fc-t4" onclick="setFilter('T4',this)">⚫ T4</button>
+    <button class="filter-chip" id="fc-untriaged" onclick="setFilter('untriaged',this)">UNTRIAGED</button>
     <input id="search-inp" placeholder="🔍 Search name / unit..." oninput="renderTable()">
     <select id="sort-sel" onchange="renderTable()">
       <option value="triage">SORT: TRIAGE</option>
@@ -628,20 +633,20 @@ canvas{width:100%;display:block;}
   <!-- CHARTS -->
   <div id="charts-section" style="display:none;">
     <div class="chart-card">
-      <div class="chart-title">TRIAGE DISTRIBUTION</div>
-      <canvas id="chart-triage" height="160"></canvas>
+      <div class="chart-title">TRIAGE DISTRIBUTION</div><div class="chart-subtitle">Patient count by triage category</div>
+      <canvas id="chart-triage" height="220"></canvas>
     </div>
     <div class="chart-card">
-      <div class="chart-title">MOI BREAKDOWN</div>
-      <canvas id="chart-moi" height="160"></canvas>
+      <div class="chart-title">MOI BREAKDOWN</div><div class="chart-subtitle">Top 6 mechanisms of injury</div>
+      <canvas id="chart-moi" height="220"></canvas>
     </div>
     <div class="chart-card">
-      <div class="chart-title">DRUG UTILIZATION</div>
-      <canvas id="chart-drugs" height="160"></canvas>
+      <div class="chart-title">DRUG UTILIZATION</div><div class="chart-subtitle">Top 6 drugs administered (by uses)</div>
+      <canvas id="chart-drugs" height="220"></canvas>
     </div>
     <div class="chart-card">
-      <div class="chart-title">VITALS OVERVIEW</div>
-      <canvas id="chart-vitals" height="160"></canvas>
+      <div class="chart-title">VITALS OVERVIEW</div><div class="chart-subtitle">Heart rate &amp; systolic BP — avg / min / max</div>
+      <canvas id="chart-vitals" height="220"></canvas>
     </div>
   </div>
 
@@ -895,6 +900,26 @@ function setFilter(f, btn) {
 function renderTable() {
   // FIX 2: compute duplicates once before rendering
   window._dupCallsigns = findDuplicateCallsigns();
+
+  // FIX A: Update filter chip labels with live counts so user sees what each does
+  try {
+    const total = _allPatients.length;
+    const cnt = (tri) => _allPatients.filter(x => x.pt.triage === tri).length;
+    const cntUntri = _allPatients.filter(x => !x.pt.triage || x.pt.triage === '--').length;
+    const elAll = document.getElementById('fc-all');
+    const elT1  = document.getElementById('fc-t1');
+    const elT2  = document.getElementById('fc-t2');
+    const elT3  = document.getElementById('fc-t3');
+    const elT4  = document.getElementById('fc-t4');
+    const elUn  = document.getElementById('fc-untriaged');
+    if (elAll) elAll.textContent = 'ALL (' + total + ')';
+    if (elT1)  elT1.textContent  = '🔴 T1 (' + cnt('T1') + ')';
+    if (elT2)  elT2.textContent  = '🟡 T2 (' + cnt('T2') + ')';
+    if (elT3)  elT3.textContent  = '🟢 T3 (' + cnt('T3') + ')';
+    if (elT4)  elT4.textContent  = '⚫ T4 (' + cnt('T4') + ')';
+    if (elUn)  elUn.textContent  = 'UNTRIAGED (' + cntUntri + ')';
+  } catch(e) { /* silent */ }
+
   const search = (document.getElementById('search-inp').value || '').toLowerCase();
   const sort   = document.getElementById('sort-sel').value;
   let data = [..._allPatients];
@@ -935,10 +960,23 @@ function renderTable() {
 
   const tbody = document.getElementById('table-body');
   if (!data.length) {
-    const msg = _commFilter
-      ? 'NO CASUALTIES WITH ' + ({'9line':'9-LINE','satcom':'SATCOM','drone':'DRONE','radio':'RADIO'}[_commFilter] || _commFilter) + ' ACTIVITY'
-      : 'NO CASUALTIES MATCH FILTER';
-    tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;color:var(--muted);padding:24px;font-family:var(--mono);font-size:11px;">' + msg + '</td></tr>';
+    let msg;
+    if (_commFilter && _filter !== 'all') {
+      msg = '<div style="font-size:13px;color:var(--text2);margin-bottom:6px;">No matches.</div>'
+          + '<div style="font-size:11px;color:var(--muted);">Filter: <b>' + _filter + '</b> + Comm: <b>' + ({'9line':'9-LINE','satcom':'SATCOM','drone':'DRONE','radio':'RADIO'}[_commFilter]) + '</b></div>'
+          + '<div style="font-size:10px;color:var(--muted);margin-top:8px;">Click ALL or the active comm box to clear filters.</div>';
+    } else if (_commFilter) {
+      msg = '<div style="font-size:13px;color:var(--text2);margin-bottom:6px;">No casualties with ' + ({'9line':'9-LINE','satcom':'SATCOM','drone':'DRONE','radio':'RADIO'}[_commFilter]) + ' activity.</div>'
+          + '<div style="font-size:10px;color:var(--muted);margin-top:8px;">Click the active comm box again to clear.</div>';
+    } else if (_filter !== 'all') {
+      msg = '<div style="font-size:13px;color:var(--text2);margin-bottom:6px;">No <b>' + _filter + '</b> casualties.</div>'
+          + '<div style="font-size:10px;color:var(--muted);margin-top:8px;">Click ALL to see everyone.</div>';
+    } else if (search) {
+      msg = '<div style="font-size:13px;color:var(--text2);margin-bottom:6px;">No matches for "<b>' + search + '</b>".</div>';
+    } else {
+      msg = 'NO CASUALTIES';
+    }
+    tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;color:var(--muted);padding:32px 24px;font-family:var(--mono);">' + msg + '</td></tr>';
     return;
   }
 
@@ -1081,52 +1119,94 @@ function drawBarChart(canvasId, labels, values, colors) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
+  // FIX D: HiDPI rendering — sharp text on retina screens
+  const dpr = window.devicePixelRatio || 1;
   const w = canvas.parentElement.offsetWidth - 32;
-  const h = 160;
-  canvas.width = w; canvas.height = h;
+  const h = 220;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  ctx.scale(dpr, dpr);
   ctx.fillStyle = '#f8faf8';
   ctx.fillRect(0, 0, w, h);
-  if (!values.length||values.every(v=>v===0)) {
+  if (!values.length || values.every(v=>v===0)) {
     ctx.fillStyle = '#a0b0a0';
-    ctx.font = '11px monospace';
+    ctx.font = 'bold 14px monospace';
     ctx.textAlign = 'center';
     ctx.fillText('NO DATA', w/2, h/2);
     return;
   }
   const max = Math.max(...values, 1);
-  const barW = Math.floor((w-20)/labels.length) - 5;
-  const chartH = h - 36;
-  // Grid lines
+  // FIX D: Reserve more bottom space for full labels (28px instead of 16)
+  const labelArea = 38;
+  const topPad = 22; // for value labels
+  const chartH = h - labelArea - topPad;
+  const leftPad = 12;
+  const rightPad = 12;
+  const innerW = w - leftPad - rightPad;
+  const slotW = innerW / labels.length;
+  const barW = Math.max(20, Math.floor(slotW * 0.72));
+  // Grid lines + Y-axis tick labels
   ctx.strokeStyle = '#e0e8e0';
   ctx.lineWidth = 1;
-  [0.25,0.5,0.75,1].forEach(f => {
-    const y = chartH - f*chartH;
-    ctx.beginPath(); ctx.moveTo(10,y); ctx.lineTo(w-10,y); ctx.stroke();
+  ctx.fillStyle = '#90a090';
+  ctx.font = 'bold 10px monospace';
+  ctx.textAlign = 'right';
+  [0, 0.25, 0.5, 0.75, 1].forEach(f => {
+    const y = topPad + chartH - f * chartH;
+    ctx.beginPath(); ctx.moveTo(leftPad, y); ctx.lineTo(w - rightPad, y); ctx.stroke();
+    const tickVal = Math.round(max * f);
+    ctx.fillText(tickVal, leftPad - 2, y + 3);
   });
+  // Bars + value + label
   labels.forEach((label, i) => {
-    const x = 10 + i*(barW+5);
-    const barH = Math.round((values[i]/max)*chartH);
-    const y = chartH - barH;
+    const x = leftPad + i * slotW + (slotW - barW) / 2;
+    const barH = Math.round((values[i]/max) * chartH);
+    const y = topPad + chartH - barH;
     // Bar shadow
-    ctx.fillStyle = 'rgba(0,0,0,.06)';
-    ctx.fillRect(x+2, y+2, barW, barH);
+    ctx.fillStyle = 'rgba(0,0,0,.08)';
+    ctx.fillRect(x + 2, y + 2, barW, barH);
     // Bar
-    ctx.fillStyle = colors[i]||'#228b35';
-    ctx.globalAlpha = 0.9;
+    ctx.fillStyle = colors[i] || '#228b35';
+    ctx.globalAlpha = 0.92;
     ctx.fillRect(x, y, barW, barH);
     ctx.globalAlpha = 1;
-    // Value
-    if (values[i]>0) {
-      ctx.fillStyle = colors[i]||'#228b35';
-      ctx.font = 'bold 11px monospace';
+    // Value above bar (FIX D: bigger, 14px bold)
+    if (values[i] > 0) {
+      ctx.fillStyle = colors[i] || '#228b35';
+      ctx.font = 'bold 14px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText(values[i], x+barW/2, Math.max(y-4, 12));
+      ctx.fillText(values[i], x + barW/2, Math.max(y - 6, 14));
     }
-    // Label
-    ctx.fillStyle = '#607060';
-    ctx.font = '8px monospace';
+    // Label below bar (FIX D: 12px bold, full text wrapping for long labels)
+    ctx.fillStyle = '#3a4a3a';
+    ctx.font = 'bold 11px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText(label.substring(0,9), x+barW/2, h-4);
+    const cx = x + barW/2;
+    const labelY = topPad + chartH + 16;
+    // Wrap label if too long for slot
+    const maxW = slotW - 4;
+    const text = label || '';
+    if (ctx.measureText(text).width <= maxW) {
+      ctx.fillText(text, cx, labelY);
+    } else {
+      // Try to split on space; else truncate with ellipsis
+      const sp = text.indexOf(' ');
+      if (sp > 0 && sp < text.length - 1) {
+        const line1 = text.substring(0, sp);
+        const line2 = text.substring(sp + 1);
+        ctx.fillText(line1, cx, labelY);
+        ctx.fillText(line2, cx, labelY + 12);
+      } else {
+        // truncate
+        let truncated = text;
+        while (truncated.length > 3 && ctx.measureText(truncated + '…').width > maxW) {
+          truncated = truncated.slice(0, -1);
+        }
+        ctx.fillText(truncated + '…', cx, labelY);
+      }
+    }
   });
 }
 
