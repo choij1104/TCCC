@@ -211,6 +211,35 @@ html,body{background:var(--bg);color:var(--text);font-family:var(--ui);min-heigh
 }
 table{width:100%;border-collapse:collapse;font-family:var(--ui);font-size:13px;}
 thead{position:sticky;top:0;z-index:5;}
+/* FIX 3: T1 row highlighting + time escalation */
+@keyframes pulse-t1 {
+  0%, 100% { background:rgba(255,107,107,0.08); }
+  50%      { background:rgba(255,107,107,0.18); }
+}
+@keyframes pulse-t1-urgent {
+  0%, 100% { background:rgba(231,76,60,0.20); }
+  50%      { background:rgba(231,76,60,0.40); }
+}
+tr.t1-row {
+  animation: pulse-t1 2s ease-in-out infinite;
+  border-left: 4px solid #e74c3c !important;
+}
+tr.t1-row-urgent {
+  animation: pulse-t1-urgent 1s ease-in-out infinite;
+  border-left: 4px solid #c0392b !important;
+}
+tr.t1-row td:first-child, tr.t1-row-urgent td:first-child {
+  position: relative;
+}
+.time-warn {
+  color: #e07b00;
+  font-weight: 700;
+}
+.time-crit {
+  color: #e74c3c;
+  font-weight: 700;
+  animation: pulse-t1 1.2s ease-in-out infinite;
+}
 th{
   background:var(--navy);color:#c8e0d0;padding:10px 12px;
   text-align:left;border-bottom:2px solid var(--green2);
@@ -491,6 +520,62 @@ canvas{width:100%;display:block;}
     </div>
   </div>
 
+  <!-- FIX 4: MEDEVAC PRIORITY QUEUE -->
+  <div id="medevac-queue" style="display:none; margin: 16px 20px; background: linear-gradient(135deg, #1a1f2a 0%, #2a1f1f 100%); border: 1px solid #c0392b; border-radius: 6px; padding: 14px 18px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-family:var(--head);font-size:14px;font-weight:900;color:#ff6b6b;letter-spacing:3px;">🚁 MEDEVAC PRIORITY QUEUE</span>
+        <span id="mq-count" style="background:#c0392b;color:#fff;font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 10px;border-radius:3px;letter-spacing:1px;">0 PATIENTS</span>
+      </div>
+      <button onclick="exportMedevacReport()" style="background:#0a2d33;color:#00bbcc;border:1px solid #006677;padding:5px 12px;border-radius:3px;font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer;letter-spacing:1px;">📡 9-LINE REPORT</button>
+    </div>
+    <div id="mq-list" style="display:flex; flex-direction:column; gap:6px;"></div>
+  </div>
+
+  <!-- FIX 5: COMMUNICATIONS STATUS PANEL -->
+  <div id="comm-status" style="display:none; margin: 16px 20px; background: linear-gradient(135deg, #0a1f2a 0%, #1a2a3a 100%); border: 1px solid #00aaff; border-radius: 6px; padding: 14px 18px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-family:var(--head);font-size:14px;font-weight:900;color:#00ddff;letter-spacing:3px;">📡 COMMUNICATIONS</span>
+        <span id="cs-live" style="background:#005577;color:#fff;font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 10px;border-radius:3px;letter-spacing:1px;">LIVE FEED</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <select id="cs-window" onchange="renderCommStatus()" style="background:#0a2030;color:#88ccee;border:1px solid #00557766;font-family:var(--mono);font-size:10px;padding:4px 8px;border-radius:3px;">
+          <option value="30">Last 30 min</option>
+          <option value="60">Last 1 hour</option>
+          <option value="240">Last 4 hours</option>
+          <option value="0">All</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Counter row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+      <div id="cc-9line" onclick="setCommFilter('9line', this)" style="background:rgba(231,76,60,0.15);border:1px solid #c0392b;border-radius:4px;padding:8px 10px;text-align:center;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='rgba(231,76,60,0.28)'" onmouseout="if(!this.classList.contains('active'))this.style.background='rgba(231,76,60,0.15)'">
+        <div id="cs-9line" style="color:#ff6b6b;font-family:var(--head);font-size:24px;font-weight:900;">0</div>
+        <div style="color:#ffaaaa;font-family:var(--mono);font-size:9px;letter-spacing:1px;">🚁 9-LINE SENT</div>
+      </div>
+      <div id="cc-satcom" onclick="setCommFilter('satcom', this)" style="background:rgba(255,170,0,0.15);border:1px solid #cc8800;border-radius:4px;padding:8px 10px;text-align:center;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='rgba(255,170,0,0.28)'" onmouseout="if(!this.classList.contains('active'))this.style.background='rgba(255,170,0,0.15)'">
+        <div id="cs-satcom" style="color:#ffaa00;font-family:var(--head);font-size:24px;font-weight:900;">0</div>
+        <div style="color:#ffd699;font-family:var(--mono);font-size:9px;letter-spacing:1px;">📡 SATCOM TX</div>
+      </div>
+      <div id="cc-drone" onclick="setCommFilter('drone', this)" style="background:rgba(0,200,150,0.15);border:1px solid #008866;border-radius:4px;padding:8px 10px;text-align:center;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='rgba(0,200,150,0.28)'" onmouseout="if(!this.classList.contains('active'))this.style.background='rgba(0,200,150,0.15)'">
+        <div id="cs-drone" style="color:#00ddaa;font-family:var(--head);font-size:24px;font-weight:900;">0</div>
+        <div style="color:#88ddbb;font-family:var(--mono);font-size:9px;letter-spacing:1px;">🛸 DRONE DISP.</div>
+      </div>
+      <div id="cc-radio" onclick="setCommFilter('radio', this)" style="background:rgba(100,150,255,0.15);border:1px solid #4477cc;border-radius:4px;padding:8px 10px;text-align:center;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='rgba(100,150,255,0.28)'" onmouseout="if(!this.classList.contains('active'))this.style.background='rgba(100,150,255,0.15)'">
+        <div id="cs-radio" style="color:#6699ff;font-family:var(--head);font-size:24px;font-weight:900;">0</div>
+        <div style="color:#aaccff;font-family:var(--mono);font-size:9px;letter-spacing:1px;">📻 RADIO TX</div>
+      </div>
+    </div>
+
+    <!-- Activity feed -->
+    <div style="background:rgba(0,0,0,0.3);border-radius:3px;padding:10px;">
+      <div style="color:#88aacc;font-family:var(--mono);font-size:9px;letter-spacing:2px;margin-bottom:6px;">RECENT ACTIVITY</div>
+      <div id="cs-feed" style="max-height:280px;overflow-y:auto;"></div>
+    </div>
+  </div>
+
   <!-- EXPORT BAR -->
   <div id="export-bar" style="display:none;">
     <button class="exp-btn green" onclick="exportAllCSV()">📊 EXPORT ALL CSV</button>
@@ -582,6 +667,100 @@ let _filter = 'all';
 let _sortBy = 'triage';
 let _fileCount = 0;
 
+// FIX 1: localStorage auto-save key
+const STORAGE_KEY = 'tccc_command_data_v1';
+
+function saveToStorage() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      patients: _allPatients,
+      fileCount: _fileCount,
+      savedAt: new Date().toISOString()
+    }));
+  } catch(e) { /* quota exceeded etc — silent */ }
+}
+
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (!data.patients || !Array.isArray(data.patients)) return false;
+    _allPatients = data.patients;
+    _fileCount = data.fileCount || _allPatients.length;
+    if (_allPatients.length) {
+      const savedAgo = data.savedAt ? new Date(data.savedAt) : null;
+      const ago = savedAgo ? Math.round((Date.now() - savedAgo.getTime())/60000) : null;
+      const agoText = ago === null ? '' : ago < 1 ? ' (just now)' : ago < 60 ? ' (' + ago + ' min ago)' : ' (' + Math.round(ago/60) + 'h ago)';
+      setTimeout(() => showToast('✓ Restored ' + _allPatients.length + ' casualties' + agoText), 100);
+      updateAll();
+      return true;
+    }
+  } catch(e) { /* silent */ }
+  return false;
+}
+
+// FIX 3: compute minutes since injury for time-based escalation
+function minutesSinceInjury(pt) {
+  if (!pt.injTime) return null;
+  // injTime can be like '14:30Z' or 'HH:MM' or full ISO
+  const now = new Date();
+  let injMs = null;
+  if (/^\d{1,2}:\d{2}/.test(pt.injTime)) {
+    // Time-only format: assume today UTC
+    const m = pt.injTime.match(/^(\d{1,2}):(\d{2})/);
+    const inj = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
+                          parseInt(m[1]), parseInt(m[2])));
+    injMs = inj.getTime();
+    // If "future" (e.g. injury 23:00 but now 01:00 next day), assume it was yesterday
+    if (injMs > now.getTime()) injMs -= 24 * 60 * 60 * 1000;
+  } else {
+    const d = new Date(pt.injTime);
+    if (!isNaN(d.getTime())) injMs = d.getTime();
+  }
+  if (injMs === null) return null;
+  return Math.max(0, Math.round((now.getTime() - injMs) / 60000));
+}
+
+function timeClass(triage, mins) {
+  if (mins === null) return '';
+  // T1 thresholds: 30 min = warn, 60 min = crit (golden hour)
+  // T2 thresholds: 120 min = warn, 240 min = crit
+  if (triage === 'T1') {
+    if (mins >= 60) return 'time-crit';
+    if (mins >= 30) return 'time-warn';
+  } else if (triage === 'T2') {
+    if (mins >= 240) return 'time-crit';
+    if (mins >= 120) return 'time-warn';
+  }
+  return '';
+}
+
+// FIX 2: detect cross-unit duplicates (same callsign across different units)
+function findDuplicateCallsigns() {
+  const map = {};
+  _allPatients.forEach((x, idx) => {
+    const name = (x.pt.name || '').trim().toUpperCase();
+    if (!name || name === 'UNKNOWN') return;
+    if (!map[name]) map[name] = [];
+    map[name].push({ idx: idx, unitName: x.unitName });
+  });
+  // Return only entries where there are multiple units (cross-unit duplicates)
+  const dupes = {};
+  Object.keys(map).forEach(name => {
+    const units = new Set(map[name].map(e => e.unitName));
+    if (units.size > 1 || map[name].length > 1) {
+      dupes[name] = map[name];
+    }
+  });
+  return dupes;
+}
+
+// FIX 5: refresh comm status every 60s to update "ago" timestamps
+setInterval(() => {
+  if (_allPatients.length) renderCommStatus();
+}, 60000);
+
 // ── CLOCK ──
 setInterval(() => {
   const d = new Date();
@@ -655,7 +834,15 @@ function handleFiles(files) {
 
 // ── UPDATE ALL ──
 function updateAll() {
-  if (!_allPatients.length) return;
+  saveToStorage(); // FIX 1: persist on every change
+  if (!_allPatients.length) {
+    // Hide all panels including medevac queue and comm status
+    var mq = document.getElementById('medevac-queue');
+    if (mq) mq.style.display = 'none';
+    var cs = document.getElementById('comm-status');
+    if (cs) cs.style.display = 'none';
+    return;
+  }
   document.getElementById('empty-state').style.display = 'none';
   ['stat-cards','filter-bar','patient-table-wrap','charts-section','export-bar']
     .forEach(id => {
@@ -668,6 +855,8 @@ function updateAll() {
   updateStats();
   renderTable();
   renderCharts();
+  renderMedevacQueue(); // FIX 4: update MEDEVAC queue
+  renderCommStatus();   // FIX 5: update comm status panel
   updateHeaderStats();
 }
 
@@ -704,12 +893,18 @@ function setFilter(f, btn) {
 }
 
 function renderTable() {
+  // FIX 2: compute duplicates once before rendering
+  window._dupCallsigns = findDuplicateCallsigns();
   const search = (document.getElementById('search-inp').value || '').toLowerCase();
   const sort   = document.getElementById('sort-sel').value;
   let data = [..._allPatients];
   if (_filter !== 'all') {
     if (_filter === 'untriaged') data = data.filter(x => !x.pt.triage || x.pt.triage === '--');
     else data = data.filter(x => x.pt.triage === _filter);
+  }
+  // FIX 6: Apply comm filter on top of triage filter
+  if (_commFilter) {
+    data = data.filter(x => patientHasComm(x.pt, _commFilter));
   }
   if (search) {
     data = data.filter(x =>
@@ -727,9 +922,23 @@ function renderTable() {
     return 0;
   });
 
+  // FIX 6: When comm filter is active, secondary-sort by most recent comm event (newest first)
+  if (_commFilter) {
+    data.sort((a,b) => {
+      const aLogs = (a.pt.logs||[]).filter(l => classifyCommLog(l) === _commFilter);
+      const bLogs = (b.pt.logs||[]).filter(l => classifyCommLog(l) === _commFilter);
+      const aTime = aLogs.length ? parseLogTime(aLogs[aLogs.length-1].time) || 0 : 0;
+      const bTime = bLogs.length ? parseLogTime(bLogs[bLogs.length-1].time) || 0 : 0;
+      return bTime - aTime;
+    });
+  }
+
   const tbody = document.getElementById('table-body');
   if (!data.length) {
-    tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;color:var(--muted);padding:24px;font-family:var(--mono);font-size:11px;">NO CASUALTIES MATCH FILTER</td></tr>';
+    const msg = _commFilter
+      ? 'NO CASUALTIES WITH ' + ({'9line':'9-LINE','satcom':'SATCOM','drone':'DRONE','radio':'RADIO'}[_commFilter] || _commFilter) + ' ACTIVITY'
+      : 'NO CASUALTIES MATCH FILTER';
+    tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;color:var(--muted);padding:24px;font-family:var(--mono);font-size:11px;">' + msg + '</td></tr>';
     return;
   }
 
@@ -748,9 +957,16 @@ function renderTable() {
     const drugs = (pt.logs||[]).filter(l=>l.type==='drug').length;
     const tqs   = (pt.tqs||[]).length;
     const moi   = (pt.moi||'--').substring(0,22) + ((pt.moi||'').length>22?'…':'');
-    return '<tr>'
+    // FIX 3: T1 row highlighting + time class
+    const minsInj = minutesSinceInjury(pt);
+    const timeCls = timeClass(triage, minsInj);
+    const rowCls = triage === 'T1' ? (minsInj !== null && minsInj >= 60 ? 't1-row-urgent' : 't1-row') : '';
+    const timeDisp = minsInj !== null
+      ? (pt.injTime||'--') + ' (' + minsInj + 'm)'
+      : (pt.injTime||'--');
+    return '<tr class="' + rowCls + '">'
       + '<td><span class="triage-badge ' + triage + '">' + (triage==='none'?'--':triage) + '</span></td>'
-      + '<td style="font-weight:700;font-size:13px;">' + (pt.name||'UNKNOWN') + '</td>'
+      + '<td style="font-weight:700;font-size:13px;">' + (pt.name||'UNKNOWN') + (window._dupCallsigns && window._dupCallsigns[(pt.name||'').trim().toUpperCase()] ? ' <span title="Possible duplicate across units" style="background:#ffaa00;color:#3a2400;padding:1px 5px;border-radius:2px;font-size:9px;font-weight:700;letter-spacing:0.5px;margin-left:4px;">⚠ DUP</span>' : '') + '</td>'
       + '<td><span class="unit-badge">' + x.unitName + '</span></td>'
       + '<td style="font-family:var(--mono);font-size:12px;">' + (pt.blood||'--') + '</td>'
       + '<td class="' + hrC + '" style="font-family:var(--mono);">' + hr + '</td>'
@@ -760,7 +976,7 @@ function renderTable() {
       + '<td style="font-size:11px;color:var(--text2);">' + moi + '</td>'
       + '<td style="color:var(--blue);font-weight:700;text-align:center;">' + (drugs||'—') + '</td>'
       + '<td style="color:' + (tqs>0?'var(--red)':'var(--muted)') + ';font-weight:700;text-align:center;">' + (tqs||'—') + '</td>'
-      + '<td style="color:var(--muted);font-family:var(--mono);font-size:10px;">' + (pt.injTime||'--') + '</td>'
+      + '<td class="' + timeCls + '" style="font-family:var(--mono);font-size:10px;">' + timeDisp + '</td>'
       + '<td><button class="view-btn" onclick="showDetail(' + i + ')">VIEW</button></td>'
       + '</tr>';
   }).join('');
@@ -947,15 +1163,290 @@ function exportAllJSON() {
   showToast('✓ JSON downloaded');
 }
 function printReport() { window.print(); }
+// FIX 4: MEDEVAC priority queue rendering
+function renderMedevacQueue() {
+  const queue = _allPatients
+    .map((x, idx) => ({ ...x, idx, mins: minutesSinceInjury(x.pt) }))
+    .filter(x => x.pt.triage === 'T1' || x.pt.triage === 'T2')
+    .sort((a, b) => {
+      // T1 first, then by elapsed time (longer waiting = higher priority)
+      const tOrder = {'T1': 0, 'T2': 1};
+      const ta = tOrder[a.pt.triage] ?? 9;
+      const tb = tOrder[b.pt.triage] ?? 9;
+      if (ta !== tb) return ta - tb;
+      const ma = a.mins ?? -1;
+      const mb = b.mins ?? -1;
+      return mb - ma; // longer wait first
+    });
+
+  const panel = document.getElementById('medevac-queue');
+  const listEl = document.getElementById('mq-list');
+  const countEl = document.getElementById('mq-count');
+
+  if (!queue.length) {
+    panel.style.display = 'none';
+    return;
+  }
+
+  panel.style.display = 'block';
+  countEl.textContent = queue.length + ' PATIENT' + (queue.length === 1 ? '' : 'S');
+
+  listEl.innerHTML = queue.map((x, qi) => {
+    const pt = x.pt;
+    const triageColor = pt.triage === 'T1' ? '#e74c3c' : '#e07b00';
+    const triageBg    = pt.triage === 'T1' ? 'rgba(231,76,60,0.15)' : 'rgba(224,123,0,0.12)';
+    const mins = x.mins;
+    const minsText = mins === null ? '—' : mins + 'm';
+    const minsColor = mins === null ? '#888' : (pt.triage === 'T1' && mins >= 60) ? '#ff3030' : (pt.triage === 'T1' && mins >= 30) ? '#ffaa00' : '#aaa';
+    const v = pt.vitals || {};
+    return '<div onclick="showDetail(' + x.idx + ')" style="cursor:pointer;background:' + triageBg + ';border-left:4px solid ' + triageColor + ';padding:8px 12px;border-radius:3px;display:flex;align-items:center;gap:14px;font-family:var(--mono);font-size:11px;transition:background 0.15s;" onmouseover="this.style.background=\'' + triageBg.replace(/0\.\d+/, '0.25') + '\'" onmouseout="this.style.background=\'' + triageBg + '\'">'
+      + '<span style="color:' + triageColor + ';font-weight:900;font-size:14px;width:28px;">#' + (qi + 1) + '</span>'
+      + '<span style="color:' + triageColor + ';font-weight:700;font-size:11px;letter-spacing:1px;width:30px;">' + pt.triage + '</span>'
+      + '<span style="color:#fff;font-weight:700;font-size:13px;flex:1;">' + (pt.name || 'UNKNOWN') + '</span>'
+      + '<span style="color:#aaa;font-size:10px;">' + x.unitName + '</span>'
+      + '<span style="color:' + minsColor + ';font-weight:700;letter-spacing:1px;">⏱ ' + minsText + '</span>'
+      + '<span style="color:#888;">HR ' + (v.hr || '--') + '</span>'
+      + '<span style="color:#888;">BP ' + ((v.bp || '--/--').split('/')[0]) + '</span>'
+      + '<span style="color:#888;">SpO₂ ' + (v.spo2 || '--') + '%</span>'
+      + '</div>';
+  }).join('');
+}
+
+function exportMedevacReport() {
+  const queue = _allPatients
+    .map(x => ({ ...x, mins: minutesSinceInjury(x.pt) }))
+    .filter(x => x.pt.triage === 'T1' || x.pt.triage === 'T2')
+    .sort((a, b) => {
+      const tOrder = {'T1': 0, 'T2': 1};
+      const diff = (tOrder[a.pt.triage] ?? 9) - (tOrder[b.pt.triage] ?? 9);
+      return diff !== 0 ? diff : (b.mins ?? -1) - (a.mins ?? -1);
+    });
+
+  if (!queue.length) { showToast('⚠ No T1/T2 patients in queue'); return; }
+
+  const ts = new Date().toISOString().slice(0, 19).replace('T', ' ') + 'Z';
+  let report = '═══════════════════════════════════════════\n';
+  report += '  MEDEVAC 9-LINE PRIORITY REPORT\n';
+  report += '  Generated: ' + ts + '\n';
+  report += '  Total: ' + queue.length + ' patients\n';
+  report += '═══════════════════════════════════════════\n\n';
+
+  queue.forEach((x, qi) => {
+    const pt = x.pt;
+    const v = pt.vitals || {};
+    report += '── PRIORITY #' + (qi + 1) + ' ──\n';
+    report += 'LINE 3: PRECEDENCE: ' + (pt.triage === 'T1' ? 'A — URGENT' : 'B — PRIORITY') + '\n';
+    report += 'LINE 4: SPECIAL EQUIP: ' + ((pt.tqs||[]).length > 0 ? 'Hemorrhage control' : 'None') + '\n';
+    report += 'LINE 5: PATIENT: ' + (pt.name || 'UNKNOWN') + ' (' + x.unitName + ')\n';
+    report += 'LINE 6: SECURITY: TBD\n';
+    report += 'LINE 7: MARKING: TBD\n';
+    report += 'LINE 8: NATIONALITY: TBD\n';
+    report += 'LINE 9: NBC: NONE\n';
+    report += '\nVITALS: HR ' + (v.hr||'--') + ' / BP ' + (v.bp||'--/--') + ' / SpO₂ ' + (v.spo2||'--') + '% / GCS ' + (v.gcs||'--') + '\n';
+    report += 'INJURY: ' + (pt.moi || 'Unknown') + '\n';
+    report += 'TIME ELAPSED: ' + (x.mins !== null ? x.mins + ' min' : 'Unknown') + '\n';
+    report += 'BLOOD: ' + (pt.blood || 'Unknown') + '\n\n';
+  });
+
+  // Copy to clipboard if possible, else show in modal
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(report).then(() => {
+      showToast('✓ MEDEVAC report copied to clipboard');
+    }).catch(() => {
+      // Fallback — show in alert for copy
+      prompt('Copy this MEDEVAC report:', report);
+    });
+  } else {
+    prompt('Copy this MEDEVAC report:', report);
+  }
+}
+
+// FIX 5: COMMUNICATIONS STATUS PANEL
+function classifyCommLog(log) {
+  // Classify a log entry into one of 4 comm types based on text/cat
+  // Returns null if not a comm event
+  if (!log || (log.cat || '').toUpperCase() !== 'MEDEVAC') return null;
+  const text = (log.text || '').toLowerCase();
+
+  // Order matters — check most specific first
+  if (text.indexOf('drone dispatch') >= 0) return text.indexOf('abort') >= 0 ? null : 'drone';
+  if (text.indexOf('drone') >= 0) return 'drone';
+  if (text.indexOf('satcom') >= 0) return 'satcom';
+  if (text.indexOf('radio transmission') >= 0) return 'radio';
+  if (text.indexOf('9-line generated') >= 0) return '9line';
+  return null;
+}
+
+function parseLogTime(timeStr) {
+  // log.time is typically 'HH:MMZ' format. Convert to today's epoch ms.
+  if (!timeStr) return null;
+  const m = timeStr.match(/^(\d{1,2}):(\d{2})/);
+  if (!m) return null;
+  const now = new Date();
+  let t = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
+                  parseInt(m[1]), parseInt(m[2])));
+  // If "future" relative to now, assume yesterday
+  if (t.getTime() > now.getTime() + 60000) t = new Date(t.getTime() - 86400000);
+  return t.getTime();
+}
+
+function gatherCommEvents() {
+  // Walk all patient logs, return classified comm events
+  const events = [];
+  _allPatients.forEach(x => {
+    const pt = x.pt;
+    (pt.logs || []).forEach(log => {
+      const kind = classifyCommLog(log);
+      if (!kind) return;
+      events.push({
+        kind: kind,
+        time: log.time || '--',
+        timeMs: parseLogTime(log.time),
+        text: log.text || '',
+        patient: pt.name || 'UNKNOWN',
+        triage: pt.triage || '--',
+        unitName: x.unitName
+      });
+    });
+  });
+  // Sort newest first
+  events.sort((a, b) => (b.timeMs || 0) - (a.timeMs || 0));
+  return events;
+}
+
+function renderCommStatus() {
+  const events = gatherCommEvents();
+  const panel = document.getElementById('comm-status');
+  if (!events.length) {
+    panel.style.display = 'none';
+    return;
+  }
+  panel.style.display = 'block';
+
+  // Time window filter
+  const winSel = document.getElementById('cs-window');
+  const winMin = winSel ? parseInt(winSel.value) : 30;
+  const cutoff = winMin > 0 ? Date.now() - winMin * 60000 : 0;
+  const filtered = events.filter(e => !e.timeMs || e.timeMs >= cutoff);
+
+  // Counters
+  const counts = { '9line': 0, satcom: 0, drone: 0, radio: 0 };
+  filtered.forEach(e => { counts[e.kind] = (counts[e.kind] || 0) + 1; });
+  document.getElementById('cs-9line').textContent  = counts['9line'];
+  document.getElementById('cs-satcom').textContent = counts.satcom;
+  document.getElementById('cs-drone').textContent  = counts.drone;
+  document.getElementById('cs-radio').textContent  = counts.radio;
+
+  // Activity feed (max 50 items)
+  const feed = document.getElementById('cs-feed');
+  if (!filtered.length) {
+    feed.innerHTML = '<div style="color:#666;font-family:var(--mono);font-size:10px;text-align:center;padding:14px;">NO COMM ACTIVITY IN SELECTED WINDOW</div>';
+    return;
+  }
+
+  const styleMap = {
+    '9line': { icon: '🚁', tag: '9-LINE',  bg: '#660000', color: '#ff6b6b' },
+    satcom:  { icon: '📡', tag: 'SATCOM',  bg: '#3a2400', color: '#ffaa00' },
+    drone:   { icon: '🛸', tag: 'DRONE',   bg: '#003322', color: '#00ddaa' },
+    radio:   { icon: '📻', tag: 'RADIO',   bg: '#1a2a4a', color: '#6699ff' }
+  };
+
+  feed.innerHTML = filtered.slice(0, 50).map(e => {
+    const s = styleMap[e.kind];
+    const ago = e.timeMs ? Math.max(0, Math.round((Date.now() - e.timeMs) / 60000)) : null;
+    const agoText = ago === null ? '' : ago < 1 ? 'just now' : ago + 'm ago';
+    const triageColor = e.triage === 'T1' ? '#ff6b6b' : e.triage === 'T2' ? '#ffaa00' : '#aaa';
+    // Trim verbose log text to short summary
+    let shortText = e.text;
+    if (shortText.length > 60) shortText = shortText.substring(0, 58) + '…';
+    return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-family:var(--mono);font-size:11px;">'
+      + '<span style="color:' + s.color + ';font-weight:700;font-size:14px;">' + s.icon + '</span>'
+      + '<span style="color:#aaa;font-size:10px;width:52px;">' + e.time + '</span>'
+      + '<span style="background:' + s.bg + ';color:' + s.color + ';padding:1px 6px;border-radius:2px;font-size:9px;font-weight:700;letter-spacing:0.5px;width:54px;text-align:center;">' + s.tag + '</span>'
+      + '<span style="color:#fff;flex:1;font-size:11px;">' + e.patient + ' <span style="color:' + triageColor + ';font-weight:700;">(' + e.triage + ')</span> — <span style="color:#bbb;">' + shortText + '</span></span>'
+      + '<span style="color:#666;font-size:10px;">' + agoText + '</span>'
+      + '</div>';
+  }).join('');
+}
+
+// FIX 6: Comm filter state
+let _commFilter = null; // null | '9line' | 'satcom' | 'drone' | 'radio'
+
+function setCommFilter(kind, el) {
+  // Toggle: same filter clicked again = clear
+  const labels = {
+    '9line':  '🚁 9-LINE SENT',
+    'satcom': '📡 SATCOM TX',
+    'drone':  '🛸 DRONE DISPATCHED',
+    'radio':  '📻 RADIO TX'
+  };
+  const colors = {
+    '9line':  { active: 'rgba(231,76,60,0.5)',   border: '#ff3030', base: 'rgba(231,76,60,0.15)' },
+    'satcom': { active: 'rgba(255,170,0,0.5)',   border: '#ffaa00', base: 'rgba(255,170,0,0.15)' },
+    'drone':  { active: 'rgba(0,200,150,0.5)',   border: '#00ddaa', base: 'rgba(0,200,150,0.15)' },
+    'radio':  { active: 'rgba(100,150,255,0.5)', border: '#6699ff', base: 'rgba(100,150,255,0.15)' }
+  };
+
+  // Reset all comm cards visual state
+  ['9line','satcom','drone','radio'].forEach(k => {
+    const card = document.getElementById('cc-' + k);
+    if (card) {
+      card.classList.remove('active');
+      card.style.background = colors[k].base;
+      card.style.boxShadow = '';
+    }
+  });
+
+  // Toggle off if clicking active filter
+  if (_commFilter === kind) {
+    _commFilter = null;
+    showToast('✓ Comm filter cleared');
+  } else {
+    _commFilter = kind;
+    if (el && colors[kind]) {
+      el.classList.add('active');
+      el.style.background = colors[kind].active;
+      el.style.boxShadow = '0 0 0 2px ' + colors[kind].border + ', 0 0 12px ' + colors[kind].border + '88';
+    }
+    showToast('✓ Filtered: ' + labels[kind]);
+  }
+
+  // Auto-scroll to table for visibility
+  const tableWrap = document.getElementById('patient-table-wrap');
+  if (tableWrap && _commFilter) {
+    tableWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  renderTable();
+}
+
+// Helper: does a patient have at least one event of given comm kind?
+function patientHasComm(pt, kind) {
+  if (!pt.logs) return false;
+  return pt.logs.some(log => classifyCommLog(log) === kind);
+}
+
 function clearAll() {
-  if (!confirm('Clear all loaded data?')) return;
+  if (!confirm('Clear all loaded data? This will also clear saved local backup.')) return;
+  // FIX 6: also reset comm filter
+  _commFilter = null;
+  ['9line','satcom','drone','radio'].forEach(k => {
+    const card = document.getElementById('cc-' + k);
+    if (card) { card.classList.remove('active'); card.style.boxShadow = ''; }
+  });
   _allPatients=[]; _fileCount=0;
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {} // FIX 1: clear backup too
   document.getElementById('empty-state').style.display='block';
-  ['stat-cards','filter-bar','patient-table-wrap','charts-section','export-bar']
-    .forEach(id=>document.getElementById(id).style.display='none');
+  ['stat-cards','filter-bar','patient-table-wrap','charts-section','export-bar','medevac-queue','comm-status']
+    .forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
   document.getElementById('file-input').value='';
   showToast('✓ All data cleared');
 }
+
+// ── INIT: restore from localStorage ──
+window.addEventListener('DOMContentLoaded', function() {
+  loadFromStorage();
+});
 
 // ── TOAST ──
 function showToast(msg) {
