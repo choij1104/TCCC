@@ -580,6 +580,7 @@ button{-webkit-appearance:none;cursor:pointer;}
   </div>
   <div style="display:flex;gap:6px;">
     <button onclick="openExport()" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:7px 14px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;">📋 EXPORT</button>
+    <button onclick="exportAllJSON()" style="background:#0a2d33;color:#00bbcc;border:1px solid #006677;padding:7px 14px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;">💾 ALL JSON</button>
     <button onclick="exportAllCSV()" style="background:var(--amber-dk);color:var(--amber);border:1px solid var(--amber2);padding:7px 14px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;">📊 ALL CSV</button>
     <button onclick="openImport()" style="background:var(--blue-dk);color:var(--blue);border:1px solid var(--blue2);padding:7px 14px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;">📥 IMPORT</button>
   </div>
@@ -1835,6 +1836,7 @@ button{-webkit-appearance:none;cursor:pointer;}
     <!-- Footer actions -->
     <div style="padding:10px 12px;background:var(--bg2);border-top:1px solid var(--border);display:flex;gap:6px;flex-shrink:0;">
       <button class="btn btn-green btn-sm" style="flex:1;margin:0" onclick="copyExport()">📋 COPY</button>
+      <button class="btn btn-sm" style="flex:1;margin:0;background:#0a2d33;color:#00bbcc;border:1px solid #006677;" onclick="saveExportJSONFile()">💾 SAVE FILE</button>
       <button class="btn btn-ghost btn-sm" style="flex:1;margin:0" onclick="document.getElementById('export-modal').classList.add('hidden')">CLOSE</button>
     </div>
   </div>
@@ -2202,7 +2204,7 @@ function activePt() {
 
 function makePt() {
   return {
-    id: 'pt_' + Date.now(),
+    id: 'pt_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8),
     created: Date.now(),
     name: '', blood: '', injTime: '', wt: '', age: '',
     triage: null,
@@ -2548,7 +2550,31 @@ function showPage(id) {
 function savePt() {
   const pt = activePt();
   if (!pt) return;
-  pt.name    = document.getElementById('cas-name').value.trim();
+  const newName = document.getElementById('cas-name').value.trim();
+
+  // FIX 2: Warn if duplicate callsign found (but don't block)
+  if (newName && newName !== pt.name) {
+    const dup = DB.patients.find(function(p) {
+      return p.id !== pt.id && p.name && p.name.toLowerCase() === newName.toLowerCase();
+    });
+    if (dup) {
+      // Use a non-blocking visual warning (one-time per change)
+      var nameInput = document.getElementById('cas-name');
+      if (nameInput && !nameInput._dupWarned) {
+        nameInput._dupWarned = true;
+        nameInput.style.borderColor = 'var(--amber)';
+        nameInput.style.boxShadow = '0 0 0 2px rgba(255,170,0,0.3)';
+        showProcToast && showProcToast('⚠ Duplicate callsign: ' + newName + ' already exists');
+        setTimeout(function() {
+          nameInput.style.borderColor = '';
+          nameInput.style.boxShadow = '';
+          nameInput._dupWarned = false;
+        }, 3000);
+      }
+    }
+  }
+
+  pt.name    = newName;
   pt.blood   = document.getElementById('cas-blood').value;
   pt.injTime = document.getElementById('cas-injtime').value.trim();
   pt.wt      = document.getElementById('cas-wt').value;
@@ -3176,6 +3202,56 @@ function exportAllCSV() {
   showProcToast('✅ ' + count + ' patients downloaded — open in Excel');
 }
 
+// ══════════════════════════════════════════════
+// FIX 4: ALL-PATIENT JSON EXPORT (file download)
+// ══════════════════════════════════════════════
+function exportAllJSON() {
+  if (!DB.patients.length) { alert('No casualties to export.'); return; }
+
+  var payload = {
+    exportTime: new Date().toISOString(),
+    appVersion: 'TCCC_FIELD_v1',
+    totalCasualties: DB.patients.length,
+    activeId: DB.activeId,
+    patients: DB.patients
+  };
+
+  var json = JSON.stringify(payload, null, 2);
+  var blob = new Blob([json], { type: 'application/json;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+
+  var ts = new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+  var count = DB.patients.length;
+
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'TCCC_' + ts + '_' + count + 'pts.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showProcToast('✅ ' + count + ' patients exported (JSON file)');
+}
+
+// Save current modal JSON view to file
+function saveExportJSONFile() {
+  var ta = document.getElementById('export-textarea');
+  if (!ta || !ta.value) { alert('No JSON data to save.'); return; }
+  var blob = new Blob([ta.value], { type: 'application/json;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var ts = new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+  var count = DB.patients.length;
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'TCCC_' + ts + '_' + count + 'pts.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showProcToast('✅ JSON file downloaded');
+}
+
 
 function exportCSV() {
   const pt = activePt();
@@ -3288,16 +3364,34 @@ let _rptTab = 'report';
 
 function openExport() {
   const pt = activePt();
-  if (!pt) { alert('No casualty selected.'); return; }
+  if (!pt && !DB.patients.length) { alert('No casualties to export.'); return; }
   _rptTab = 'report';
-  buildReportView(pt);
-  document.getElementById('rpt-sub').textContent = new Date().toLocaleString();
+  if (pt) {
+    buildReportView(pt);
+    document.getElementById('rpt-sub').textContent = new Date().toLocaleString();
+  } else {
+    // No active patient — go straight to JSON tab (whole-DB view)
+    _rptTab = 'json';
+  }
   document.getElementById('export-modal').classList.remove('hidden');
-  // Activate report tab
   document.querySelectorAll('.rpt-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('rtab-report').classList.add('active');
-  document.getElementById('rpt-report').style.display = 'block';
-  document.getElementById('rpt-raw').style.display = 'none';
+  if (_rptTab === 'json') {
+    var jt = document.getElementById('rtab-json');
+    if (jt) jt.classList.add('active');
+    document.getElementById('rpt-report').style.display = 'none';
+    document.getElementById('rpt-raw').style.display = 'block';
+    var ta = document.getElementById('export-textarea');
+    if (ta) ta.value = JSON.stringify({
+      exportTime: new Date().toISOString(),
+      totalCasualties: DB.patients.length,
+      activeId: DB.activeId,
+      patients: DB.patients
+    }, null, 2);
+  } else {
+    document.getElementById('rtab-report').classList.add('active');
+    document.getElementById('rpt-report').style.display = 'block';
+    document.getElementById('rpt-raw').style.display = 'none';
+  }
 }
 
 function switchRptTab(tab, el) {
@@ -3319,7 +3413,14 @@ function switchRptTab(tab, el) {
   } else if (tab === 'json') {
     document.getElementById('rpt-raw').style.display = 'block';
     const ta = document.getElementById('export-textarea');
-    ta.value = JSON.stringify(DB, null, 2);
+    // Export structured payload — full DB for mother program
+    ta.value = JSON.stringify({
+      exportTime: new Date().toISOString(),
+      appVersion: 'TCCC_FIELD_v1',
+      totalCasualties: DB.patients.length,
+      activeId: DB.activeId,
+      patients: DB.patients
+    }, null, 2);
     setTimeout(() => ta.select(), 80);
   }
 }
@@ -3618,11 +3719,20 @@ function doImportPaste() {
   if (!raw) { alert('Paste your exported JSON data first.'); return; }
   try {
     const imp = JSON.parse(raw);
-    if (!imp.patients || !Array.isArray(imp.patients)) throw new Error('Invalid format');
+    // Accept multiple formats:
+    // 1) Wrapped payload: {patients: [...]}
+    // 2) Raw DB: {patients: [...], activeId: ...}
+    // 3) Bare array: [...]
+    let pts;
+    if (imp.patients && Array.isArray(imp.patients)) pts = imp.patients;
+    else if (Array.isArray(imp)) pts = imp;
+    else throw new Error('Invalid format — expected {patients:[...]} or array');
+
     const existing = new Set(DB.patients.map(p => p.id));
-    let added = 0;
-    imp.patients.forEach(p => {
-      if (!existing.has(p.id)) { DB.patients.push(p); added++; }
+    let added = 0, skipped = 0;
+    pts.forEach(p => {
+      if (existing.has(p.id)) { skipped++; }
+      else { DB.patients.push(p); added++; }
     });
     if (!DB.activeId && DB.patients.length) DB.activeId = DB.patients[0].id;
     saveDB();
@@ -3630,7 +3740,7 @@ function doImportPaste() {
     syncUIFromPt();
     document.getElementById('import-modal').classList.add('hidden');
     document.getElementById('import-textarea').value = '';
-    showProcToast('✓ ' + added + ' casualties imported');
+    showProcToast('✓ ' + added + ' imported' + (skipped ? ' (' + skipped + ' duplicate IDs skipped)' : ''));
   } catch(err) {
     alert('Import failed: invalid JSON. Make sure you paste the complete exported data.');
   }
@@ -6636,6 +6746,7 @@ function checkHypo() {
       <div style="margin-left:auto;display:flex;gap:4px;">
         <button onclick="openExport()" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">JSON</button>
         <button onclick="exportCSV()" style="background:var(--blue-dk);color:var(--blue);border:1px solid var(--blue2);padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">CSV</button>
+        <button onclick="exportAllJSON()" style="background:#0a2d33;color:#00bbcc;border:1px solid #006677;padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">ALL JSON</button>
         <button onclick="exportAllCSV()" style="background:var(--amber-dk);color:var(--amber);border:1px solid var(--amber2);padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;">ALL CSV</button>
       </div>
     </div>
