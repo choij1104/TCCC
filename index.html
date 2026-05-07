@@ -4585,6 +4585,43 @@ function _buildAndStoreDemoPatients() {
       pt.logs.push({id:now+idx+0.9,cat:'BLOOD',text:'pRBC 2u + FFP 2u + WB 1u administered',type:'drug',time:pt.injTime,ts:pt.startTime+900000});
     }
 
+    // MEDEVAC communications logs (for COMMAND dashboard demo)
+    // T1: All get 9-LINE, half get SATCOM, severe ones get DRONE
+    // T2: Half get 9-LINE
+    // Vary the timestamps slightly so they don't all stack at same time
+    var commTime = function(offsetMin) {
+      var minutes = (parseInt(pt.injTime.substr(0,2))*60 + parseInt(pt.injTime.substr(3,2))) + offsetMin;
+      return String(Math.floor(minutes/60)%24).padStart(2,'0') + ':' + String(minutes%60).padStart(2,'0') + 'Z';
+    };
+
+    if (s.triage === 'T1') {
+      // 9-LINE generated for every T1
+      pt.logs.push({id:now+idx+1.0, cat:'MEDEVAC',
+        text:'9-LINE generated @ '+commTime(5)+' — Grid: 42UPV1234567890',
+        type:'system', time:commTime(5), ts:pt.startTime+300000});
+      // RADIO transmission for every T1
+      pt.logs.push({id:now+idx+1.1, cat:'MEDEVAC',
+        text:'RADIO TRANSMISSION INITIATED @ '+commTime(7),
+        type:'tq', time:commTime(7), ts:pt.startTime+420000});
+      // SATCOM for half of T1 (those with even index)
+      if (idx % 2 === 0) {
+        pt.logs.push({id:now+idx+1.2, cat:'MEDEVAC',
+          text:'[SIM] SATCOM TX: CH-1 | URGENT | MSG-'+(pt.name||'A').substr(0,5)+' @ '+commTime(8),
+          type:'system', time:commTime(8), ts:pt.startTime+480000});
+      }
+      // DRONE for severe T1 (high blood loss or every 3rd T1)
+      if ((s.ml && s.ml > 1500) || idx % 3 === 0) {
+        pt.logs.push({id:now+idx+1.3, cat:'MEDEVAC',
+          text:'[SIM] Drone dispatched: MQ-9 Reaper (CASEVAC) | ETA 12min | Grid: 42UPV1234567890 @ '+commTime(10),
+          type:'system', time:commTime(10), ts:pt.startTime+600000});
+      }
+    } else if (s.triage === 'T2' && idx % 2 === 0) {
+      // 9-LINE for some T2
+      pt.logs.push({id:now+idx+1.0, cat:'MEDEVAC',
+        text:'9-LINE generated @ '+commTime(15)+' — Grid: 42UPV1234567890',
+        type:'system', time:commTime(15), ts:pt.startTime+900000});
+    }
+
     DB.patients.push(pt);
   });
 
