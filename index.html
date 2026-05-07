@@ -157,6 +157,17 @@ body.brief-mode .btn-amber {
 body.brief-mode .btn-blue {
   background:#d8eeff;color:#0055aa;border-color:#0077cc;
 }
+/* FIX: PILOT MODE button visibility in brief mode */
+body.brief-mode .lang-btn,
+body.brief-mode button[onclick*="togglePilotMode"] {
+  background: #c8e8c8 !important;
+  color: #006600 !important;
+  border-color: #008800 !important;
+}
+body.brief-mode .lang-btn:hover,
+body.brief-mode button[onclick*="togglePilotMode"]:hover {
+  background: #b0d8b0 !important;
+}
 body.brief-mode .btn-ghost {
   background:#e8f0e8;color:#2a5a2a;border-color:#8aaa8a;
 }
