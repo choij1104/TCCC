@@ -331,10 +331,10 @@ html,body{background:var(--bg);color:var(--white);font-family:var(--ui);height:1
 .stor-btn:active{background:var(--border2);}
 
 /* ── PATIENT BAR ── */
-#pt-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:5px 8px;display:flex;align-items:flex-start;gap:5px;flex-shrink:0;flex-wrap:wrap;max-height:120px;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--border2) transparent;}
-#pt-bar::-webkit-scrollbar{width:3px;}
+#pt-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:6px 8px;display:flex;align-items:center;gap:5px;flex-shrink:0;flex-wrap:nowrap;height:42px;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:var(--border2) transparent;-webkit-overflow-scrolling:touch;}
+#pt-bar::-webkit-scrollbar{width:3px;height:3px;}
 #pt-bar::-webkit-scrollbar-thumb{background:var(--border2);}
-.pt-chip{display:inline-flex;align-items:center;gap:4px;padding:5px 9px;border-radius:2px;font-family:var(--mono);font-size:11px;border:1px solid var(--border2);background:var(--panel);color:var(--off);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .12s;min-height:30px;}
+.pt-chip{display:inline-flex;align-items:center;gap:4px;padding:5px 9px;border-radius:2px;font-family:var(--mono);font-size:11px;border:1px solid var(--border2);background:var(--panel);color:var(--off);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .12s;min-height:30px;max-height:30px;}
 .pt-chip.active{background:var(--green-dk);color:var(--green);border-color:var(--green2);}
 .pt-del{color:var(--muted);margin-left:3px;font-size:11px;}
 #btn-new-pt{padding:4px 10px;border-radius:2px;font-family:var(--mono);font-size:10px;background:none;border:1px dashed var(--border3);color:var(--muted);cursor:pointer;white-space:nowrap;flex-shrink:0;}
@@ -599,7 +599,7 @@ button{-webkit-appearance:none;cursor:pointer;}
 <div style="position:relative;">
   <div id="pt-bar">
     <button id="btn-new-pt" onclick="newPatient()">＋ NEW CASUALTY</button>
-    <div id="pt-chips" style="display:flex;flex-wrap:wrap;gap:4px;flex:1;"></div>
+    <div id="pt-chips" style="display:contents;"></div>
   </div>
   <button onclick="togglePtBar()" id="pt-bar-toggle" style="position:absolute;right:6px;top:4px;background:var(--bg2);border:1px solid var(--border2);color:var(--muted);font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:2px;cursor:pointer;z-index:10;">▲ HIDE</button>
 </div>
@@ -1015,6 +1015,11 @@ button{-webkit-appearance:none;cursor:pointer;}
       </div>
     </div>
   </div>
+
+  <!-- NEXT TAB -->
+  <div style="padding:16px 0 8px;display:flex;justify-content:flex-end;">
+    <button onclick="showPage('injury')" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:12px 24px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">NEXT: 🫁 INJURY &#9654;</button>
+  </div>
 </div>
 
   <!-- CITRATE / Ca²⁺ TRACKER -->
@@ -1143,10 +1148,6 @@ button{-webkit-appearance:none;cursor:pointer;}
       <div id="shock-result"></div>
     </div>
   
-  <!-- NEXT TAB -->
-  <div style="padding:16px 0 8px;display:flex;justify-content:flex-end;">
-    <button onclick="showPage('injury')" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:12px 24px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">NEXT: 🫁 INJURY &#9654;</button>
-  </div>
 </div>
 
 
@@ -1736,6 +1737,11 @@ button{-webkit-appearance:none;cursor:pointer;}
     </div>
   </div>
 
+
+  <!-- NEXT TAB -->
+  <div style="padding:16px 0 8px;display:flex;justify-content:flex-end;">
+    <button onclick="showPage('mist')" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:12px 24px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">NEXT: 📡 MIST &#9654;</button>
+  </div>
 </div>
 
 <!-- DRUG MODAL -->
@@ -4308,12 +4314,13 @@ function togglePtBar() {
   var bar = document.getElementById('pt-bar');
   var btn = document.getElementById('pt-bar-toggle');
   if (!bar || !btn) return;
-  if (bar.style.maxHeight === '0px' || bar.style.display === 'none') {
-    bar.style.maxHeight = '120px';
+  var isHidden = bar.style.height === '0px' || bar.style.display === 'none';
+  if (isHidden) {
+    bar.style.height = '42px';
     bar.style.display = '';
     btn.textContent = '▲ HIDE';
   } else {
-    bar.style.maxHeight = '0px';
+    bar.style.height = '0px';
     bar.style.overflow = 'hidden';
     btn.textContent = '▼ SHOW (' + (DB.patients.filter(function(p){ return _currentMode==='demo'?p._isDemo:!p._isDemo; }).length) + ')';
   }
@@ -6425,10 +6432,6 @@ function checkHypo() {
 </script>
 
 <div style="text-align:center;padding:18px 0 24px;font-family:monospace;font-size:10px;color:#2a3a2a;letter-spacing:1px;border-top:1px solid #1a2a1a;margin-top:24px;">Developed by Jae H. Choi, PhD, DVSc &nbsp;&middot;&nbsp; v1.0 &nbsp;&middot;&nbsp; 2026 &nbsp;&middot;&nbsp; Drug protocols: TCCC Guidelines 01 May 2026
-  <!-- NEXT TAB -->
-  <div style="padding:16px 0 8px;display:flex;justify-content:flex-end;">
-    <button onclick="showPage('mist')" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:12px 24px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">NEXT: 📡 MIST &#9654;</button>
-  </div>
 </div>
 
 <!-- ╔══════════════════════════════╗ -->
@@ -6537,6 +6540,11 @@ function checkHypo() {
     </div>
   </div>
 
+
+  <!-- NEXT TAB -->
+  <div style="padding:16px 0 8px;display:flex;justify-content:flex-end;">
+    <button onclick="showPage('log')" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:12px 24px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">NEXT: 📋 LOG &#9654;</button>
+  </div>
 </div><!-- /mist -->
 
 </div><!-- /screen -->
@@ -6613,10 +6621,6 @@ function checkHypo() {
     <button class="btn btn-ghost btn-sm" onclick="closeLogEdit()">CANCEL</button>
   </div>
 
-  <!-- NEXT TAB -->
-  <div style="padding:16px 0 8px;display:flex;justify-content:flex-end;">
-    <button onclick="showPage('log')" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:12px 24px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">NEXT: 📋 LOG &#9654;</button>
-  </div>
 </div>
 
 
@@ -6671,13 +6675,6 @@ function checkHypo() {
   </div>
 
 </div>
-
-  <!-- NEXT TAB -->
-  <div style="padding:16px 0 8px;display:flex;justify-content:flex-end;">
-    <button onclick="showPage('calc')" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:12px 20px;border-radius:2px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;">
-      NEXT: 🧮 CALC &#9654;
-    </button>
-  </div>
 
 
 </body>
