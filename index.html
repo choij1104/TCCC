@@ -592,6 +592,7 @@ button{-webkit-appearance:none;cursor:pointer;}
   <div style="display:flex;gap:6px;">
     <button onclick="openExport()" style="background:var(--green-dk);color:var(--green);border:1px solid var(--green2);padding:7px 14px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;">📋 EXPORT</button>
     <button onclick="exportAllJSON()" style="background:#0a2d33;color:#00bbcc;border:1px solid #006677;padding:7px 14px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;">💾 ALL JSON</button>
+    <button onclick="sendToCommand()" style="background:#001c2d;color:#00bbff;border:1px solid #0099cc;padding:7px 14px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;">SEND TO COMMAND</button>
     <button onclick="exportAllCSV()" style="background:var(--amber-dk);color:var(--amber);border:1px solid var(--amber2);padding:7px 10px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;" title="Patient summary CSV">📊 CSV</button>
     <button onclick="exportVitalsTimeseriesCSV()" style="background:#3a1e2d;color:#ff66a8;border:1px solid #66345a;padding:7px 10px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;" title="Vitals time-series CSV (one row per measurement)">📈 VITALS</button>
     <button onclick="exportEventsCSV()" style="background:#2d2d3a;color:#aabaff;border:1px solid #4a5a8a;padding:7px 10px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;min-height:36px;" title="Events CSV (one row per log entry)">📋 EVENTS</button>
@@ -3358,16 +3359,35 @@ function exportAllCSVBundle() {
   }, 900);
 }
 
-function exportAllJSON() {
-  if (!DB.patients.length) { alert('No casualties to export.'); return; }
+const COMMAND_INBOX_KEY = 'tccc_command_inbox_v1';
 
-  var payload = {
+function buildCommandPayload() {
+  return {
     exportTime: new Date().toISOString(),
     appVersion: 'TCCC_FIELD_v1',
     totalCasualties: DB.patients.length,
     activeId: DB.activeId,
     patients: DB.patients
   };
+}
+
+function sendToCommand() {
+  if (!DB.patients.length) { alert('No casualties to send.'); return; }
+  try {
+    localStorage.setItem(COMMAND_INBOX_KEY, JSON.stringify(buildCommandPayload()));
+    showProcToast('Sending ' + DB.patients.length + ' patients to Command...');
+    setTimeout(function() {
+      window.location.href = './TCCC_COMMAND.html?autoImport=1';
+    }, 250);
+  } catch(e) {
+    alert('Send failed. Use ALL JSON export instead.');
+  }
+}
+
+function exportAllJSON() {
+  if (!DB.patients.length) { alert('No casualties to export.'); return; }
+
+  var payload = buildCommandPayload();
 
   var json = JSON.stringify(payload, null, 2);
   var blob = new Blob([json], { type: 'application/json;charset=utf-8;' });

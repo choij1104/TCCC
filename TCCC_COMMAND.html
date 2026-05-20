@@ -674,6 +674,7 @@ let _fileCount = 0;
 
 // FIX 1: localStorage auto-save key
 const STORAGE_KEY = 'tccc_command_data_v1';
+const FIELD_INBOX_KEY = 'tccc_command_inbox_v1';
 
 function saveToStorage() {
   try {
@@ -800,6 +801,40 @@ function importFromPaste() {
     updateAll();
   } catch(e) {
     showToast('✗ Invalid JSON — check format');
+  }
+}
+
+function importPatientsPayload(db, unitName) {
+  let patients = [];
+  if (db && db.patients && Array.isArray(db.patients)) patients = db.patients;
+  else if (Array.isArray(db)) patients = db;
+  else return 0;
+  if (!patients.length) return 0;
+  _fileCount++;
+  const name = unitName || ('FIELD-' + _fileCount);
+  patients.forEach(pt => _allPatients.push({ pt, unitName: name, unitIdx: _fileCount }));
+  updateAll();
+  return patients.length;
+}
+
+function importFromFieldInbox() {
+  let raw = '';
+  try { raw = localStorage.getItem(FIELD_INBOX_KEY) || ''; }
+  catch(e) { return false; }
+  if (!raw) return false;
+  try {
+    const db = JSON.parse(raw);
+    const count = importPatientsPayload(db, 'FIELD-' + (_fileCount + 1));
+    if (!count) {
+      showToast('Field data found, but no casualties were available');
+      return false;
+    }
+    try { localStorage.removeItem(FIELD_INBOX_KEY); } catch(e) {}
+    showToast('Auto-imported ' + count + ' casualties from Field app');
+    return true;
+  } catch(e) {
+    showToast('Field auto-import failed. Use PASTE JSON instead.');
+    return false;
   }
 }
 
@@ -1715,6 +1750,7 @@ function clearAll() {
 // ── INIT: restore from localStorage ──
 window.addEventListener('DOMContentLoaded', function() {
   loadFromStorage();
+  importFromFieldInbox();
 });
 
 // ── TOAST ──
