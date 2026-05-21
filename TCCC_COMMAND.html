@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,10 +61,13 @@ html,body{background:var(--bg);color:var(--text);font-family:var(--ui);min-heigh
 }
 #hdr-left p{font-family:var(--mono);font-size:9px;color:#8ab0a0;letter-spacing:2px;margin-top:2px;}
 #hdr-clock{
-  font-family:var(--mono);font-size:20px;
+  font-family:var(--mono);font-size:13px;
   color:#00ff88;letter-spacing:3px;
   background:rgba(0,0,0,.3);padding:6px 14px;border-radius:3px;
   border:1px solid rgba(0,255,136,.2);
+  min-width: 288px;
+  text-align: center;
+  line-height: 1.55;
 }
 #hdr-stats{display:flex;gap:16px;align-items:center;}
 .hdr-stat{text-align:center;background:rgba(255,255,255,.08);padding:6px 14px;border-radius:3px;border:1px solid rgba(255,255,255,.12);}
@@ -431,7 +435,7 @@ canvas{width:100%;display:block;}
       <div class="hdr-stat-lbl">T1 URGENT</div>
     </div>
   </div>
-  <div id="hdr-clock">--:--:--</div>
+  <div id="hdr-clock">LOCAL --:--:--<br>ZULU --:--:--Z</div>
 </div>
 
 <!-- IMPORT ZONE -->
@@ -768,13 +772,18 @@ setInterval(() => {
 }, 60000);
 
 // ── CLOCK ──
-setInterval(() => {
+function updateHeaderClock() {
   const d = new Date();
+  const local = String(d.getHours()).padStart(2,'0') + ':' +
+                String(d.getMinutes()).padStart(2,'0') + ':' +
+                String(d.getSeconds()).padStart(2,'0');
   const z = String(d.getUTCHours()).padStart(2,'0') + ':' +
             String(d.getUTCMinutes()).padStart(2,'0') + ':' +
             String(d.getUTCSeconds()).padStart(2,'0') + 'Z';
-  document.getElementById('hdr-clock').textContent = z;
-}, 1000);
+  document.getElementById('hdr-clock').innerHTML = 'LOCAL ' + local + '<br>ZULU&nbsp;&nbsp;' + z;
+}
+updateHeaderClock();
+setInterval(updateHeaderClock, 1000);
 
 // ── PASTE TOGGLE ──
 function togglePaste() {
