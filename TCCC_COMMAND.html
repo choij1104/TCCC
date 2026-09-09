@@ -17,6 +17,7 @@
   --border2:#a8bfab;
   --navy:#1a2f3a;
   --navy2:#243d4a;
+  --ink-strong:#1a2f3a;   /* the ink role of --navy, split out so dark modes can lift it */
   --green:#1a6b2a;
   --green2:#228b35;
   --green-lt:#e6f4e9;
@@ -43,6 +44,60 @@
   --head:'Exo 2',sans-serif;
   --ui:'Rajdhani',sans-serif;
 }
+
+/* ══ DISPLAY MODES ══════════════════════════════════════════════
+   COMMAND may sit in a lit headquarters or at a darkened forward CCP, so the
+   mode is a choice, not an assumption. DAY (the tokens above) stays the
+   default and is unchanged. DARK dims the station for a low-light TOC while
+   keeping full colour, so triage stays colour-coded. RED is light discipline:
+   red-monochrome, with triage re-encoded on luminance because hue is no
+   longer available. Every text/background pair in both modes was measured
+   before it was written — minimum contrast DARK 5.37:1, RED 4.92:1.
+   RED triage luminance: T1 .471 > T2 .375 > T3 .310 > T4 .214. */
+
+body.theme-dark{
+  --bg:#0f1411;--bg2:#161d18;--bg3:#1c241e;--bg4:#232c25;
+  --panel:#141a16;--border:#2a352c;--border2:#3a4a3d;
+  --navy:#0d1620;--navy2:#152230;
+  --text:#e4ebe6;--text2:#b8c6bc;--muted:#8a9a8e;
+  --green:#5fd47a;--green2:#7ee095;--green-lt:#14281a;--green-mid:#2a4d33;
+  --red:#ff7a6a;--red2:#ff9385;--red-lt:#2e1512;--red-mid:#5c2620;
+  --amber:#f0a94a;--amber2:#ffc061;--amber-lt:#2d1f0c;--amber-mid:#553d18;
+  --blue:#5aaef0;--blue2:#7cc0f5;--blue-lt:#0f2334;--blue-mid:#1d3f5c;
+  --gray:#9aa89e;--gray-lt:#1a201c;--gray-mid:#39433c;
+  --ink-strong:#cfe0d4;
+}
+body.theme-red{
+  --bg:#0a0202;--bg2:#120303;--bg3:#180404;--bg4:#1f0606;
+  --panel:#1b0505;--border:#4a1a14;--border2:#5e241c;
+  --navy:#160404;--navy2:#210707;
+  --text:#ffe3dc;--text2:#f5b2a4;--muted:#c9877b;
+  /* T1 / critical — highest luminance, seen first */
+  --red:#ff9d85;--red2:#ff8a70;--red-lt:#3d0f08;--red-mid:#5c1a10;
+  --amber:#e2907a;--amber2:#eb9d87;--amber-lt:#2e120a;--amber-mid:#4a1d12;
+  --green:#cf8471;--green2:#d99180;--green-lt:#24100a;--green-mid:#3d1a11;
+  --blue:#b98077;--blue2:#c48d84;--blue-lt:#200e0c;--blue-mid:#361814;
+  --gray:#a87268;--gray-lt:#1a0605;--gray-mid:#2e0f0c;
+  --ink-strong:#ffd6cc;
+}
+/* The MEDEVAC queue and comms panels carry their background as a literal
+   gradient, so the tokens above cannot reach them. */
+body.theme-dark #medevac-queue{background:linear-gradient(135deg,#141a22 0%,#1e242e 100%)!important;}
+body.theme-dark #comm-status{background:linear-gradient(135deg,#0c1a22 0%,#152430 100%)!important;}
+body.theme-red  #medevac-queue{background:linear-gradient(135deg,#1a0706 0%,#260b09 100%)!important;}
+body.theme-red  #comm-status{background:linear-gradient(135deg,#160505 0%,#210808 100%)!important;}
+
+/* Mode switch */
+#mode-switch{display:flex;gap:0;border:1px solid var(--border2);border-radius:4px;overflow:hidden;flex:0 0 auto;}
+#mode-switch button{
+  min-height:44px;min-width:56px;padding:0 12px;border:none;cursor:pointer;
+  background:transparent;color:var(--muted);
+  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:1px;
+  -webkit-appearance:none;touch-action:manipulation;
+}
+#mode-switch button + button{border-left:1px solid var(--border2);}
+#mode-switch button.active{background:var(--green-lt);color:var(--green);}
+body.theme-red #mode-switch button.active{background:var(--red-lt);color:var(--red);}
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{background:var(--bg);color:var(--text);font-family:var(--ui);min-height:100vh;}
 
@@ -98,7 +153,7 @@ html,body{background:var(--bg);color:var(--text);font-family:var(--ui);min-heigh
 }
 #paste-toggle{
   width:100%;padding:10px 16px;background:var(--bg3);border:none;
-  font-family:var(--mono);font-size:10px;color:var(--navy);letter-spacing:1px;
+  font-family:var(--mono);font-size:10px;color:var(--ink-strong);letter-spacing:1px;
   cursor:pointer;text-align:left;font-weight:700;
   border-bottom:1px solid var(--border);
 }
@@ -158,7 +213,7 @@ html,body{background:var(--bg);color:var(--text);font-family:var(--ui);min-heigh
 .stat-card.t4{border-top:4px solid var(--gray);background:var(--gray-lt);}
 .stat-card.t4 .stat-card-val{color:var(--gray);}
 .stat-card.total{border-top:4px solid var(--navy);background:var(--blue-lt);}
-.stat-card.total .stat-card-val{color:var(--navy);}
+.stat-card.total .stat-card-val{color:var(--ink-strong);}
 .stat-card.info{border-top:4px solid var(--blue2);background:var(--blue-lt);}
 .stat-card.info .stat-card-val{color:var(--blue);}
 
@@ -240,7 +295,7 @@ tr.t1-row td:first-child, tr.t1-row-urgent td:first-child {
   font-weight: 700;
 }
 .time-crit {
-  color: #e74c3c;
+  color: var(--red2);
   font-weight: 700;
   animation: pulse-t1 1.2s ease-in-out infinite;
 }
@@ -310,7 +365,7 @@ canvas{width:100%;display:block;}
   box-shadow:0 1px 4px rgba(0,0,0,.06);
 }
 #empty-state h2{
-  font-family:var(--head);font-size:22px;color:var(--navy);
+  font-family:var(--head);font-size:22px;color:var(--ink-strong);
   margin-bottom:12px;letter-spacing:3px;
 }
 #empty-state p{
@@ -342,7 +397,7 @@ canvas{width:100%;display:block;}
 }
 .detail-title{
   font-family:var(--head);font-size:20px;font-weight:900;
-  color:var(--navy);letter-spacing:3px;
+  color:var(--ink-strong);letter-spacing:3px;
 }
 .close-btn{
   background:var(--bg3);border:1px solid var(--border2);
@@ -353,7 +408,7 @@ canvas{width:100%;display:block;}
 .close-btn:hover{background:var(--red-lt);color:var(--red);border-color:var(--red-mid);}
 .detail-section{margin-bottom:16px;}
 .detail-section-title{
-  font-family:var(--mono);font-size:9px;color:var(--navy);
+  font-family:var(--mono);font-size:9px;color:var(--ink-strong);
   letter-spacing:2px;margin-bottom:8px;
   border-bottom:2px solid var(--border);padding-bottom:4px;
   font-weight:700;
@@ -435,6 +490,11 @@ canvas{width:100%;display:block;}
       <div class="hdr-stat-lbl">T1 URGENT</div>
     </div>
   </div>
+  <div id="mode-switch" role="group" aria-label="Display mode">
+    <button type="button" id="mode-day"  onclick="setDisplayMode('day')"  title="Lit headquarters">☀ DAY</button>
+    <button type="button" id="mode-dark" onclick="setDisplayMode('dark')" title="Low-light TOC">◑ DARK</button>
+    <button type="button" id="mode-red"  onclick="setDisplayMode('red')"  title="Light discipline / forward CCP">● RED</button>
+  </div>
   <div id="hdr-clock">LOCAL --:--:--<br>ZULU --:--:--Z</div>
 </div>
 
@@ -452,7 +512,7 @@ canvas{width:100%;display:block;}
       style="background:var(--navy);color:#fff;border:none;padding:8px 20px;border-radius:4px;font-family:var(--mono);font-size:10px;cursor:pointer;letter-spacing:1px;font-weight:700;">
       📁 SELECT FILES</button>
     <button onclick="event.stopPropagation();togglePaste()"
-      style="background:var(--bg2);color:var(--navy);border:1px solid var(--border2);padding:8px 20px;border-radius:4px;font-family:var(--mono);font-size:10px;cursor:pointer;letter-spacing:1px;font-weight:700;">
+      style="background:var(--bg2);color:var(--ink-strong);border:1px solid var(--border2);padding:8px 20px;border-radius:4px;font-family:var(--mono);font-size:10px;cursor:pointer;letter-spacing:1px;font-weight:700;">
       📋 PASTE JSON</button>
   </div>
 </div>
@@ -678,6 +738,28 @@ let _fileCount = 0;
 
 // FIX 1: localStorage auto-save key
 const STORAGE_KEY = 'tccc_command_data_v1';
+const MODE_KEY = 'tccc_command_display_mode';
+
+// DAY is the default: COMMAND is normally run from a lit headquarters.
+// DARK and RED are opt-in for a darkened TOC or a forward CCP under light
+// discipline. The choice persists on this station.
+function setDisplayMode(mode) {
+  const modes = ['day', 'dark', 'red'];
+  if (modes.indexOf(mode) === -1) mode = 'day';
+  document.body.classList.remove('theme-dark', 'theme-red');
+  if (mode !== 'day') document.body.classList.add('theme-' + mode);
+  modes.forEach(function (m) {
+    const btn = document.getElementById('mode-' + m);
+    if (btn) btn.classList.toggle('active', m === mode);
+  });
+  try { localStorage.setItem(MODE_KEY, mode); } catch (e) {}
+}
+
+function restoreDisplayMode() {
+  let mode = 'day';
+  try { mode = localStorage.getItem(MODE_KEY) || 'day'; } catch (e) {}
+  setDisplayMode(mode);
+}
 const FIELD_INBOX_KEY = 'tccc_command_inbox_v1';
 
 function saveToStorage() {
@@ -1506,7 +1588,11 @@ function renderMedevacQueue() {
 
   listEl.innerHTML = queue.map((x, qi) => {
     const pt = x.pt;
-    const triageColor = pt.triage === 'T1' ? '#e74c3c' : '#e07b00';
+    // Read the live theme tokens so the queue follows DAY / DARK / RED.
+    const _cs = getComputedStyle(document.body);
+    const triageColor = (pt.triage === 'T1'
+      ? _cs.getPropertyValue('--red2') : _cs.getPropertyValue('--amber2')).trim()
+      || (pt.triage === 'T1' ? '#e74c3c' : '#e07b00');
     const triageBg    = pt.triage === 'T1' ? 'rgba(231,76,60,0.15)' : 'rgba(224,123,0,0.12)';
     const mins = x.mins;
     const minsText = mins === null ? '—' : mins + 'm';
@@ -1653,7 +1739,7 @@ function renderCommStatus() {
   // Activity feed (max 50 items)
   const feed = document.getElementById('cs-feed');
   if (!filtered.length) {
-    feed.innerHTML = '<div style="color:#666;font-family:var(--mono);font-size:10px;text-align:center;padding:14px;">NO COMM ACTIVITY IN SELECTED WINDOW</div>';
+    feed.innerHTML = '<div style="color:var(--muted);font-family:var(--mono);font-size:10px;text-align:center;padding:14px;">NO COMM ACTIVITY IN SELECTED WINDOW</div>';
     return;
   }
 
@@ -1677,7 +1763,7 @@ function renderCommStatus() {
       + '<span style="color:#aaa;font-size:10px;width:52px;">' + e.time + '</span>'
       + '<span style="background:' + s.bg + ';color:' + s.color + ';padding:1px 6px;border-radius:2px;font-size:9px;font-weight:700;letter-spacing:0.5px;width:54px;text-align:center;">' + s.tag + '</span>'
       + '<span style="color:#fff;flex:1;font-size:11px;">' + e.patient + ' <span style="color:' + triageColor + ';font-weight:700;">(' + e.triage + ')</span> — <span style="color:#bbb;">' + shortText + '</span></span>'
-      + '<span style="color:#666;font-size:10px;">' + agoText + '</span>'
+      + '<span style="color:var(--muted);font-size:10px;">' + agoText + '</span>'
       + '</div>';
   }).join('');
 }
@@ -1758,6 +1844,7 @@ function clearAll() {
 
 // ── INIT: restore from localStorage ──
 window.addEventListener('DOMContentLoaded', function() {
+  restoreDisplayMode();
   loadFromStorage();
   importFromFieldInbox();
 });
