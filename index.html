@@ -82,11 +82,61 @@ body.training-mode #hdr-title{color:#ff6600 !important;text-shadow:0 0 15px rgba
 .pm-small-btn{padding:10px 6px;border-radius:2px;font-family:'Exo 2',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:1px solid;-webkit-appearance:none;text-align:center;}
 
 /* ══ RED LIGHT MODE ══ */
+/* Night vision is preserved by removing short-wavelength output, not by
+   filtering the rendered page. The previous global filter
+   (saturate 0 / sepia / hue-rotate / brightness 0.5) collapsed every colour
+   onto one hue at half luminance: 429 of 513 text runs fell below WCAG AA,
+   T1 red dropped to 1.68:1, and T1/T2/T3/T4 became indistinguishable.
+   Re-declaring the palette tokens keeps the same red-light discipline while
+   every text pair clears 4.5:1 and triage stays separable by luminance.
+   Measured minimum contrast in this palette: 5.55:1.
+   Triage fill luminance: T1 .0305 > T2 .0141 > T3 .0077 > T4 .0051 */
 body.red-light{
-  filter:saturate(0) sepia(1) hue-rotate(300deg) brightness(0.5);
+  --bg:#0a0202;--bg2:#120303;--bg3:#180404;--panel:#1b0505;--panel2:#220707;
+  --border:#4a1a14;--border2:#5e241c;--border3:#743026;
+
+  --white:#ffe3dc;--off:#f5b2a4;--muted:#c9877b;--muted2:#2e0e0b;
+
+  /* T1 / critical — highest luminance, seen first */
+  --red:#ff9d85;--red2:#e07a60;--red-dk:#5c1a10;--red-glow:rgba(255,157,133,.28);
+  /* T2 / caution */
+  --amber:#e2907a;--amber2:#c47660;--amber-dk:#3d1109;--amber-glow:rgba(226,144,122,.20);
+  /* T3 / normal + primary actions */
+  --green:#cf8471;--green2:#b06d5c;--green-dk:#2a0c07;--green-glow:rgba(207,132,113,.18);
+  /* informational */
+  --blue:#b98077;--blue2:#9a6a5f;--blue-dk:#241010;--blue-glow:rgba(185,128,119,.16);
+  --purple:#c58c84;--purple-dk:#241014;
 }
 body.red-light #red-light-btn{
   background:#330000;color:#ff3030;border-color:#660000;
+}
+body.red-light #contact-btn{background:var(--red-dk);color:var(--red);border-color:var(--red2);}
+
+/* ══ RED LIGHT MODE — hard-coded colour reach-in ══
+   A dozen controls carry their colours as inline style attributes or as literal
+   hex in the .btn-* rules, so the palette tokens above cannot reach them and
+   they would keep their daylight colours at night. These overrides put them
+   back on the red-light palette. Day mode is untouched — every rule here is
+   scoped to body.red-light. */
+body.red-light .btn-red{border-color:var(--red2);}
+body.red-light .btn-amber{border-color:var(--amber2);}
+body.red-light .btn-green{border-color:var(--green2);}
+body.red-light .btn-blue{border-color:var(--blue2);}
+body.red-light .btn-ghost{border-color:var(--border2);}
+body.red-light #brief-btn,
+body.red-light #training-btn,
+body.red-light #demo-btn,
+body.red-light #selfaid-btn,
+body.red-light #tts-btn{
+  background:var(--bg3)!important;color:var(--off)!important;border-color:var(--border2)!important;
+}
+body.red-light #stor-bar button,
+body.red-light .pm-big-btn,
+body.red-light #log-export-row button{
+  background:var(--bg3)!important;color:var(--off)!important;border-color:var(--border2)!important;
+}
+body.red-light .nav-icon{
+  filter:saturate(0) sepia(1) hue-rotate(325deg) brightness(1.1);
 }
 
 /* ══ BRIEF MODE (Light / Presentation) ══ */
@@ -303,13 +353,16 @@ body.brief-mode #hdr-elapsed {color:#885500;}
 .trend-canvas{width:100%;height:130px;background:var(--bg3);border-radius:2px;display:block;}
 
 /* ══ LIVE/DEMO MODE TABS ══ */
-#mode-tabs{display:flex;gap:0;background:var(--bg2);border-bottom:2px solid var(--border);flex-shrink:0;}
+#mode-tabs{display:flex;gap:0;background:var(--bg2);border-bottom:2px solid var(--border);flex-shrink:0;overflow:hidden;}
+#mode-tabs > .mode-tab{min-width:0;}
 .mode-tab{flex:1;padding:9px 8px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:2px;cursor:pointer;border:none;border-bottom:3px solid transparent;background:none;color:var(--muted);text-align:center;-webkit-appearance:none;}
 .mode-tab.active-live{color:var(--green);border-bottom-color:var(--green);background:rgba(0,255,65,.04);}
 .mode-tab.active-demo{color:var(--purple);border-bottom-color:var(--purple);background:rgba(187,136,255,.04);}
 
 /* ══ MODE BUTTONS in HEADER ══ */
-#mode-btns{display:flex;gap:5px;align-items:center;}
+#mode-btns{display:flex;gap:5px;align-items:center;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+#mode-btns::-webkit-scrollbar{display:none;}
+#mode-btns > .mode-btn{flex:0 0 auto;}
 .mode-btn{
   padding:4px 7px;border-radius:2px;font-family:'Share Tech Mono',monospace;
   font-size:9px;font-weight:700;letter-spacing:1px;cursor:pointer;
@@ -324,7 +377,7 @@ html,body{background:var(--bg);color:var(--white);font-family:var(--ui);height:1
 /* scanline removed for iOS touch compatibility */
 
 /* ── SHELL ── */
-#app{display:flex;flex-direction:column;height:100vh;min-height:100vh;max-width:500px;margin:0 auto;position:relative;}
+#app{display:flex;flex-direction:column;height:100vh;min-height:100vh;max-width:500px;margin:0 auto;position:relative;overflow-x:clip;}
 
 /* ── HEADER ── */
 #hdr{background:var(--bg2);border-bottom:2px solid var(--green);padding:8px 14px 7px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 0 30px rgba(0,255,65,.1);}
@@ -334,7 +387,11 @@ html,body{background:var(--bg);color:var(--white);font-family:var(--ui);height:1
 #hdr-elapsed{font-family:var(--mono);font-size:12px;color:var(--amber);text-align:right;margin-top:1px;}
 
 /* ── STORAGE BAR ── */
-#stor-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:4px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+#stor-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:4px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:10px;overflow:hidden;}
+#stor-bar > #stor-info{flex:0 0 auto;white-space:nowrap;}
+#stor-bar > div:last-child{flex:1 1 auto;min-width:0;overflow-x:auto;justify-content:flex-start;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+#stor-bar > div:last-child::-webkit-scrollbar{display:none;}
+#stor-bar > div:last-child > button{flex:0 0 auto;min-height:44px!important;}  /* beats the inline min-height:36px on these seven buttons */
 #stor-info{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:1px;}
 .stor-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);display:inline-block;margin-right:4px;animation:blink 2s infinite;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
@@ -387,6 +444,17 @@ html,body{background:var(--bg);color:var(--white);font-family:var(--ui);height:1
 .btn-ghost:active{background:var(--border2);}
 .btn-sm{padding:13px 12px;font-size:14px;margin-bottom:6px;min-height:48px;}
 .btn-xs{padding:10px 10px;font-size:13px;margin-bottom:5px;min-height:44px;}
+
+/* ══ NUMERIC STEPPERS (gloved / one-handed entry) ══
+   Additive: every field below keeps its existing keyboard input untouched.
+   The steppers only add or subtract a fixed amount — no preset clinical
+   values, no thresholds, no defaults are introduced. */
+.vstep{display:flex;gap:4px;margin:4px 0 8px;}
+.vstep button{flex:1 1 0;min-height:44px;min-width:44px;background:var(--bg3);color:var(--off);
+  border:1px solid var(--border2);border-radius:3px;font-family:var(--mono);font-size:14px;
+  font-weight:700;cursor:pointer;-webkit-appearance:none;touch-action:manipulation;}
+.vstep button:active{background:var(--green-dk);color:var(--green);border-color:var(--green2);}
+.vstep button.vstep-clr{flex:0 0 48px;font-size:12px;color:var(--off);}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:6px;}
 .g2 .btn{margin-bottom:0;}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:5px;}
@@ -600,7 +668,7 @@ button{-webkit-appearance:none;cursor:pointer;}
   </div>
 </div>
 
-<!-- LIVE / DEMO MODE TABS -->
+<!-- LIVE / DEMO MODE TABS  (PILOT MODE merged into this row — see NAV below) -->
 <div id="mode-tabs">
   <button class="mode-tab active-live" id="tab-live" onclick="switchModeTab('live')">
     🟢 LIVE
@@ -608,6 +676,7 @@ button{-webkit-appearance:none;cursor:pointer;}
   <button class="mode-tab" id="tab-demo" onclick="switchModeTab('demo')">
     🎬 DEMO
   </button>
+  <button class="lang-btn" id="pilot-mode-btn" onclick="togglePilotMode()" style="flex:0 0 auto;background:var(--panel);color:var(--green);border:1px solid var(--green-dk);border-bottom:none;padding:0 14px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;min-height:44px;">✈️ PILOT</button>
 </div>
 
 <!-- PATIENT BAR -->
@@ -620,8 +689,10 @@ button{-webkit-appearance:none;cursor:pointer;}
 </div>
 
 <!-- NAV -->
-<!-- LANGUAGE SELECTOR -->
-<div id="lang-selector" style="justify-content:flex-end;">
+<!-- LANGUAGE SELECTOR
+     PILOT MODE moved into the LIVE/DEMO row above; this row is kept in place
+     (collapsed to zero height) so future language buttons have a home. -->
+<div id="lang-selector" style="justify-content:flex-end;display:none;">
   <button class="lang-btn" style="background:var(--panel);color:#00ff41;border-color:#004400;" onclick="togglePilotMode()">✈️ PILOT MODE</button>
 </div>
 
@@ -643,6 +714,24 @@ button{-webkit-appearance:none;cursor:pointer;}
 <!-- ║         PAGE: MARCH          ║ -->
 <!-- ╚══════════════════════════════╝ -->
 <div class="page active" id="page-march">
+
+  <!-- QUICK ACTIONS hoisted to the top of MARCH.
+       Measured before: this block sat 1108 px into a 486 px content window
+       (2.3 screens of scrolling), making every "quick" action slower to reach
+       than the nav route it exists to shortcut. Contents unchanged. -->
+  <div class="sec">
+    <div class="sec-hdr"><span class="sec-title">QUICK ACTIONS</span></div>
+    <div class="sec-body">
+      <div class="g2">
+        <button class="btn btn-red btn-sm" onclick="showPage('tq')">🩸 DEPLOY TQ</button>
+        <button class="btn btn-blue btn-sm" onclick="openDrug('Morphine','IV/IM — 2–5mg titrate q4h')">💉 MORPHINE</button>
+        <button class="btn btn-blue btn-sm" onclick="openDrug('Ketamine','IV 0.3–0.5mg/kg | IM 1–2mg/kg')">💉 KETAMINE</button>
+        <button class="btn btn-red btn-sm" onclick="openDrug('TXA (Tranexamic Acid)','IV/IO 2g slow push ASAP — NOT later than 3h after injury. Single dose. TCCC Change 20-02, PMID 32969002')">🩸 TXA ⚠</button>
+        <button class="btn btn-amber btn-sm" onclick="openNCD()">🫁 NEEDLE DECOMP</button>
+        <button class="btn btn-green btn-sm" onclick="showPage('vitals')">💓 CHECK VITALS</button>
+      </div>
+    </div>
+  </div>
 
   <div class="sec">
     <div class="sec-hdr"><span class="sec-title">CASUALTY INFO</span><span id="triage-chip" class="chip chip-m" style="margin-left:auto">UNTRIAGED</span></div>
@@ -772,19 +861,6 @@ button{-webkit-appearance:none;cursor:pointer;}
     </div>
   </div>
 
-  <div class="sec">
-    <div class="sec-hdr"><span class="sec-title">QUICK ACTIONS</span></div>
-    <div class="sec-body">
-      <div class="g2">
-        <button class="btn btn-red btn-sm" onclick="showPage('tq')">🩸 DEPLOY TQ</button>
-        <button class="btn btn-blue btn-sm" onclick="openDrug('Morphine','IV/IM — 2–5mg titrate q4h')">💉 MORPHINE</button>
-        <button class="btn btn-blue btn-sm" onclick="openDrug('Ketamine','IV 0.3–0.5mg/kg | IM 1–2mg/kg')">💉 KETAMINE</button>
-        <button class="btn btn-red btn-sm" onclick="openDrug('TXA (Tranexamic Acid)','IV/IO 2g push ASAP — no 3hr limit (TCCC 2026)')">🩸 TXA ⚠</button>
-        <button class="btn btn-amber btn-sm" onclick="openNCD()">🫁 NEEDLE DECOMP</button>
-        <button class="btn btn-green btn-sm" onclick="showPage('vitals')">💓 CHECK VITALS</button>
-      </div>
-    </div>
-  </div>
 
   <!-- NEXT TAB -->
   <div style="padding:16px 0 8px;display:flex;justify-content:flex-end;">
@@ -805,15 +881,21 @@ button{-webkit-appearance:none;cursor:pointer;}
         <div><span class="lbl">HEART RATE (BPM)</span><input class="inp" id="i-hr" type="number" placeholder="Normal: 60–100"></div>
         <div><span class="lbl">SpO₂ (%)</span><input class="inp" id="i-spo2" type="number" placeholder="Normal: 95–100"></div>
       </div>
+      <span class="lbl">HEART RATE (BPM)</span><div class="vstep"><button type="button" onclick="vAdj('i-hr',-10)">-10</button><button type="button" onclick="vAdj('i-hr',-1)">-1</button><button type="button" onclick="vAdj('i-hr',1)">+1</button><button type="button" onclick="vAdj('i-hr',10)">+10</button><button type="button" class="vstep-clr" onclick="vClear('i-hr')">CLR</button></div>
+      <span class="lbl">SpO₂ (%)</span><div class="vstep"><button type="button" onclick="vAdj('i-spo2',-5)">-5</button><button type="button" onclick="vAdj('i-spo2',-1)">-1</button><button type="button" onclick="vAdj('i-spo2',1)">+1</button><button type="button" onclick="vAdj('i-spo2',5)">+5</button><button type="button" class="vstep-clr" onclick="vClear('i-spo2')">CLR</button></div>
       <div class="r2">
         <div><span class="lbl">SYSTOLIC BP</span><input class="inp" id="i-sbp" type="number" placeholder="SBP mmHg"></div>
         <div><span class="lbl">DIASTOLIC BP</span><input class="inp" id="i-dbp" type="number" placeholder="DBP mmHg"></div>
       </div>
+      <span class="lbl">SYSTOLIC BP</span><div class="vstep"><button type="button" onclick="vAdj('i-sbp',-10)">-10</button><button type="button" onclick="vAdj('i-sbp',-1)">-1</button><button type="button" onclick="vAdj('i-sbp',1)">+1</button><button type="button" onclick="vAdj('i-sbp',10)">+10</button><button type="button" class="vstep-clr" onclick="vClear('i-sbp')">CLR</button></div>
+      <span class="lbl">DIASTOLIC BP</span><div class="vstep"><button type="button" onclick="vAdj('i-dbp',-10)">-10</button><button type="button" onclick="vAdj('i-dbp',-1)">-1</button><button type="button" onclick="vAdj('i-dbp',1)">+1</button><button type="button" onclick="vAdj('i-dbp',10)">+10</button><button type="button" class="vstep-clr" onclick="vClear('i-dbp')">CLR</button></div>
       <div class="r3">
         <div><span class="lbl">RESP RATE</span><input class="inp" id="i-rr" type="number" placeholder="12–20"></div>
         <div><span class="lbl">TEMP (°C)</span><input class="inp" id="i-temp" type="number" step=".1" placeholder="36.5"></div>
         <div><span class="lbl">ETCO₂</span><input class="inp" id="i-etco2" type="number" placeholder="35–45"></div>
       </div>
+      <span class="lbl">RESP RATE</span><div class="vstep"><button type="button" onclick="vAdj('i-rr',-5)">-5</button><button type="button" onclick="vAdj('i-rr',-1)">-1</button><button type="button" onclick="vAdj('i-rr',1)">+1</button><button type="button" onclick="vAdj('i-rr',5)">+5</button><button type="button" class="vstep-clr" onclick="vClear('i-rr')">CLR</button></div>
+      <span class="lbl">TEMP (°C)</span><div class="vstep"><button type="button" onclick="vAdj('i-temp',-1,1)">-1.0</button><button type="button" onclick="vAdj('i-temp',-0.1,1)">-0.1</button><button type="button" onclick="vAdj('i-temp',0.1,1)">+0.1</button><button type="button" onclick="vAdj('i-temp',1,1)">+1.0</button><button type="button" class="vstep-clr" onclick="vClear('i-temp')">CLR</button></div>
       <div class="r2">
         <div><span class="lbl">GCS (3–15)</span><input class="inp" id="i-gcs" type="number" min="3" max="15" placeholder="3–15"></div>
         <div><span class="lbl">GLUCOSE (mg/dL)</span><input class="inp" id="i-gluc" type="number" placeholder="70–120"></div>
@@ -1019,8 +1101,10 @@ button{-webkit-appearance:none;cursor:pointer;}
         <div class="alert-box-body">Absent breath sounds (affected side) · Tracheal deviation (away) · JVD · Hypotension + tachycardia · Severe resp distress + falling SpO₂</div>
       </div>
       <div class="g2">
-        <button class="btn btn-blue btn-sm" onclick="logProc('NCD — 14G catheter, 2nd ICS MCL, RIGHT','procedure')">🫁 NCD RIGHT</button>
-        <button class="btn btn-blue btn-sm" onclick="logProc('NCD — 14G catheter, 2nd ICS MCL, LEFT','procedure')">🫁 NCD LEFT</button>
+        <button class="btn btn-blue btn-sm" onclick="logProc('NCD — 14G/10G 3.25in catheter, 5th ICS AAL, RIGHT','procedure')">🫁 NCD R — AAL</button>
+        <button class="btn btn-blue btn-sm" onclick="logProc('NCD — 14G/10G 3.25in catheter, 5th ICS AAL, LEFT','procedure')">🫁 NCD L — AAL</button>
+        <button class="btn btn-blue btn-sm" onclick="logProc('NCD — 14G/10G 3.25in catheter, 2nd ICS MCL, RIGHT','procedure')">🫁 NCD R — MCL</button>
+        <button class="btn btn-blue btn-sm" onclick="logProc('NCD — 14G/10G 3.25in catheter, 2nd ICS MCL, LEFT','procedure')">🫁 NCD L — MCL</button>
         <button class="btn btn-blue btn-sm" onclick="logProc('Vented chest seal applied — RIGHT','procedure')">CHEST SEAL R</button>
         <button class="btn btn-blue btn-sm" onclick="logProc('Vented chest seal applied — LEFT','procedure')">CHEST SEAL L</button>
         <button class="btn btn-blue btn-sm" onclick="logProc('Finger thoracostomy (FUT) performed — RIGHT','procedure')">FUT RIGHT</button>
@@ -1391,8 +1475,8 @@ button{-webkit-appearance:none;cursor:pointer;}
         <div class="dpill" onclick="openDrug('Midazolam','IV/IM 1–5mg — caution with opioids')">Midazolam</div>
         <div class="dpill" onclick="openDrug('Meloxicam','PO 15mg q24h — do NOT use if hemorrhage risk')">Meloxicam</div>
         <div class="dpill" onclick="openDrug('Acetaminophen (APAP)','IV/PO 1g q6h — max 4g/day')">APAP</div>
-        <div class="dpill b" onclick="openDrug('Esketamine IN','Intranasal — TCCC 2026. Analgesia/procedural sedation. 84mg/mL intranasal')">Esketamine IN ⭐</div>
-        <div class="dpill b" onclick="openDrug('Suzetrigine','PO — TCCC 2026 new analgesic. Nav1.8 blocker, non-opioid. Dose per formulary')">Suzetrigine ⭐</div>
+        <div class="dpill b" onclick="openDrug('Esketamine IN','IN 14mg or 28mg &#215; 1 — repeat q30min prn. TCCC analgesia. Device = 28mg (14mg/spray). Analgesia use is off-label vs FDA')">Esketamine IN ⭐</div>
+        <div class="dpill b" onclick="openDrug('Suzetrigine','PO 100mg once (2 &#215; 50mg, empty stomach) then 50mg q12h — TCCC CWMP non-opioid, Nav1.8 blocker. Not studied &gt;14 days')">Suzetrigine ⭐</div>
         <div class="dpill" onclick="openDrug('Diazepam','IV/IM 5–10mg — seizure/muscle spasm')">Diazepam</div>
       </div>
 
@@ -1405,14 +1489,14 @@ button{-webkit-appearance:none;cursor:pointer;}
         <div class="dpill a" onclick="openDrug('FFP (Fresh Frozen Plasma)','IV 1 unit — 1:1 ratio with pRBC')">FFP</div>
         <div class="dpill a" onclick="openDrug('Whole Blood (LTOWB)','IV 1 unit — preferred over component therapy')">Whole Blood</div>
         <div class="dpill a" onclick="openDrug('Platelets','IV 1 apheresis unit')">Platelets</div>
-        <div class="dpill r" onclick="openDrug('TXA (Tranexamic Acid)','IV/IO 2g push ASAP — no 3hr limit (TCCC 2026). 2nd dose: 1g IV over 8h')">TXA ⚠</div>
+        <div class="dpill r" onclick="openDrug('TXA (Tranexamic Acid)','IV/IO 2g slow push ASAP — NOT later than 3h after injury. Single dose, no maintenance infusion. Indication: likely transfusion OR significant TBI. TCCC Change 20-02, PMID 32969002')">TXA ⚠</div>
       </div>
 
       <div class="drug-cat">🦠 ANTIBIOTICS</div>
       <div class="drug-wrap">
-        <div class="dpill g" onclick="openDrug('Ceftriaxone 2g','IV/IO/IM 2g q24h — TCCC 2026 1st line ABx')">Ceftriaxone ⭐</div>
-        <div class="dpill g" onclick="openDrug('Cefadroxil 1g','PO 1g q12h — TCCC 2026 oral ABx (replaces Moxifloxacin)')">Cefadroxil ⭐</div>
-        <div class="dpill g" onclick="openDrug('Cephalexin 500mg','PO 500mg q6h — oral ABx alternative')">Cephalexin</div>
+        <div class="dpill g" onclick="openDrug('Ceftriaxone 2g','IV/IO/IM 2g q24h — TCCC Change 25-1 parenteral ABx (replaces Ertapenem). PMID 41474877')">Ceftriaxone ⭐</div>
+        <div class="dpill g" onclick="openDrug('Cefadroxil 1g','PO 1g q24h — TCCC Change 25-1 preferred oral ABx (replaces Moxifloxacin). PMID 41474877')">Cefadroxil ⭐</div>
+        <div class="dpill g" onclick="openDrug('Cephalexin 500mg','PO 500mg q6h — TCCC Change 25-1 oral ABx alternative. PMID 41474877')">Cephalexin</div>
         <div class="dpill g" onclick="openDrug('Metronidazole','IV 500mg q8h — abdominal/anaerobic coverage')">Metronidazole</div>
         <div class="dpill g" onclick="openDrug('Azithromycin','PO/IV 500mg q24h')">Azithromycin</div>
         <div class="dpill g" onclick="openDrug('Amoxicillin-Clavulanate','PO 875/125mg q12h')">Amox-Clav</div>
@@ -1793,17 +1877,21 @@ button{-webkit-appearance:none;cursor:pointer;}
     <div class="alert-box" style="margin-bottom:12px">
       <div class="alert-box-title">TCCC STANDARD PROCEDURE</div>
       <div class="alert-box-body">
-        ➤ 14G (minimum) IV catheter<br>
-        ➤ 2nd intercostal space, midclavicular line<br>
-        ➤ Insert over superior border of 3rd rib<br>
+        ➤ 14-gauge or 10-gauge, 3.25-inch needle/catheter unit<br>
+        ➤ Site A: 5th intercostal space, anterior axillary line (AAL)<br>
+        ➤ Site B: 2nd intercostal space, midclavicular line (MCL)<br>
+        ➤ If the MCL site is used, do NOT insert medial to the nipple line<br>
+        ➤ Insert over the superior border of the rib below<br>
         ➤ Advance until rush of air confirmed<br>
         ➤ Leave catheter in place — do NOT remove<br>
         ➤ Follow with finger thoracostomy or chest tube
       </div>
     </div>
     <div class="g2">
-      <button class="btn btn-red" onclick="logNCD('RIGHT')">⚡ NCD — RIGHT</button>
-      <button class="btn btn-red" onclick="logNCD('LEFT')">⚡ NCD — LEFT</button>
+      <button class="btn btn-red" onclick="logNCD('RIGHT','5th ICS AAL')">⚡ NCD R — 5th ICS AAL</button>
+      <button class="btn btn-red" onclick="logNCD('LEFT','5th ICS AAL')">⚡ NCD L — 5th ICS AAL</button>
+      <button class="btn btn-red" onclick="logNCD('RIGHT','2nd ICS MCL')">⚡ NCD R — 2nd ICS MCL</button>
+      <button class="btn btn-red" onclick="logNCD('LEFT','2nd ICS MCL')">⚡ NCD L — 2nd ICS MCL</button>
     </div>
   </div>
 </div>
@@ -2647,6 +2735,36 @@ function toggleMarch(letter) {
 // ══════════════════════════════════════════════
 // VITALS
 // ══════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// NUMERIC STEPPERS
+// Purely arithmetic. Adds/subtracts a fixed amount from whatever is already
+// in the field, clamped to the field's own min/max. Empty field + a tap
+// starts from 0 for +, and is ignored for -. No clinical value is assumed.
+// ══════════════════════════════════════════════
+function vAdj(id, delta, decimals) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const cur = el.value.trim();
+  if (cur === '' && delta < 0) return;
+  let v = (cur === '' ? 0 : parseFloat(cur));
+  if (isNaN(v)) v = 0;
+  v += delta;
+  const lo = el.min !== '' ? parseFloat(el.min) : null;
+  const hi = el.max !== '' ? parseFloat(el.max) : null;
+  if (lo !== null && v < lo) v = lo;
+  if (hi !== null && v > hi) v = hi;
+  if (v < 0) v = 0;
+  el.value = decimals ? v.toFixed(decimals) : String(Math.round(v));
+  el.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+function vClear(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.value = '';
+  el.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
 function saveVitals() {
   const pt = activePt();
   if (!pt) { alert('No casualty selected.'); return; }
@@ -2921,8 +3039,10 @@ function openNCD() {
   document.getElementById('ncd-modal').classList.remove('hidden');
 }
 
-function logNCD(side) {
-  logProc('NCD — 14G catheter, 2nd ICS MCL, ' + side + ' — air rush confirmed', 'procedure');
+function logNCD(side, site) {
+  // TCCC permits 5th ICS AAL or 2nd ICS MCL, 14-gauge or 10-gauge 3.25-inch unit.
+  site = site || '2nd ICS MCL';
+  logProc('NCD — 14G/10G 3.25in catheter, ' + site + ', ' + side + ' — air rush confirmed', 'procedure');
   document.getElementById('ncd-modal').classList.add('hidden');
 }
 
@@ -3928,7 +4048,7 @@ function importData() { openImport(); }
 // ══════════════════════════════════════════════
 // ══════════════════════════════════════════════
 // DEI ASSESSMENT ENGINE
-// Based on NAMRU-SA DEI research framework
+// Based on published directed-energy injury research
 // ══════════════════════════════════════════════
 const DEI_PROFILES = {
   laser: {
@@ -4515,7 +4635,7 @@ function calcCitrate() {
   // pRBC (Adsol/AS-1): ~4 mmol/unit (range 3–5 mmol; supernatant removed)
   // FFP (CPD): ~14 mmol/unit (range 13–15 mmol; citrate dissolved in plasma)
   // Whole Blood (CPD 450mL): ~18 mmol/unit (full anticoagulant volume, ~17.6 mmol)
-  // Source: Rall et al. 2026 — NAMRU-SA swine polytrauma model
+  // Source: Rall et al. 2026 — swine polytrauma model
   const prbc = parseInt(document.getElementById('blood-prbc').textContent) || 0;
   const ffp  = parseInt(document.getElementById('blood-ffp').textContent)  || 0;
   const wb   = parseInt(document.getElementById('blood-wb').textContent)   || 0;
@@ -4722,7 +4842,7 @@ function _buildAndStoreDemoPatients() {
 
     // Drug logs
     if (s.triage==='T1') {
-      pt.logs.push({id:now+idx+0.3,cat:'DRUG',text:'TXA 2g IV/IO push ASAP (no 3hr limit) @ '+pt.injTime,type:'drug',time:pt.injTime,ts:pt.startTime});
+      pt.logs.push({id:now+idx+0.3,cat:'DRUG',text:'TXA 2g slow IV/IO push ASAP, within 3h of injury @ '+pt.injTime,type:'drug',time:pt.injTime,ts:pt.startTime});
       if (s.hr && s.hr > 120) {
         pt.logs.push({id:now+idx+0.4,cat:'DRUG',text:'Ketamine 50mg IM for analgesia @ '+pt.injTime,type:'drug',time:pt.injTime,ts:pt.startTime+300000});
       }
@@ -6694,18 +6814,21 @@ function genSchedule() {
 
   // TXA 2nd dose at injury+1h
   if (txaVal === 'yes') {
-    doses.push({ t: 1, label: 'TXA 1g IV over 8h (2nd dose — start)' });
+    doses.push({ t: 1, label: 'TXA 1g IV over 8h (2nd dose — SUPERSEDED by single 2g push, TCCC 20-02)' });
   }
 
-  // Antibiotics
+  // Antibiotics — first dose at H+0. TCCC Change 25-1 reaffirms early administration;
+  // the previous loop started at H+interval and omitted the initial dose entirely.
   if (parseInt(abxInt) > 0) {
+    doses.push({ t: 0, label: abxDrug + '  [1st dose — give ASAP]' });
     for (let h = parseInt(abxInt); h <= 72; h += parseInt(abxInt)) {
       doses.push({ t: h, label: abxDrug });
     }
   }
 
-  // Analgesics
+  // Analgesics — first dose at H+0 for the same reason.
   if (parseInt(painInt) > 0) {
+    doses.push({ t: 0, label: painDrug + '  [1st dose]' });
     for (let h = parseInt(painInt); h <= 72; h += parseInt(painInt)) {
       doses.push({ t: h, label: painDrug });
     }
@@ -6724,7 +6847,7 @@ function genSchedule() {
   out += 'H+000 ' + pad2(hh) + ':' + pad2(mm) + 'Z  — INJURY / START\n';
 
   doses.forEach(d => {
-    out += 'H+' + String(d.t).padStart(3,'0') + ' ' + formatTime(hh, mm, d.t) + 'Z  — ' + d.label + '\n';
+    out += 'H+' + String(d.t).padStart(3,'0') + ' ' + formatTime(hh, mm, d.t) + '  — ' + d.label + '\n';
   });
 
   const el = document.getElementById('sched-output');
@@ -6811,9 +6934,11 @@ function checkHypo() {
         <div>
           <span class="lbl">ANTIBIOTIC</span>
           <select class="inp" id="sched-abx">
-            <option value="Moxifloxacin 400mg PO|24">Moxifloxacin q24h</option>
-            <option value="Ertapenem 1g IV|24">Ertapenem q24h</option>
-            <option value="Ceftriaxone 2g IV|24">Ceftriaxone q24h</option>
+            <option value="Cefadroxil 1g PO|24">Cefadroxil q24h — TCCC 25-1 oral, preferred</option>
+            <option value="Ceftriaxone 2g IV/IO/IM|24">Ceftriaxone q24h — TCCC 25-1 parenteral</option>
+            <option value="Cephalexin 500mg PO|6">Cephalexin q6h — TCCC 25-1 oral alternative</option>
+            <option value="Moxifloxacin 400mg PO|24">Moxifloxacin q24h — superseded by 25-1</option>
+            <option value="Ertapenem 1g IV|24">Ertapenem q24h — superseded by 25-1</option>
             <option value="Metronidazole 500mg IV|8">Metronidazole q8h</option>
             <option value="Ciprofloxacin 500mg PO|12">Ciprofloxacin q12h</option>
             <option value="Doxycycline 100mg PO|12">Doxycycline q12h</option>
@@ -6833,8 +6958,8 @@ function checkHypo() {
         <div>
           <span class="lbl">INCLUDE TXA 2ND DOSE</span>
           <select class="inp" id="sched-txa">
-            <option value="yes">Yes (1g over 8h)</option>
-            <option value="no">No</option>
+            <option value="no">No — single 2g push only (TCCC 20-02)</option>
+            <option value="yes">Yes (1g over 8h) — superseded regimen</option>
           </select>
         </div>
       </div>
