@@ -2173,6 +2173,25 @@ button{-webkit-appearance:none;cursor:pointer;}
 </div>
 
 <script>
+// Global non-blocking toast (tactical theme). Replaces blocking alert() dialogs.
+// type: 'warn' (amber, default) | 'err' (red) | 'ok' (green)
+function toast(msg, type) {
+  const el = document.getElementById('toast');
+  if (!el) { window.alert(msg); return; }
+  const t = type || 'warn';
+  el.style.background = t === 'err' ? 'var(--red-dk)' : t === 'ok' ? 'var(--green-dk)' : 'var(--amber-dk)';
+  el.style.borderColor = t === 'err' ? 'var(--red)' : t === 'ok' ? 'var(--green)' : 'var(--amber)';
+  el.style.color = t === 'err' ? 'var(--red)' : t === 'ok' ? 'var(--green)' : 'var(--amber)';
+  el.textContent = msg;
+  el.style.opacity = '1';
+  el.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(-50%) translateY(20px)';
+  }, 2600);
+}
+
 // ══════════════════════════════════════════════
 // CONSTANTS
 // ══════════════════════════════════════════════
@@ -2267,7 +2286,7 @@ function makePt() {
 
 function newPatient() {
   if (DB.patients.length >= MAX_PT) {
-    alert('Maximum 50 casualties stored. Export and clear to add more.'); return;
+    toast('Maximum 50 casualties stored. Export and clear to add more.'); return;
   }
   const pt = makePt();
   DB.patients.push(pt);
@@ -2602,7 +2621,7 @@ function savePt() {
 
 function setTriage(t) {
   const pt = activePt();
-  if (!pt) { alert('No casualty selected. Tap "+ NEW CASUALTY" first.'); return; }
+  if (!pt) { toast('No casualty selected. Tap "+ NEW CASUALTY" first.'); return; }
   pt.triage = t;
   setTriageChip(t);
   addLog('TRIAGE', 'Category set: ' + t, 'system');
@@ -2618,8 +2637,8 @@ function setTriageChip(t) {
 
 function startTimer() {
   const pt = activePt();
-  if (!pt) { alert('No casualty selected. Tap "+ NEW CASUALTY" first.'); return; }
-  if (pt.startTime) { alert('Timer already running.'); return; }
+  if (!pt) { toast('No casualty selected. Tap "+ NEW CASUALTY" first.'); return; }
+  if (pt.startTime) { toast('Timer already running.'); return; }
   pt.startTime = Date.now();
   addLog('TIMER', 'Injury timer started', 'system');
 }
@@ -2629,7 +2648,7 @@ function startTimer() {
 // ══════════════════════════════════════════════
 function toggleMarch(letter) {
   const pt = activePt();
-  if (!pt) { alert('No casualty selected.'); return; }
+  if (!pt) { toast('No casualty selected.'); return; }
   pt.march[letter] = !pt.march[letter];
   const done = pt.march[letter];
   const s = document.getElementById('ms-' + letter);
@@ -2652,7 +2671,7 @@ function toggleMarch(letter) {
 // ══════════════════════════════════════════════
 function saveVitals() {
   const pt = activePt();
-  if (!pt) { alert('No casualty selected.'); return; }
+  if (!pt) { toast('No casualty selected.'); return; }
 
   const hr   = document.getElementById('i-hr').value;
   const spo2 = document.getElementById('i-spo2').value;
@@ -2665,7 +2684,7 @@ function saveVitals() {
   const pain = document.getElementById('i-pain').value;
 
   const hasAny = hr || spo2 || sbp || rr || temp || etco2 || gluc;
-  if (!hasAny) { alert('Enter at least one vital sign.'); return; }
+  if (!hasAny) { toast('Enter at least one vital sign.'); return; }
 
   if (hr)   { pt.vitals.hr   = hr;   applyVbox('d-hr',   hr,   v => +v<50||+v>130?'crit':+v>100?'warn':''); }
   if (spo2) { pt.vitals.spo2 = spo2; applyVbox('d-spo2', spo2, v => +v<90?'crit':+v<95?'warn':''); }
@@ -2766,9 +2785,9 @@ function refreshGCSDisplay() {
 
 function saveGCS() {
   const { e, v, m } = gcs;
-  if (!e || !v || !m) { alert('Select all three GCS categories (Eye / Verbal / Motor).'); return; }
+  if (!e || !v || !m) { toast('Select all three GCS categories (Eye / Verbal / Motor).'); return; }
   const pt = activePt();
-  if (!pt) { alert('No casualty selected.'); return; }
+  if (!pt) { toast('No casualty selected.'); return; }
   const total = e + v + m;
   pt.gcsVals = { ...gcs };
   pt.vitals.gcs = total;
@@ -2787,7 +2806,7 @@ function logAVPU(code, desc) {
 // ══════════════════════════════════════════════
 function deployTQ(location) {
   const pt = activePt();
-  if (!pt) { alert('No casualty selected.'); return; }
+  if (!pt) { toast('No casualty selected.'); return; }
   const type = document.getElementById('tq-type').value;
   const tq = {
     id: Date.now(),
@@ -2803,7 +2822,7 @@ function deployTQ(location) {
 
 function deployTQCustom() {
   const loc = document.getElementById('tq-custom').value.trim();
-  if (!loc) { alert('Enter custom location.'); return; }
+  if (!loc) { toast('Enter custom location.'); return; }
   deployTQ(loc);
   document.getElementById('tq-custom').value = '';
 }
@@ -2878,7 +2897,7 @@ function closeDrug() {
 
 function confirmDrug() {
   const pt = activePt();
-  if (!pt) { alert('No casualty selected.'); closeDrug(); return; }
+  if (!pt) { toast('No casualty selected.'); closeDrug(); return; }
   const name  = document.getElementById('dm-name').value;
   const dose  = document.getElementById('dm-dose').value.trim();
   const route = document.getElementById('dm-route').value;
@@ -2895,9 +2914,9 @@ function confirmDrug() {
 
 function logManualDrug() {
   const pt = activePt();
-  if (!pt) { alert('No casualty selected.'); return; }
+  if (!pt) { toast('No casualty selected.'); return; }
   const name  = document.getElementById('md-name').value.trim();
-  if (!name)  { alert('Enter drug name.'); return; }
+  if (!name)  { toast('Enter drug name.'); return; }
   const dose  = document.getElementById('md-dose').value.trim();
   const route = document.getElementById('md-route').value;
   const times = parseInt(document.getElementById('md-times').value) || 1;
@@ -2932,7 +2951,7 @@ function logNCD(side) {
 // ══════════════════════════════════════════════
 function setMOI(moi, btn) {
   const pt = activePt();
-  if (!pt) { alert('No casualty selected.'); return; }
+  if (!pt) { toast('No casualty selected.'); return; }
   pt.moi = moi;
   // Visual feedback — highlight selected button
   document.querySelectorAll('#moi-btns .btn').forEach(b => b.style.outline = '');
@@ -2943,7 +2962,7 @@ function setMOI(moi, btn) {
 
 function toggleZone(el) {
   const pt = activePt();
-  if (!pt) { alert('No casualty selected.'); return; }
+  if (!pt) { toast('No casualty selected.'); return; }
   if (!pt.zones) pt.zones = [];
   const z = el.dataset.z;
   const idx = pt.zones.indexOf(z);
@@ -2965,7 +2984,7 @@ function renderHitZones(zones) {
 
 function saveInjuryRecord() {
   const pt = activePt();
-  if (!pt) { alert('No casualty selected.'); return; }
+  if (!pt) { toast('No casualty selected.'); return; }
   const detail = document.getElementById('injury-detail').value.trim();
   const zones  = pt.zones && pt.zones.length ? pt.zones.join(', ') : 'Not specified';
   const moi    = pt.moi || 'Not specified';
@@ -2976,14 +2995,14 @@ function saveInjuryRecord() {
 
 function logProc(text, type) {
   const pt = activePt();
-  if (!pt) { alert('No casualty selected. Tap "+ NEW CASUALTY" first.'); return; }
+  if (!pt) { toast('No casualty selected. Tap "+ NEW CASUALTY" first.'); return; }
   addLog('PROC', text, type || 'procedure');
   showProcToast('✓ ' + text.substring(0, 40) + (text.length > 40 ? '...' : ''));
 }
 
 function savePackNote() {
   const pt = activePt();
-  if (!pt) { alert('No casualty selected.'); return; }
+  if (!pt) { toast('No casualty selected.'); return; }
   const n = document.getElementById('pack-note').value.trim();
   addLog('PACK', 'Wound packing' + (n ? ' — ' + n : ''), 'procedure');
   document.getElementById('pack-note').value = '';
@@ -3123,7 +3142,7 @@ function deleteLogEntry() {
 // ══════════════════════════════════════════════
 function exportCSV() {
   const pt = activePt();
-  if (!pt) { alert('No casualty selected.'); return; }
+  if (!pt) { toast('No casualty selected.'); return; }
 
   // Build CSV rows
   const rows = [];
@@ -3225,7 +3244,7 @@ function copy9Line() {
 // ══════════════════════════════════════════════
 function genCard() {
   const pt = activePt();
-  if (!pt) { alert('No casualty selected.'); return; }
+  if (!pt) { toast('No casualty selected.'); return; }
 
   const drugLog  = pt.logs.filter(e => e.type === 'drug').map(e => '  ' + e.time + '  ' + e.text).join('\n') || '  None recorded';
   const procLog  = pt.logs.filter(e => e.type === 'procedure').map(e => '  ' + e.time + '  ' + e.text).join('\n') || '  None recorded';
@@ -3270,7 +3289,7 @@ let _rptTab = 'report';
 
 function openExport() {
   const pt = activePt();
-  if (!pt) { alert('No casualty selected.'); return; }
+  if (!pt) { toast('No casualty selected.'); return; }
   _rptTab = 'report';
   buildReportView(pt);
   document.getElementById('rpt-sub').textContent = new Date().toLocaleString();
@@ -3531,7 +3550,7 @@ function buildCSV(pt) {
 
 function exportCSV() {
   const pt = activePt();
-  if (!pt) { alert('No casualty selected.'); return; }
+  if (!pt) { toast('No casualty selected.'); return; }
   openExport();
   setTimeout(() => switchRptTab('csv', document.getElementById('rtab-csv')), 100);
 }
@@ -3597,7 +3616,7 @@ function openImport() {
 
 function doImportPaste() {
   const raw = document.getElementById('import-textarea').value.trim();
-  if (!raw) { alert('Paste your exported JSON data first.'); return; }
+  if (!raw) { toast('Paste your exported JSON data first.'); return; }
   try {
     const imp = JSON.parse(raw);
     if (!imp.patients || !Array.isArray(imp.patients)) throw new Error('Invalid format');
@@ -3614,7 +3633,7 @@ function doImportPaste() {
     document.getElementById('import-textarea').value = '';
     showProcToast('✓ ' + added + ' casualties imported');
   } catch(err) {
-    alert('Import failed: invalid JSON. Make sure you paste the complete exported data.');
+    toast('Import failed: invalid JSON. Make sure you paste the complete exported data.');
   }
 }
 
@@ -3815,7 +3834,7 @@ function copyNineLine() {
 function dispatchRadio() {
   const txt = document.getElementById('mvac-output').textContent;
   if (!txt || txt.indexOf('LINE 1') === -1) {
-    alert('Generate 9-LINE first before transmitting.');
+    toast('Generate 9-LINE first before transmitting.');
     return;
   }
   const confirmed = confirm('CONFIRM RADIO TRANSMISSION\n\nTransmit MEDEVAC 9-LINE on designated frequency?\n\nThis will be logged with current timestamp.');
@@ -3828,11 +3847,11 @@ function dispatchRadio() {
 }
 
 function dispatchDrone() {
-  alert('DRONE DISPATCH — NOT YET CONNECTED\n\nAPI endpoint not configured.\nContact system administrator to enable autonomous dispatch.');
+  toast('DRONE DISPATCH — NOT YET CONNECTED — API endpoint not configured. Contact system administrator to enable autonomous dispatch.');
 }
 
 function dispatchSatcom() {
-  alert('SATCOM AUTO-TRANSMIT — NOT YET CONNECTED\n\nSatellite communication module not configured.');
+  toast('SATCOM AUTO-TRANSMIT — NOT YET CONNECTED — Satellite communication module not configured.');
 }
 
 // ══════════════════════════════════════════════
@@ -3870,7 +3889,7 @@ function saveMiniGCS() {
   const { e, v, m } = miniGcs;
   if (!e || !v || !m) { showProcToast('Select E, V, and M values first'); return; }
   const pt = activePt();
-  if (!pt) { alert('No casualty selected.'); return; }
+  if (!pt) { toast('No casualty selected.'); return; }
   const total = e + v + m;
   pt.gcsVals = { e, v, m };
   pt.vitals.gcs = total;
@@ -5220,9 +5239,9 @@ function kgToLbs() {
 }
 function setPatientWeight() {
   const kg = document.getElementById('wt-kg').value;
-  if (!kg) { alert('Enter weight first.'); return; }
+  if (!kg) { toast('Enter weight first.'); return; }
   const pt = activePt();
-  if (!pt) { alert('No casualty selected.'); return; }
+  if (!pt) { toast('No casualty selected.'); return; }
   pt.wt = kg;
   document.getElementById('cas-wt').value = kg;
   saveDB();
@@ -5620,7 +5639,7 @@ function copyMIST() {
 
 function logMISTasNote() {
   const txt = document.getElementById('mist-output').textContent;
-  if (txt === 'Press GENERATE →') { alert('Generate MIST report first.'); return; }
+  if (txt === 'Press GENERATE →') { toast('Generate MIST report first.'); return; }
   addLog('MIST', txt.substring(0, 200) + '...', 'system');
   showProcToast('✓ Saved to LOG');
 }
@@ -5630,10 +5649,10 @@ function logMISTasNote() {
 // ══════════════════════════════════════════════
 function genSchedule() {
   const startStr = document.getElementById('sched-start').value.trim();
-  if (!startStr) { alert('Enter injury time (HH:MM).'); return; }
+  if (!startStr) { toast('Enter injury time (HH:MM).'); return; }
 
   const [hh, mm] = startStr.split(':').map(Number);
-  if (isNaN(hh) || isNaN(mm)) { alert('Invalid time format. Use HH:MM.'); return; }
+  if (isNaN(hh) || isNaN(mm)) { toast('Invalid time format. Use HH:MM.'); return; }
 
   const abxVal   = document.getElementById('sched-abx').value;
   const painVal  = document.getElementById('sched-pain').value;
@@ -5704,5 +5723,7 @@ function checkHypo() {
 </script>
 
 <div style="text-align:center;padding:18px 0 24px;font-family:monospace;font-size:10px;color:#2a3a2a;letter-spacing:1px;border-top:1px solid #1a2a1a;margin-top:24px;">Developed by Jae H. Choi, PhD, DVSc &nbsp;&middot;&nbsp; v1.0 &nbsp;&middot;&nbsp; 2026</div>
+  <!-- GLOBAL TOAST (non-blocking feedback, replaces alert()) -->
+  <div id="toast" style="position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--amber-dk);border:1px solid var(--amber);color:var(--amber);font-family:var(--mono);font-size:12px;padding:10px 18px;border-radius:4px;opacity:0;transition:all .25s;z-index:9500;pointer-events:none;letter-spacing:.5px;max-width:88vw;text-align:center;"></div>
 </body>
 </html>
