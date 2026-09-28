@@ -4806,9 +4806,15 @@ function toggleContactMode() {
 function contactTQ() {
   // Quick deploy TQ to most likely location
   const loc = 'CONTACT — location TBD';
+  const pt = activePt();
+  const before = pt ? pt.tqs.length : 0;
   deployTQ(loc);
-  showProcToast('🩸 TQ deployed — timer started');
-  speak('Tourniquet deployed. Timer started. Check bleeding control.');
+  if (pt && pt.tqs.length > before) {
+    showProcToast('🩸 TQ deployed — timer started');
+    speak('Tourniquet deployed. Timer started. Check bleeding control.');
+  } else {
+    speak('No casualty selected. TQ not logged.');
+  }
   toggleContactMode();
   showPage('tq');
 }
