@@ -1047,7 +1047,7 @@ function renderTable() {
       ? (pt.injTime||'--') + ' (' + minsInj + 'm)'
       : (pt.injTime||'--');
     return '<tr class="' + rowCls + '">'
-      + '<td><span class="triage-badge ' + triage + '">' + (triage==='none'?'--':triage) + '</span></td>'
+      + '<td><span class="triage-badge ' + triage + '">' + (triage==='none'?'--':triage) + '</span>' + (pt.disposition ? '<div style="font-family:var(--mono);font-size:9px;color:var(--blue);margin-top:2px;">' + dispositionLabel(pt.disposition, false) + '</div>' : '') + '</td>'
       + '<td style="font-weight:700;font-size:13px;">' + (pt.name||'UNKNOWN') + (window._dupCallsigns && window._dupCallsigns[(pt.name||'').trim().toUpperCase()] ? ' <span title="Possible duplicate across units" style="background:#ffaa00;color:#3a2400;padding:1px 5px;border-radius:2px;font-size:9px;font-weight:700;letter-spacing:0.5px;margin-left:4px;">⚠ DUP</span>' : '') + '</td>'
       + '<td><span class="unit-badge">' + x.unitName + '</span></td>'
       + '<td style="font-family:var(--mono);font-size:12px;">' + (pt.blood||'--') + '</td>'
@@ -1098,6 +1098,7 @@ function showDetail(idx) {
     + '<div class="detail-row"><span class="detail-label">WEIGHT</span><span class="detail-value">' + (pt.wt||'--') + ' kg</span></div>'
     + '<div class="detail-row"><span class="detail-label">MOI</span><span class="detail-value" style="font-size:11px;">' + (pt.moi||'--') + '</span></div>'
     + '<div class="detail-row"><span class="detail-label">INJURY TIME</span><span class="detail-value">' + (pt.injTime||'--') + '</span></div>'
+    + '<div class="detail-row"><span class="detail-label">DISPOSITION</span><span class="detail-value" style="font-size:11px;">' + dispositionLabel(pt.disposition, true) + '</span></div>'
     + '</div></div>'
     + '<div class="detail-section">'
     + '<div class="detail-section-title">VITALS — CURRENT</div>'
@@ -1444,8 +1445,22 @@ function drawBarChart(canvasId, labels, values, colors) {
 }
 
 // ── EXPORT ──
+const DISPOSITION_TAGS = { EVACUATED:'EVAC', HANDED_OFF:'HANDED OFF', RTD:'RTD', KIA:'KIA', DOW:'DOW' };
+function dispositionLabel(d, full) {
+  if (!d || !DISPOSITION_TAGS[d.status]) return full ? 'Not recorded' : '';
+  const esc = v => String(v || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':"'"}[c]));
+  const isDeath = d.status === 'KIA' || d.status === 'DOW';
+  let s = DISPOSITION_TAGS[d.status] + ' ' + (isDeath ? 'TOD ' : '') + esc(d.timeStr || '--');
+  if (full) {
+    if (d.detail) s += ' | ' + esc(d.detail);
+    if (d.by) s += ' | BY ' + esc(d.by);
+    if (d.note) s += ' | ' + esc(d.note);
+  }
+  return s;
+}
+
 function exportAllCSV() {
-  const rows = ['"UNIT","NAME","BLOOD","TRIAGE","HR","SBP","SPO2","GCS","TEMP","MOI","DRUGS","TQ","INJURY_TIME"'];
+  const rows = ['"UNIT","NAME","BLOOD","TRIAGE","HR","SBP","SPO2","GCS","TEMP","MOI","DRUGS","TQ","INJURY_TIME","DISPOSITION","DISPOSITION_TIME"'];
   _allPatients.forEach(({pt,unitName}) => {
     const v=pt.vitals||{};
     const sbp=(v.bp||'').split('/')[0];
@@ -1454,7 +1469,8 @@ function exportAllCSV() {
     rows.push(['"'+unitName+'"','"'+(pt.name||'UNKNOWN')+'"','"'+(pt.blood||'')+'"',
       '"'+(pt.triage||'')+'"','"'+(v.hr||'')+'"','"'+sbp+'"','"'+(v.spo2||'')+'"',
       '"'+(v.gcs||'')+'"','"'+(v.temp||'')+'"','"'+(pt.moi||'').replace(/"/g,"'")+'"',
-      '"'+drugs+'"','"'+tqs+'"','"'+(pt.injTime||'')+'"'].join(','));
+      '"'+drugs+'"','"'+tqs+'"','"'+(pt.injTime||'')+'"',
+      '"'+dispositionLabel(pt.disposition, false)+'"','"'+((pt.disposition&&pt.disposition.time)||'')+'"'].join(','));
   });
   const csv = rows.join('\n');
   const blob = new Blob([csv], {type:'text/csv'});
@@ -1480,7 +1496,7 @@ function printReport() { window.print(); }
 function renderMedevacQueue() {
   const queue = _allPatients
     .map((x, idx) => ({ ...x, idx, mins: minutesSinceInjury(x.pt) }))
-    .filter(x => x.pt.triage === 'T1' || x.pt.triage === 'T2')
+    .filter(x => (x.pt.triage === 'T1' || x.pt.triage === 'T2') && !x.pt.disposition)
     .sort((a, b) => {
       // T1 first, then by elapsed time (longer waiting = higher priority)
       const tOrder = {'T1': 0, 'T2': 1};
@@ -1528,7 +1544,7 @@ function renderMedevacQueue() {
 function exportMedevacReport() {
   const queue = _allPatients
     .map(x => ({ ...x, mins: minutesSinceInjury(x.pt) }))
-    .filter(x => x.pt.triage === 'T1' || x.pt.triage === 'T2')
+    .filter(x => (x.pt.triage === 'T1' || x.pt.triage === 'T2') && !x.pt.disposition)
     .sort((a, b) => {
       const tOrder = {'T1': 0, 'T2': 1};
       const diff = (tOrder[a.pt.triage] ?? 9) - (tOrder[b.pt.triage] ?? 9);

@@ -1756,6 +1756,45 @@ button{-webkit-appearance:none;cursor:pointer;}
   </div>
   </div>
 
+  <!-- FINAL DISPOSITION -->
+  <div class="sec" id="disp-sec">
+    <div class="sec-hdr"><span class="sec-title">FINAL DISPOSITION</span></div>
+    <div class="sec-body">
+      <div id="disp-current" style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.6;">NOT RECORDED</div>
+      <div class="r2">
+        <div>
+          <span class="lbl">STATUS</span>
+          <select class="inp" id="disp-status" onchange="dispStatusChanged()">
+            <option value="">— Select —</option>
+            <option value="EVACUATED">EVACUATED</option>
+            <option value="HANDED_OFF">HANDED OFF</option>
+            <option value="RTD">RTD — Returned to duty</option>
+            <option value="KIA">KIA — Killed in action</option>
+            <option value="DOW">DOW — Died of wounds</option>
+          </select>
+        </div>
+        <div>
+          <span class="lbl" id="disp-time-lbl">TIME (blank = now)</span>
+          <input class="inp" id="disp-time" placeholder="HH:MM" inputmode="numeric">
+        </div>
+      </div>
+      <div class="r2">
+        <div>
+          <span class="lbl" id="disp-detail-lbl">DETAIL</span>
+          <input class="inp" id="disp-detail" placeholder="">
+        </div>
+        <div>
+          <span class="lbl">RECORDED BY</span>
+          <input class="inp" id="disp-by" placeholder="Name / callsign">
+        </div>
+      </div>
+      <span class="lbl">NOTE</span>
+      <input class="inp" id="disp-note" placeholder="Optional">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);line-height:1.6;margin:6px 0 8px;">KIA: died before reaching a medical treatment facility. DOW: died after reaching a medical treatment facility. Every change is kept in the casualty LOG.</div>
+      <button class="btn btn-green" onclick="recordDisposition()">RECORD DISPOSITION</button>
+    </div>
+  </div>
+
   <!-- RADIO TRANSMISSION GUIDE -->
   <div class="sec">
     <div class="sec-hdr"><span class="sec-title">RADIO TRANSMISSION GUIDE</span></div>
@@ -2254,7 +2293,8 @@ function makePt() {
     gcsVals: { e: null, v: null, m: null },
     moi: null,
     zones: [],
-    bloodProducts: { prbc: 0, ffp: 0, wb: 0 }
+    bloodProducts: { prbc: 0, ffp: 0, wb: 0 },
+    disposition: null
   };
 }
 
@@ -2305,6 +2345,7 @@ function renderPtBar() {
     return '<div class="pt-chip' + (active ? ' active' : '') + '" onclick="switchPt(\'' + p.id + '\')">'
       + label
       + '<span style="color:' + sevColor + ';font-size:9px;margin-left:3px">' + sev + '</span>'
+      + (p.disposition && DISPOSITIONS[p.disposition.status] ? '<span style="color:' + DISPOSITIONS[p.disposition.status].color + ';font-size:9px;margin-left:3px">' + DISPOSITIONS[p.disposition.status].tag + '</span>' : '')
       + '<span class="pt-del" onclick="deletePt(\'' + p.id + '\',event)">✕</span>'
       + '</div>';
   }).join('');
@@ -2323,6 +2364,7 @@ function syncUIFromPt() {
   setVal('cas-wt', '');
   setVal('cas-age', '');
   setTriageChip(null);
+  syncDispositionUI();
 
   // Reset MARCH
   ['M','A','R','C','H'].forEach(l => {
@@ -4846,6 +4888,7 @@ function renderPtBar() {
     return '<div class="pt-chip' + (active ? ' active' : '') + '" style="' + demoStyle + '" onclick="switchPt(\'' + p.id + '\');">'
       + label
       + '<span style="color:' + sevColor + ';font-size:9px;margin-left:3px">' + sev + '</span>'
+      + (p.disposition && DISPOSITIONS[p.disposition.status] ? '<span style="color:' + DISPOSITIONS[p.disposition.status].color + ';font-size:9px;margin-left:3px">' + DISPOSITIONS[p.disposition.status].tag + '</span>' : '')
       + ((!p._isDemo) ? '<span class="pt-del" onclick="deletePt(\'' + p.id + '\',event)">✕</span>' : '')
       + '</div>';
   }).join('');
@@ -6642,6 +6685,94 @@ function autoFillMIST() {
   setTimeout(genMIST, 100);
 }
 
+// ══════════════════════════════════════════════
+// FINAL DISPOSITION
+// ══════════════════════════════════════════════
+const DISPOSITIONS = {
+  EVACUATED:  { label: 'EVACUATED',              tag: 'EVAC', color: 'var(--blue)',  detail: 'DESTINATION (Role 1/2/3, platform)', time: 'TIME DEPARTED (blank = now)' },
+  HANDED_OFF: { label: 'HANDED OFF',             tag: 'H/O',  color: 'var(--blue)',  detail: 'RECEIVING UNIT / PROVIDER',          time: 'TIME OF HANDOFF (blank = now)' },
+  RTD:        { label: 'RETURNED TO DUTY',       tag: 'RTD',  color: 'var(--green)', detail: 'UNIT RETURNED TO',                   time: 'TIME (blank = now)' },
+  KIA:        { label: 'KIA — KILLED IN ACTION', tag: 'KIA',  color: 'var(--muted)', detail: 'LOCATION OF DEATH',                  time: 'TIME OF DEATH (blank = now)' },
+  DOW:        { label: 'DOW — DIED OF WOUNDS',   tag: 'DOW',  color: 'var(--muted)', detail: 'FACILITY WHERE DEATH OCCURRED',      time: 'TIME OF DEATH (blank = now)' }
+};
+
+function dispositionText(d) {
+  if (!d || !DISPOSITIONS[d.status]) return 'Not recorded';
+  const def = DISPOSITIONS[d.status];
+  const isDeath = d.status === 'KIA' || d.status === 'DOW';
+  let s = def.label + ' | ' + (isDeath ? 'TIME OF DEATH ' : 'TIME ') + (d.timeStr || '--');
+  if (d.detail) s += ' | ' + d.detail;
+  if (d.by) s += ' | BY ' + d.by;
+  if (d.note) s += ' | ' + d.note;
+  return s;
+}
+
+function dispStatusChanged() {
+  const st = (document.getElementById('disp-status') || {}).value;
+  const def = DISPOSITIONS[st];
+  const dl = document.getElementById('disp-detail-lbl');
+  const tl = document.getElementById('disp-time-lbl');
+  if (dl) dl.textContent = def ? def.detail : 'DETAIL';
+  if (tl) tl.textContent = def ? def.time : 'TIME (blank = now)';
+}
+
+function recordDisposition() {
+  const pt = activePt();
+  if (!pt) { toast('No casualty selected. Tap "+ NEW CASUALTY" first.'); return; }
+  const get = id => { const el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
+  const status = get('disp-status');
+  if (!DISPOSITIONS[status]) { toast('Select a disposition status.'); return; }
+  const t = get('disp-time');
+  const d = new Date();
+  if (t) {
+    const m = t.match(/^(\d{1,2}):?(\d{2})$/);
+    if (!m || +m[1] > 23 || +m[2] > 59) { toast('Time must be HH:MM (24 h).'); return; }
+    d.setHours(+m[1], +m[2], 0, 0);
+  }
+  const hhmm = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  const rec = {
+    status: status,
+    time: d.toISOString(),
+    timeStr: hhmm,
+    detail: get('disp-detail'),
+    by: get('disp-by'),
+    note: get('disp-note'),
+    recorded: Date.now()
+  };
+  if (pt.disposition) {
+    pt.dispositionHistory = pt.dispositionHistory || [];
+    pt.dispositionHistory.push(pt.disposition);
+  }
+  pt.disposition = rec;
+  addLog('DISPOSITION', (pt.dispositionHistory && pt.dispositionHistory.length ? 'Changed to: ' : '') + dispositionText(rec), 'system');
+  saveDB();
+  renderPtBar();
+  syncDispositionUI();
+  showProcToast('✓ Disposition recorded: ' + DISPOSITIONS[status].tag);
+}
+
+function syncDispositionUI() {
+  const pt = activePt();
+  const d = pt && pt.disposition;
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+  set('disp-status', d ? d.status : '');
+  set('disp-time', d ? (d.timeStr || '') : '');
+  set('disp-detail', d ? (d.detail || '') : '');
+  set('disp-by', d ? (d.by || '') : '');
+  set('disp-note', d ? (d.note || '') : '');
+  dispStatusChanged();
+  const cur = document.getElementById('disp-current');
+  if (cur) {
+    if (d && DISPOSITIONS[d.status]) {
+      cur.textContent = dispositionText(d);
+      cur.style.color = DISPOSITIONS[d.status].color;
+    } else {
+      cur.textContent = 'NOT RECORDED';
+      cur.style.color = 'var(--muted)';
+    }
+  }
+}
+
 function genMIST() {
   var m = document.getElementById("mist-m").value.trim();
   var i = document.getElementById("mist-i").value.trim();
@@ -6671,6 +6802,7 @@ function genMIST() {
   out += "I - INJURIES:\n  " + (i ? i.replace(/\n/g, "\n  ") : "Not recorded") + "\n\n";
   out += "S - SIGNS/VITALS:\n  " + (s || "Not recorded") + "\n\n";
   out += "T - TREATMENT:\n  " + (t ? t.replace(/\n/g, "\n  ") : "Not recorded") + "\n";
+  if (pt && pt.disposition) { out += "\nDISPOSITION:\n  " + dispositionText(pt.disposition) + "\n"; }
   if (notes) { out += "\nNOTES:\n  " + notes.replace(/\n/g, "\n  ") + "\n"; }
   out += SEP;
   document.getElementById("mist-output").textContent = out;

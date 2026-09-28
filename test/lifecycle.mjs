@@ -6,8 +6,8 @@
  *
  * One scenario = one casualty carried from point of injury to handoff:
  *   injury -> triage/MOI/wound zones -> MARCH -> serial vitals (x3) -> tourniquet(s) -> TXA ->
- *   blood product -> GCS -> MIST report -> 9-line MEDEVAC request -> export -> import into
- *   TCCC COMMAND -> reload persistence.
+ *   blood product -> GCS -> final disposition (evacuated, handed off, RTD, KIA or DOW) -> MIST
+ *   report -> 9-line MEDEVAC request -> export -> import into TCCC COMMAND -> reload persistence.
  * Seeded by DAY so any day can be re-run exactly. Runs offline. Judges record integrity and
  * report content, not clinical decisions. Survival is NOT simulated or predicted.
  *
@@ -27,6 +27,9 @@
  *        each triage category should map to is a clinical decision and is not judged here.
  *   L12 COMMAND imports the casualty with the same triage, heart rate and tourniquet count
  *   L13 record survives a reload
+ *   L14 final disposition (status, time, detail) is stored, shown in MIST and the casualty bar,
+ *        carried into COMMAND, and survives a reload. The disposition is scripted input;
+ *        no outcome is predicted.
  */
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'url';
@@ -71,6 +74,8 @@ for (let i = 0; i < N; i++) {
     wb: between(r, 0, 2),
     grid: `14R PU ${between(r, 10000, 99999)} ${between(r, 10000, 99999)}`, freq: `${between(r, 30, 87)}.${between(r, 0, 975)}`, callsign: pick(r, ['DUSTOFF 21', 'VIPER 6', 'BRAVO 3', 'REAPER 11']),
   };
+  // drawn last so the earlier scenario values are unchanged from protocol v1.3
+  sc.disp = { status: pick(r, ['EVACUATED', 'HANDED_OFF', 'RTD', 'KIA', 'DOW']), time: `${String(between(r, 0, 23)).padStart(2, '0')}:${String(between(r, 0, 59)).padStart(2, '0')}`, detail: pick(r, ['Role 2 FST', 'Role 3 CSH', 'Relieving medic', 'Aid station']) };
   const [w, h] = VIEWPORTS[i % VIEWPORTS.length];
   const ctx = await browser.newContext({ viewport: { width: w, height: h } });
   const page = await ctx.newPage();
@@ -97,6 +102,9 @@ for (let i = 0; i < N; i++) {
     openDrug('TXA', 'test'); set('dm-dose', '2 g'); const rt = document.getElementById('dm-route'); if (rt) rt.value = rt.options[0] ? rt.options[0].value : ''; confirmDrug();
     for (let k = 0; k < s.wb; k++) adjBlood('wb', 1);
     gcs.e = s.gcs.e; gcs.v = s.gcs.v; gcs.m = s.gcs.m; saveGCS();
+    set('disp-status', s.disp.status); set('disp-time', s.disp.time); set('disp-detail', s.disp.detail); set('disp-by', 'SIM MEDIC'); set('disp-note', '');
+    recordDisposition();
+    const chip = (document.getElementById('pt-chips') || {}).textContent || '';
     autoFillMIST(); await new Promise(r => setTimeout(r, 250));
     const mist = (document.getElementById('mist-output') || {}).textContent || '';
     set('mvac-grid', s.grid); set('mvac-freq', s.freq); set('mvac-callsign', s.callsign);
@@ -107,7 +115,7 @@ for (let i = 0; i < N; i++) {
       triage: pt.triage, moi: pt.moi, zones: [...(pt.zones || [])], march: { ...pt.march },
       hist: (pt.vitalHistory || []).map(v => v.hr), tqs: pt.tqs.map(q => q.deployStr),
       txa: (pt.logs || []).some(e => e.type === 'drug' && /TXA/.test(e.text)), wb: (pt.bloodProducts || {}).wb,
-      gcsTotal: pt.vitals.gcs, mist, nine, payload, id: pt.id,
+      gcsTotal: pt.vitals.gcs, mist, nine, payload, id: pt.id, disp: pt.disposition, chip,
     };
   }, sc);
 
@@ -116,6 +124,7 @@ for (let i = 0; i < N; i++) {
   else {
     await page.reload(); await page.waitForTimeout(500);
     const persisted = await page.evaluate(id => DB.patients.some(p => p.id === id), res.id);
+    const persistedDisp = await page.evaluate(id => { const p = DB.patients.find(q => q.id === id); return p && p.disposition ? p.disposition.status + ' ' + p.disposition.timeStr : ''; }, res.id);
     const cmd = await ctx.newPage();
     cmd.on('pageerror', e => errors.push('COMMAND: ' + e.message));
     cmd.on('dialog', d => d.dismiss());
@@ -124,7 +133,8 @@ for (let i = 0; i < N; i++) {
       try {
         const n = importPatientsPayload(JSON.parse(p), 'SIM');
         const got = _allPatients[_allPatients.length - 1];
-        return { n, triage: got && got.pt.triage, hr: got && got.pt.vitals && got.pt.vitals.hr, tqs: got && got.pt.tqs ? got.pt.tqs.length : -1 };
+        return { n, triage: got && got.pt.triage, hr: got && got.pt.vitals && got.pt.vitals.hr, tqs: got && got.pt.tqs ? got.pt.tqs.length : -1,
+          disp: got && got.pt.disposition ? got.pt.disposition.status + ' ' + got.pt.disposition.timeStr : '', dispShown: typeof dispositionLabel === 'function' ? dispositionLabel(got.pt.disposition, true) : '' };
       } catch (e) { return { err: e.message }; }
     }, res.payload);
     const line3 = (res.nine.split('\n').find(l => /LINE 3/.test(l)) || '');
@@ -143,6 +153,10 @@ for (let i = 0; i < N; i++) {
       L11_precedence_valid_pair: VALID_PRECEDENCE.test(line3),
       L12_command_handoff: imported.n === 1 && imported.triage === sc.triage && String(imported.hr) === String(last.hr) && imported.tqs === sc.tqs.length,
       L13_persisted: persisted,
+      L14_disposition: !!res.disp && res.disp.status === sc.disp.status && res.disp.timeStr === sc.disp.time && res.disp.detail === sc.disp.detail
+        && res.mist.includes('DISPOSITION:') && res.chip.includes({ EVACUATED: 'EVAC', HANDED_OFF: 'H/O', RTD: 'RTD', KIA: 'KIA', DOW: 'DOW' }[sc.disp.status])
+        && imported.disp === sc.disp.status + ' ' + sc.disp.time && imported.dispShown.includes(sc.disp.detail)
+        && persistedDisp === sc.disp.status + ' ' + sc.disp.time,
     };
     report.scenarios.push({ ...sc, viewport: `${w}x${h}`, line3, checks, pass: Object.values(checks).every(Boolean),
       errors: errors.slice(0, 3), failed: Object.entries(checks).filter(([, v]) => !v).map(([k]) => k) });
