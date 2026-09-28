@@ -1548,7 +1548,7 @@ function exportMedevacReport() {
     const pt = x.pt;
     const v = pt.vitals || {};
     report += '── PRIORITY #' + (qi + 1) + ' ──\n';
-    report += 'LINE 3: PRECEDENCE: ' + (pt.triage === 'T1' ? 'A — URGENT' : 'B — PRIORITY') + '\n';
+    report += 'LINE 3: PRECEDENCE: ' + ({ T1:'A — URGENT', T2:'C — PRIORITY', T3:'D — ROUTINE', T4:'E — CONVENIENCE' }[pt.triage] || 'A — URGENT') + '\n';
     report += 'LINE 4: SPECIAL EQUIP: ' + ((pt.tqs||[]).length > 0 ? 'Hemorrhage control' : 'None') + '\n';
     report += 'LINE 5: PATIENT: ' + (pt.name || 'UNKNOWN') + ' (' + x.unitName + ')\n';
     report += 'LINE 6: SECURITY: TBD\n';

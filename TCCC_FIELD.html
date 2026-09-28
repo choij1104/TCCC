@@ -3209,7 +3209,7 @@ function gen9Line() {
   const triage = (pt && pt.triage) || 'T1';
   const zones  = (pt && pt.zones && pt.zones.length) ? pt.zones.join(', ') : 'Multiple';
   const moi    = (pt && pt.moi) || 'Trauma';
-  const prio   = { T1:'A — URGENT', T2:'B — PRIORITY', T3:'C — ROUTINE', T4:'D — CONVENIENCE' }[triage] || 'A — URGENT';
+  const prio   = { T1:'A — URGENT', T2:'C — PRIORITY', T3:'D — ROUTINE', T4:'E — CONVENIENCE' }[triage] || 'A — URGENT';
   const d = new Date();
   const zulu = pad(d.getUTCHours()) + pad(d.getUTCMinutes()) + 'Z';
 
@@ -3794,7 +3794,7 @@ function buildNineLine() {
   const triage = pt ? (pt.triage || 'T1')       : 'T1';
   const zones  = pt && pt.zones && pt.zones.length ? pt.zones.join(', ') : 'Multiple';
   const moi    = pt ? (pt.moi || 'Trauma')      : 'Trauma';
-  const prio   = { T1:'A — URGENT', T2:'B — PRIORITY', T3:'C — ROUTINE', T4:'D — CONVENIENCE' }[triage] || 'A — URGENT';
+  const prio   = { T1:'A — URGENT', T2:'C — PRIORITY', T3:'D — ROUTINE', T4:'E — CONVENIENCE' }[triage] || 'A — URGENT';
 
   const d = new Date();
   const zulu = String(d.getUTCHours()).padStart(2,'0') + String(d.getUTCMinutes()).padStart(2,'0') + 'Z';
