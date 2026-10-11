@@ -5280,7 +5280,7 @@ const PILOT_DRUGS = [
   { id:'doxy',      name:'Doxycycline',           dose:'100mg PO',        interval:720,  indication:'Malaria / infection' },
   { id:'moxiflox',  name:'Moxifloxacin',          dose:'400mg PO',        interval:1440, indication:'Broad-spectrum ABx' },
   { id:'meloxicam', name:'Meloxicam',             dose:'15mg PO',         interval:1440, indication:'Pain / anti-inflammatory' },
-  { id:'txa',       name:'TXA',                   dose:'1g IV over 10min',interval:600,  indication:'Hemorrhage control' },
+  { id:'txa',       name:'TXA',                   dose:'2g slow IV/IO push',interval:0, single:true, indication:'Hemorrhage control — single dose, NOT later than 3h after injury (TCCC 20-02)' },
   { id:'gopill',    name:'Dextroamphetamine',      dose:'10mg PO',         interval:240,  indication:'Go Pill — alertness' },
   { id:'modafinil', name:'Modafinil (Provigil)',   dose:'200mg PO',        interval:480,  indication:'Wakefulness agent' },
   { id:'zofran',    name:'Ondansetron (Zofran)',   dose:'4mg ODT',         interval:480,  indication:'Nausea/vomiting' },
@@ -5681,7 +5681,7 @@ function buildPilotDrugChecklist() {
     '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);">'
     + '<input type="checkbox" id="pm-drug-' + d.id + '" style="width:18px;height:18px;cursor:pointer;" onchange="updateDrugSchedule()">'
     + '<div><div style="font-family:var(--ui);font-size:13px;font-weight:600;color:var(--white);">' + d.name + '</div>'
-    + '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);">' + d.dose + ' | q' + (d.interval/60).toFixed(0) + 'h | ' + d.indication + '</div>'
+    + '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);">' + d.dose + ' | ' + (d.single ? 'once' : 'q' + (d.interval/60).toFixed(0) + 'h') + ' | ' + d.indication + '</div>'
     + '</div></div>'
   ).join('');
 }
@@ -5705,7 +5705,7 @@ function generateDrugSchedule() {
 
   el.innerHTML = selected.map(d => {
     const schedule = [];
-    for (let i = 0; i <= 72 * 60; i += d.interval) {
+    for (let i = 0; i <= 72 * 60; i += (d.single ? 72 * 60 + 1 : d.interval)) {
       const t = new Date(now + i * 60000);
       const h = String(t.getHours()).padStart(2,'0');
       const m = String(t.getMinutes()).padStart(2,'0');
@@ -5713,7 +5713,7 @@ function generateDrugSchedule() {
     }
     return '<div class="pm-drug-card">'
       + '<div class="pm-drug-name">' + d.name + '</div>'
-      + '<div class="pm-drug-info">Dose: ' + d.dose + ' | Every ' + (d.interval/60).toFixed(0) + ' hours</div>'
+      + '<div class="pm-drug-info">Dose: ' + d.dose + ' | ' + (d.single ? 'Single dose — do not repeat' : 'Every ' + (d.interval/60).toFixed(0) + ' hours') + '</div>'
       + '<div class="pm-drug-info">Schedule: ' + schedule.slice(0,6).join(' → ') + (schedule.length>6?'...':'') + '</div>'
       + '</div>';
   }).join('');
@@ -6447,7 +6447,7 @@ function calcDoses() {
       ['Ketamine (RSI)',    'IV',   kg * 1.5,   kg * 2.0,   'mg',   '1.5–2 mg/kg IV'],
     ]],
     ['RESUSCITATION', 'var(--amber)', [
-      ['TXA',               'IV',   1000,       1000,       'mg',   '1g fixed — give within 3 hrs'],
+      ['TXA',               'IV/IO', 2000,      2000,       'mg',   '2g slow push, single dose — NOT later than 3h after injury (TCCC 20-02)'],
       ['NS/LR bolus',       'IV',   250,        500,        'mL',   '250–500mL bolus, reassess'],
       ['Hextend',           'IV',   500,        500,        'mL',   '500mL bolus (max 1L/day)'],
     ]],
@@ -7057,7 +7057,7 @@ function checkHypo() {
       <textarea class="inp" id="mist-s" placeholder="e.g. HR 120, BP 90/60, RR 22, GCS 14, SpO2 96%..." rows="2"></textarea>
 
       <span class="lbl">T — TREATMENT GIVEN</span>
-      <textarea class="inp" id="mist-t" placeholder="e.g. CAT TQ R thigh @ 14:32Z, QuikClot packing, 1g TXA IV..." rows="3"></textarea>
+      <textarea class="inp" id="mist-t" placeholder="e.g. CAT TQ R thigh @ 14:32Z, QuikClot packing, 2g TXA IV/IO..." rows="3"></textarea>
 
       <span class="lbl" style="margin-top:8px;">📝 ADDITIONAL NOTES (free text)</span>
       <textarea class="inp" id="mist-notes" placeholder="Additional clinical notes, next treatment plan, special instructions..." rows="3"></textarea>
