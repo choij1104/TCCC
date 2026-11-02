@@ -5278,7 +5278,8 @@ const PILOT_DRUGS = [
   { id:'ketamine',  name:'Ketamine',              dose:'50mg IM',         interval:30,   indication:'Pain / sedation' },
   { id:'cipro',     name:'Ciprofloxacin',         dose:'500mg PO',        interval:720,  indication:'Infection prophylaxis' },
   { id:'doxy',      name:'Doxycycline',           dose:'100mg PO',        interval:720,  indication:'Malaria / infection' },
-  { id:'moxiflox',  name:'Moxifloxacin',          dose:'400mg PO',        interval:1440, indication:'Broad-spectrum ABx' },
+  { id:'cefadrox',  name:'Cefadroxil',            dose:'1g PO',           interval:1440, indication:'Wound ABx — preferred oral (TCCC Change 25-1, PMID 41474877)' },
+  { id:'moxiflox',  name:'Moxifloxacin',          dose:'400mg PO',        interval:1440, indication:'Former TCCC oral ABx — replaced by cefadroxil (TCCC Change 25-1)' },
   { id:'meloxicam', name:'Meloxicam',             dose:'15mg PO',         interval:1440, indication:'Pain / anti-inflammatory' },
   { id:'txa',       name:'TXA',                   dose:'2g slow IV/IO push',interval:0, single:true, indication:'Hemorrhage control — single dose, NOT later than 3h after injury (TCCC 20-02)' },
   { id:'gopill',    name:'Dextroamphetamine',      dose:'10mg PO',         interval:240,  indication:'Go Pill — alertness' },
@@ -6026,8 +6027,8 @@ const SELF_AID_PROTOCOLS = {
     title: '🫁 CHEST WOUND',
     steps: [
       { title: 'SEAL', desc: 'Open chest wound (sucking):\n→ Apply chest seal immediately (Hyfin, Bolin)\n→ No chest seal? Use plastic wrap taped on 3 sides\n→ Wound on exit side too? Seal both\n→ Patient sitting up 45° if possible' },
-      { title: 'TENSION PNEUMOTHORAX', desc: 'Signs of tension pneumo:\n→ Worsening breathing after seal\n→ No breath sounds one side\n→ Trachea deviated\n→ JVD (neck veins bulging)\n→ ACTION: Needle decompression — 2nd ICS, MCL' },
-      { title: 'NEEDLE DECOMPRESSION', desc: 'If trained:\n→ 14G needle, 2nd intercostal space\n→ Midclavicular line, ABOVE 3rd rib\n→ Insert until rush of air\n→ Leave catheter in place\n→ Convert to chest tube if available' },
+      { title: 'TENSION PNEUMOTHORAX', desc: 'Signs of tension pneumo:\n→ Worsening breathing after seal\n→ No breath sounds one side\n→ Trachea deviated\n→ JVD (neck veins bulging)\n→ ACTION: Needle decompression — 5th ICS AAL or 2nd ICS MCL' },
+      { title: 'NEEDLE DECOMPRESSION', desc: 'If trained:\n→ 14G or 10G, 3.25-inch needle/catheter\n→ Site A: 5th ICS, anterior axillary line (AAL)\n→ Site B: 2nd ICS, midclavicular line (MCL), ABOVE 3rd rib\n→ If MCL: do NOT insert medial to the nipple line\n→ Insert until rush of air\n→ Leave catheter in place\n→ Convert to chest tube if available' },
       { title: 'MONITOR', desc: 'Every 5 minutes:\n→ Breathing rate and depth\n→ SpO2 — target >94%\n→ Seal not bubbling/loose?\n→ Mental status (confused = hypoxia)' }
     ]
   },
